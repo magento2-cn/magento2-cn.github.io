@@ -1,0 +1,85 @@
+{
+    "main": [
+        {
+            "name": "home",
+            "title": "首页",
+            "href": "index.html"
+        },
+        {
+            "name": "user-guide",
+            "title": "用户指南",
+            "children": [
+                {
+                    "name": "catalog",
+                    "title": "产品 CATALOG",
+                    "href": "user-guide/catalog.html"
+                },
+                {
+                    "name": "customers",
+                    "title": "用户 CUSTOMERS",
+                    "href": "user-guide/customers.html"
+                },
+                {
+                    "name": "marketing",
+                    "title": "营销 MARKETING",
+                    "href": "user-guide/marketing.html"
+                },
+                {
+                    "name": "sales",
+                    "title": "销售 SALES",
+                    "href": "user-guide/sales.html"
+                }
+            ]
+        },
+        {
+            "name": "codes",
+            "title": "常用代码",
+            "children": [
+                {
+                    "name": "catalog",
+                    "title": "产品 CATALOG",
+                    "href": "codes/catalog.html"
+                },
+                {
+                    "name": "customers",
+                    "title": "用户 CUSTOMERS",
+                    "href": "codes/customers.html"
+                },
+                {
+                    "name": "sales",
+                    "title": "销售 SALES",
+                    "href": "codes/sales.html"
+                }
+            ]
+        },
+        {
+            "name": "exceptions",
+            "title": "异常处理",
+            "children": [
+                {
+                    "name": "bugs",
+                    "title": "原生 BUG",
+                    "href": "exceptions/bugs.html"
+                },
+                {
+                    "name": "errors",
+                    "title": "常见错误",
+                    "href": "exceptions/errors.html"
+                }
+            ]
+        },
+        {
+            "name": "appendices",
+            "title": "附录",
+            "children": [
+                {
+                    "name": "glossary",
+                    "title": "词汇表",
+                    "href": "appendices/glossary.html"
+                }
+            ]
+        }
+    ],
+    "footer": [
+    ]
+}
