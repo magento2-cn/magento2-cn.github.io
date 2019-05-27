@@ -74,8 +74,8 @@ article table tbody td {}
 /**
  * Footer
  */
-footer { background:#333; color:#fff; font-size:11px; padding:10px 0; position:relative; z-index:2; }
-footer .box { margin:0 30px; }
+footer { background:#333; color:#fff; font-size:10px; padding:10px 0; position:relative; z-index:2; }
+footer .box { margin:0 20px; }
 footer .box nav { float:left; }
 footer .box .copyright { float:right; }
 footer .box:after { clear:both; content:''; display:table; }
