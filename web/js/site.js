@@ -43,14 +43,16 @@ require( [ 'jquery' ], function( $ ) {
  * @param {Object} $
  * @param {String} index
  */
-require( [ 'jquery', 'text!index.json', 'mousewheel' ], function( $, index ) {
+require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel' ], function( $, index, markdown ) {
 
+    const body = $( 'body' );
     const header = $( 'body > header' );
     const mainMenu = $( 'body > header > nav' );
     const main = $( 'body > main' );
     const footer = $( 'body > footer' );
     const footerMenu = $( 'body > footer > nav' );
 
+    const markdownConverter = new markdown.Converter();
     const indexData = JSON.parse( index );
 
     /**
@@ -102,10 +104,10 @@ require( [ 'jquery', 'text!index.json', 'mousewheel' ], function( $, index ) {
 
     const updateStage = function( evt ) {
         let scrollTop = $( document ).scrollTop();
-        if ( scrollTop > headerH ) {
-            header.addClass( 'show-bg' );
+        if ( body.hasClass( 'home' ) && scrollTop < headerH ) {
+            header.addClass( 'hide-bg' );
         } else {
-            header.removeClass( 'show-bg' );
+            header.removeClass( 'hide-bg' );
         }
         if ( evt && evt.dir === 1 && scrollTop > headerH ) { // close
             header.addClass( 'close' );
@@ -123,6 +125,14 @@ require( [ 'jquery', 'text!index.json', 'mousewheel' ], function( $, index ) {
         headerH = header.outerHeight();
     };
 
+    const initMain = function() {
+        let elArticleSource = main.find( '#article-source' );
+        if ( elArticleSource.length > 0 ) {
+            main.find( 'article' ).append( markdownConverter.makeHtml( elArticleSource.text() ) );
+            elArticleSource.remove();
+        }
+    };
+
     const initFooter = function() {
         footerMenu.wrap( '<div class="box"></div>' ).after( '<div class="copyright">Copyright &copy; ' + (new Date).getFullYear() + ' Magento 2 笔记</div>' );
     };
@@ -130,6 +140,7 @@ require( [ 'jquery', 'text!index.json', 'mousewheel' ], function( $, index ) {
     let headerH;
 
     initHeader();
+    initMain();
     initFooter();
     updateStage();
 
