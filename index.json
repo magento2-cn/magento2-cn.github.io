@@ -3,7 +3,7 @@
         {
             "name": "home",
             "title": "首页",
-            "href": "index.html"
+            "href": "/"
         },
         {
             "name": "user-guide",
@@ -12,22 +12,22 @@
                 {
                     "name": "catalog",
                     "title": "产品 CATALOG",
-                    "href": "user-guide/catalog.html"
+                    "href": "user-guide/catalog"
                 },
                 {
                     "name": "customers",
                     "title": "用户 CUSTOMERS",
-                    "href": "user-guide/customers.html"
+                    "href": "user-guide/customers"
                 },
                 {
                     "name": "marketing",
                     "title": "营销 MARKETING",
-                    "href": "user-guide/marketing.html"
+                    "href": "user-guide/marketing"
                 },
                 {
                     "name": "sales",
                     "title": "销售 SALES",
-                    "href": "user-guide/sales.html"
+                    "href": "user-guide/sales"
                 }
             ]
         },
@@ -38,22 +38,22 @@
                 {
                     "name": "catalog",
                     "title": "产品 CATALOG",
-                    "href": "codes/catalog.html"
+                    "href": "codes/catalog"
                 },
                 {
                     "name": "customers",
                     "title": "用户 CUSTOMERS",
-                    "href": "codes/customers.html"
+                    "href": "codes/customers"
                 },
                 {
                     "name": "sales",
                     "title": "销售 SALES",
-                    "href": "codes/sales.html"
+                    "href": "codes/sales"
                 },
                 {
                     "name": "others",
                     "title": "其他",
-                    "href": "codes/others.html"
+                    "href": "codes/others"
                 }
             ]
         },
@@ -64,12 +64,12 @@
                 {
                     "name": "bugs",
                     "title": "原生 BUG",
-                    "href": "exceptions/bugs.html"
+                    "href": "exceptions/bugs"
                 },
                 {
                     "name": "errors",
                     "title": "常见错误",
-                    "href": "exceptions/errors.html"
+                    "href": "exceptions/errors"
                 }
             ]
         },
