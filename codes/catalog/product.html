@@ -67,6 +67,93 @@ $collection->addAttributeToFilter( [
 'sneq'          => null,
 'ntoa'          => "INET_NTOA({{fieldName}}) LIKE ?",
 ```
+
+### 为产品集添加访问次数属性
+
+```php
+$from = date( 'Y-m-d', time() - 3600 * 24 * 30 );
+$to = date( 'Y-m-d' );
+$collection = $objectManager->create( 'Magento\Reports\Model\ResourceModel\Product\Collection' );
+$collection->addViewsCount( $from, $to ); // $from 及 $to 为可选参数
+foreach( $collection as $product ) {
+    $views = $product->getData( 'views' );
+}
+```
+
+p.s. 开启 full page cache 可能使该方法的结果变得非常不准确，需设置关闭产品详细页缓存。
+
+
+### 获取多个指定分类的产品
+
+可选用两个可选条件 ```in``` 或 ```nin```。
+
+```php
+/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+/* @var $categoryIds array */
+$collection = $objectManager->create( 'Magento\Catalog\Model\ResourceModel\Product\Collection' )
+        ->addCategoriesFilter( [ 'in' => $categoryIds ] );
+```
+
+### 不执行 load 方法获取可见产品集
+
+如果执行 load 方法则无需添加 stock 相关代码，系统原生插件在 load 之前添加了库存过滤。
+
+```php
+/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+/* @var $catalogProductVisibility \Magento\Catalog\Model\Product\Visibility */
+$productCollection = $objectManager->create( 'Magento\Catalog\Model\ResourceModel\Product\Collection' );
+//$productCollection->setVisibility( $catalogProductVisibility->getVisibleInSearchIds() );
+//$productCollection->setVisibility( $catalogProductVisibility->getVisibleInCatalogIds() );
+$productCollection->setVisibility( $catalogProductVisibility->getVisibleInSiteIds() );
+
+/* @var $stockConfig \Magento\CatalogInventory\Model\Configuration */
+/* @var $stockHelper \Magento\CatalogInventory\Helper\Stock */
+if ( !$stockConfig->isShowOutOfStock() ) {
+    $stockHelper->addInStockFilterToCollection( $productCollection );
+}
+```
+
+### 在一个 Collection 加载多个 store view 的属性数据
+
+```php
+/* @var $productCollection \Magento\Catalog\Model\ResourceModel\Product\Collection */
+/* @var $alias string */
+/* @var $attribute string */
+/* @var $bind string */
+/* @var $filter string */
+/* @var $joinType string */
+/* @var $storeId int */
+$productCollection->joinAttribute( $alias, $attribute, $bind, $filter, $joinType, $storeId );
+```
+
+- ***$alias*** - 别名，使用 getData 方法时用到的名字
+- ***$attribute*** - 属性名，格式为 `[entity_type]/[attribute_code]`，比如 `catalog_product/name`
+- ***$bind*** - 指定用作关联的产品 attribute code
+- ***$filter*** - 指定的产品数据表中用作关联的字段，默认为 `row_id`
+- ***$joinType*** - inner / left
+- ***$storeId*** - Store View ID
+
+
+### 联合其他数据表查询
+
+```php
+/* @var $productCollection \Magento\Catalog\Model\ResourceModel\Product\Collection */
+/* @var $table string|array */
+/* @var $bind string */
+/* @var $fields array */
+/* @var $cond null|string|array */
+/* @var $joinType null|string */
+$productCollection->joinTable( $table, $bind, $fields, $cond, $joinType );
+```
+
+- ***$table*** - 联合的数据表，必须
+- ***$bind*** - 联合条件，格式为 `field_name=attribute_code`，必须
+- ***$fields*** - 联合的表中要查询的字段，格式为 `[ field_alias => field_name ]`，必须
+- ***$cond*** - 额外的联合条件。
+以字符串作参数时，系统会将 `{{table}}` 解释为联合数据表的别名，比如 `{{table}}.id = 123`；
+以数组作参数时，格式为 `[ field_name => [ condition => value ] ]`，其中 `field_name` 是联合数据表当中的字段名
+- ***$joinType*** - inner / left
+
                 </pre>
             </article>
         </main>
