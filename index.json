@@ -49,6 +49,11 @@
                     "name": "sales",
                     "title": "销售 SALES",
                     "href": "codes/sales.html"
+                },
+                {
+                    "name": "others",
+                    "title": "其他",
+                    "href": "codes/others.html"
                 }
             ]
         },

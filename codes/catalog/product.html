@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Magento 2 笔记</title>
+        <base href="/" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+        <meta name="keywords" content="Magento,Magento 2,开源电商,笔记,教程" />
+        <meta name="description" content="记录一切与 Magento 2 使用和开发相关的内容，包括使用指南、常用代码、异常处理、运维优化等等。" />
+        <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico" />
+        <link rel="stylesheet" type="text/css" media="all" href="web/css/style.css" />
+        <link rel="stylesheet" type="text/css" media="all" href="web/css/jquery.mCustomScrollbar.min.css" />
+        <script type="text/javascript" src="web/js/require.js"></script>
+    </head>
+    <body>
+        <header>
+            <nav></nav>
+        </header>
+        <main>
+            <aside><nav></nav></aside>
+            <article>
+                <a id="collection"></a>
+                <h2>产品数据集 Collection</h2>
+
+                <a id="collection-01"></a>
+                <h3>获取产品数据</h3>
+                <pre><code>/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+$collection = $objectManager->get( 'Magento\Catalog\Model\ProductFactory' )->create()->getCollection();</code></pre>
+                <p>以下为 AND 条件使用实例：</p>
+                <pre><code>$collection
+    ->addAttributeToFilter( 'news_from_date', [ 'to' => date( 'Y-m-d' ) ] )
+    ->addAttributeToFilter( 'title', [ 'like' => '%abc' ] );</code></pre>
+                <p>以下为 OR 条件使用实例：</p>
+                <pre><code>$collection->addAttributeToFilter( [
+    [ 'attribute' => 'news_from_date', 'from' => date( 'Y-m-d' ) ],
+    [ 'attribute' => 'news_to_date', 'to' => date( 'Y-m-d' ) ]
+] );</code></pre>
+                <p>下面列出可用条件：</p>
+                <pre><code>'eq'            => "{{fieldName}} = ?",
+'neq'           => "{{fieldName}} != ?",
+'like'          => "{{fieldName}} LIKE ?",
+'nlike'         => "{{fieldName}} NOT LIKE ?",
+'in'            => "{{fieldName}} IN(?)",
+'nin'           => "{{fieldName}} NOT IN(?)",
+'is'            => "{{fieldName}} IS ?",
+'notnull'       => "{{fieldName}} IS NOT NULL",
+'null'          => "{{fieldName}} IS NULL",
+'gt'            => "{{fieldName}} > ?",
+'lt'            => "{{fieldName}} < ?",
+'gteq'          => "{{fieldName}} >= ?",
+'lteq'          => "{{fieldName}} <= ?",
+'finset'        => "FIND_IN_SET(?, {{fieldName}})",
+'regexp'        => "{{fieldName}} REGEXP ?",
+'from'          => "{{fieldName}} >= ?",
+'to'            => "{{fieldName}} <= ?",
+'seq'           => null,
+'sneq'          => null,
+'ntoa'          => "INET_NTOA({{fieldName}}) LIKE ?",</code></pre>
+
+                <a id="collection-02"></a>
+                <h3>不执行 load 方法获取可见产品集</h3>
+                <p>如果执行 load 方法则无需添加 stock 相关代码，系统原生插件在 load 之前添加了库存过滤。</p>
+                <pre><code>/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+/* @var $catalogProductVisibility \Magento\Catalog\Model\Product\Visibility */
+$productCollection = $objectManager->create( 'Magento\Catalog\Model\ResourceModel\Product\Collection' );
+//$productCollection->setVisibility( $catalogProductVisibility->getVisibleInSearchIds() );
+//$productCollection->setVisibility( $catalogProductVisibility->getVisibleInCatalogIds() );
+$productCollection->setVisibility( $catalogProductVisibility->getVisibleInSiteIds() );
+
+/* @var $stockConfig \Magento\CatalogInventory\Model\Configuration */
+/* @var $stockHelper \Magento\CatalogInventory\Helper\Stock */
+if ( !$stockConfig->isShowOutOfStock() ) {
+    $stockHelper->addInStockFilterToCollection( $productCollection );
+}</code></pre>
+
+                <a id="collection-03"></a>
+                <h3>在一个 Collection 加载多个 store view 的属性数据</h3>
+                <pre><code>/* @var $productCollection \Magento\Catalog\Model\ResourceModel\Product\Collection */
+/* @var $alias string */
+/* @var $attribute string */
+/* @var $bind string */
+/* @var $filter string */
+/* @var $joinType string */
+/* @var $storeId int */
+$productCollection->joinAttribute( $alias, $attribute, $bind, $filter, $joinType, $storeId );</code></pre>
+                <ul>
+                    <li>$alias - 别名，使用 getData 方法时用到的名字</li>
+                    <li>$attribute - 属性名，格式为 [entity_type]/[attribute_code]，比如 catalog_product/name</li>
+                    <li>$bind - 指定用作关联的产品 attribute code</li>
+                    <li>$filter - 指定的产品数据表中用作关联的字段，默认为 row_id</li>
+                    <li>$joinType - inner / left</li>
+                    <li>$storeId - Store View ID</li>
+                </ul>
+
+                <a id="collection-04"></a>
+                <h3>联合其他数据表查询</h3>
+                <pre><code>/* @var $productCollection \Magento\Catalog\Model\ResourceModel\Product\Collection */
+/* @var $table string|array */
+/* @var $bind string */
+/* @var $fields array */
+/* @var $cond null|string|array */
+/* @var $joinType null|string */
+$productCollection->joinTable( $table, $bind, $fields, $cond, $joinType );</code></pre>
+                <ul>
+                    <li><strong>$table</strong> - 联合的数据表，必须</li>
+                    <li><strong>$bind</strong> - 联合条件，格式为 <code>field_name=attribute_code</code>，必须</li>
+                    <li><strong>$fields</strong> - 联合的表中要查询的字段，格式为 <code>[ field_alias => field_name ]</code>，必须</li>
+                    <li><strong>$cond</strong> - 额外的联合条件。<br />
+                        以字符串作参数时，系统会将 <code>{{table}}</code> 解释为联合数据表的别名，比如 <code>{{table}}.id = 123</code>；<br />
+                        以数组作参数时，格式为 <code>[ field_name => [ condition => value ] ]</code>，其中 <code>field_name</code> 是联合数据表当中的字段名</li>
+                    <li><strong>$joinType</strong> - inner / left</li>
+                </ul>
+            </article>
+        </main>
+        <footer>
+            <nav></nav>
+        </footer>
+        <script type="text/javascript" src="web/js/site.js"></script>
+    </body>
+</html>
