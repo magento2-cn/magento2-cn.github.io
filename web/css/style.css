@@ -53,11 +53,11 @@ main > aside { width:260px; }
 /**
  * Atricle contents
  */
-article { background:#fff; box-shadow:0 0 5px #999; flex:1; padding:70px 20px 80px; }
-article h1 { color:#43bec5; font-size:26px; font-weight:normal; line-height:32px; padding:28px 0 10px; }
-article h2 { color:#43bec5; font-size:22px; font-weight:normal; line-height:28px; padding:24px 0 20px; }
-article h3 { color:#43bec5; font-size:18px; font-weight:normal; line-height:24px; padding:24px 0 16px; }
-article a { color:#379aa0; border-bottom:1px solid #379aa0; text-decoration:none; }
+article { background:#fff; box-shadow:0 0 5px #999; color:#545454; flex:1; padding:70px 20px 80px; }
+article h1 { font-size:26px; font-weight:normal; line-height:32px; padding:28px 0 10px; }
+article h2 { font-size:22px; font-weight:normal; line-height:28px; padding:24px 0 20px; }
+article h3 { font-size:18px; font-weight:normal; line-height:24px; padding:24px 0 16px; }
+article a { color:#545454; border-bottom:1px solid #545454; text-decoration:none; }
 article a:hover { border:0; }
 article p { margin:0 0 16px; }
 article code { background:#f4f4f4; padding:4px 8px; }
