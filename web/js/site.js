@@ -123,9 +123,14 @@ require( [ 'jquery', 'text!index.json', 'mousewheel' ], function( $, index ) {
         headerH = header.outerHeight();
     };
 
+    const initFooter = function() {
+        footerMenu.wrap( '<div class="box"></div>' ).after( '<div class="copyright">Copyright &copy; ' + (new Date).getFullYear() + ' Magento 2 笔记</div>' );
+    };
+
     let headerH;
 
     initHeader();
+    initFooter();
     updateStage();
 
     $( document ).on( 'scroll', updateStage );

@@ -9,21 +9,21 @@ body { background:#f6f6f6; background-size:cover; color:#333; font:14px/21px Con
 /**
  * Header
  */
-header { height:50px; left:0; position:fixed; right:0; top:0; z-index:3; }
+header { height:60px; left:0; position:fixed; right:0; top:0; z-index:3; }
 header .box { height:100%; left:0; position:absolute; right:0; top:0; transition:top .3s; }
 header.close .box { top:-100%; }
 header .box:before { background:#fff; bottom:0; box-shadow:0 1px 6px #999; content:''; display:block; left:0; opacity:0; position:absolute; right:0; top:0; transition:opacity .3s; }
 header.show-bg .box:before { opacity:1; }
 header nav { height:100%; margin:0 auto; width:1280px; }
-header nav > .logo { float:left; height:100%; margin:0 30px 0 0; padding:5px 0; }
+header nav > .logo { float:left; height:100%; margin:0 30px 0 0; padding:10px 0; }
 header nav > .logo img { display:block; filter:grayscale(100%); height:100%; }
 header nav > ul { float:right; height:100%; }
 header nav > ul > li { float:left; height:100%; list-style:none; margin:0 30px 0 0; position:relative; }
 header nav > ul > li a { display:block; text-decoration:none; }
 header nav > ul > li a span { display:block; }
-header nav > ul > li > a { height:100%; padding:15px 15px 3px; }
-header nav > ul > li > a span { color:#7d7d7d; font-size:16px; }
-header nav > ul > li.parent.hover > a { border-bottom:3px solid #000; padding:15px 15px 0; }
+header nav > ul > li > a { height:100%; padding:20px 15px 3px; }
+header nav > ul > li > a span { color:#545454; font-size:16px; }
+header nav > ul > li.parent.hover > a { border-bottom:3px solid #000; padding:20px 15px 0; }
 header nav > ul > li.parent.hover > a span { color:#000; }
 header nav > ul > li.hover > a span,
 header nav > ul > li.active > a span,
@@ -47,7 +47,11 @@ main { margin:0 auto; position:relative; width:1280px; z-index:2; }
 /**
  * Footer
  */
-footer { margin:0 auto; position:relative; width:1280px; z-index:1; }
+footer { background:#222; color:#fff; font-size:11px; padding:10px 0; position:relative; z-index:1; }
+footer .box { margin:0 auto; width:1280px; }
+footer .box nav { float:left; }
+footer .box .copyright { float:right; }
+footer .box:after { clear:both; content:''; display:table; }
 
 /**
  * Atricle contents
@@ -72,6 +76,11 @@ article table tbody td {}
 /**
  * Home page
  */
-body.home > .bg { left:0; position:fixed; right:0; top:0; z-index:0; }
-body.home > .bg image { display:block; width:100%; }
+body.home > .info { left:0; position:fixed; right:0; top:0; z-index:0; }
+body.home > .info .bg { left:0; position:absolute; right:0; top:0; z-index:1; }
+body.home > .info .bg img { display:block; width:100%; }
+body.home > .info .content { color:#fff; margin:200px auto 0; position:relative; text-align:center; width:800px; z-index:2; }
+body.home > .info .content .box { position:relative; }
+body.home > .info .content h1 { font-size:32px; font-weight:normal; margin:0 0 45px; }
+body.home > .info .content p { font-size:16px; }
 body.home > main { background:#f6f6f6; margin:600px 0 0; width:100%; }
