@@ -140,6 +140,7 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress' ], 
             elArticle.find( '> .content' ).readingProgress( {
                 elProgressBox: elIndexer,
                 onInitialized: function( elProgressBox ) {
+                    elProgressBox.find( '.reading-progress' ).before( '<div class="caption">本页目录</div>' );
                     elProgressBox.find( 'li.idx a' ).before( '<div class="progress"></div>' );
                 },
                 onUpdate: function( indexElms ) {
