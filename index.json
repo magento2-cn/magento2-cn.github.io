@@ -3,7 +3,7 @@
         {
             "name": "home",
             "title": "首页",
-            "href": "/"
+            "href": "index.html"
         },
         {
             "name": "user-guide",

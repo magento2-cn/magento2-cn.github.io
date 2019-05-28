@@ -93,7 +93,7 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel' ], function( $,
         } );
 
         menu.find( 'a' ).each( function() {
-            if ( this.href === window.location.href ) {
+            if ( window.location.href.indexOf( this.href ) === 0 ) {
                 let el = $( this );
                 el.parent( 'li' ).addClass( opts.clsCurrent ).parents( 'li' ).addClass( opts.clsActive );
             }
