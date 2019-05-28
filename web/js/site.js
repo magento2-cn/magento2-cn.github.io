@@ -5,7 +5,8 @@ require.config( {
         text: 'web/js/text',
         markdown: 'web/js/showdown.min',
         mousewheel: 'web/js/jquery.mousewheel-3.0.6.min',
-        scrollbar: 'web/js/jquery.mCustomScrollbar.min'
+        scrollbar: 'web/js/jquery.mCustomScrollbar.min',
+        progress: 'web/js/reading-progress'
     },
     shim: {
         mousewheel: {
@@ -44,12 +45,12 @@ require( [ 'jquery' ], function( $ ) {
  * @param {String} index
  * @param {Object} markdown
  */
-require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel' ], function( $, index, markdown ) {
+require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress' ], function( $, index, markdown ) {
 
-    const body = $( 'body' );
-    const header = $( 'body > header' );
-    const main = $( 'body > main' );
-    const footer = $( 'body > footer' );
+    const elBody = $( 'body' );
+    const elHeader = $( 'body > header' );
+    const elMain = $( 'body > main' );
+    const elFooter = $( 'body > footer' );
 
     const markdownConverter = new markdown.Converter();
     const indexData = JSON.parse( index );
@@ -104,48 +105,75 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel' ], function( $,
 
     const updateStage = function( evt ) {
         let scrollTop = $( document ).scrollTop();
-        if ( body.hasClass( 'home' ) && scrollTop < headerH ) {
-            header.addClass( 'hide-bg' );
+        if ( elBody.hasClass( 'home' ) && scrollTop < headerH ) {
+            elHeader.addClass( 'hide-bg' );
         } else {
-            header.removeClass( 'hide-bg' );
+            elHeader.removeClass( 'hide-bg' );
         }
         if ( evt && evt.dir === 1 && scrollTop > headerH ) { // close
-            header.addClass( 'close' );
-            aside.addClass( 'top' );
+            elHeader.addClass( 'close' );
+            $( document ).trigger( 'close_header' );
         } else if ( evt && evt.dir === -1 ) {
-            header.removeClass( 'close' );
-            aside.removeClass( 'top' );
+            $( document ).trigger( 'open_header' );
+            elHeader.removeClass( 'close' );
         }
     };
 
     const initHeader = function() {
-        header.html( '<div class="box"><div class="content"><div class="logo"><a href="index.html"><img src="web/images/logo.png" /></a></div><nav></nav></div></div>' );
+        elHeader.html( '<div class="box"><div class="content"><div class="logo"><a href="index.html"><img src="web/images/logo.png" /></a></div><nav></nav></div></div>' );
         buildMenu( {
             data: indexData.main,
-            container: header.find( 'nav' )
+            container: elHeader.find( 'nav' )
         } );
-        headerH = header.outerHeight();
+        headerH = elHeader.outerHeight();
     };
 
     const initMain = function() {
-        let elArticleSource = main.find( '#article-source' );
+        let elArticleSource = elMain.find( '#article-source' );
         if ( elArticleSource.length > 0 ) {
-            main.find( 'article' ).append( markdownConverter.makeHtml( elArticleSource.text() ) );
+            let elArticle = elMain.find( 'article' );
+            elArticle.addClass( 'has-content' )
+                    .append( '<div class="content">' + markdownConverter.makeHtml( elArticleSource.text() ) + '</div><div class="index"></div>' );
             elArticleSource.remove();
+
+            let elIndexer = elArticle.find( '> .index' );
+            elArticle.find( '> .content' ).readingProgress( {
+                elProgressBox: elIndexer,
+                onInitialized: function( elProgressBox ) {
+                    elProgressBox.find( 'li.idx a' ).before( '<div class="progress"></div>' );
+                },
+                onUpdate: function( indexElms ) {
+                    for ( let i = 0; i < indexElms.length; i++ ) {
+                        indexElms[i].find( '.progress' ).css( 'width', indexElms[i].data( 'read-progress' ) + '%' );
+                    }
+                }
+            } );
+            $( document ).on( 'close_header', function() {
+                elIndexer.addClass( 'top' );
+            } );
+            $( document ).on( 'open_header', function() {
+                elIndexer.removeClass( 'top' );
+            } );
         }
 
-        aside = main.find( '> aside' );
-        if ( aside.length > 0 ) {
+        let elNav = elMain.find( '> aside' );
+        if ( elNav.length > 0 ) {
             let paths = window.location.href.substr( baseUrl.length ).replace( /^\/*(.*)/, '$1' ).split( '/' );
             if ( paths.length >= 2 ) {
                 $.ajax( {
                     url: baseUrl + '/' + paths[0] + '/' + paths[1] + '/index.json',
                     dataType: 'json',
                     success: function( result ) {
-                        aside.html( '<nav></nav>' );
+                        elNav.html( '<nav></nav>' );
                         buildMenu( {
                             data: result,
-                            container: aside.find( 'nav' )
+                            container: elNav.find( 'nav' )
+                        } );
+                        $( document ).on( 'close_header', function() {
+                            elNav.addClass( 'top' );
+                        } );
+                        $( document ).on( 'open_header', function() {
+                            elNav.removeClass( 'top' );
                         } );
                     }
                 } );
@@ -154,11 +182,10 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel' ], function( $,
     };
 
     const initFooter = function() {
-        footer.html( '<div class="box"><div class="copyright">Copyright &copy; ' + (new Date).getFullYear() + ' Magento 2 笔记</div></div>' );
+        elFooter.html( '<div class="box"><div class="copyright">Copyright &copy; ' + (new Date).getFullYear() + ' Magento 2 笔记</div></div>' );
     };
 
     let headerH;
-    let aside;
 
     initHeader();
     initMain();
