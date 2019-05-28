@@ -18,7 +18,7 @@
             <article>
                 <h1>产品 Product</h1>
                 <pre id="article-source">
-## 产品数据集
+## 获取产品集合
 
 ```php
 /* @var $objectManager \Magento\Framework\ObjectManagerInterface */
@@ -65,9 +65,10 @@ $collection->addAttributeToFilter( [
 'ntoa'          => "INET_NTOA({{fieldName}}) LIKE ?",
 ```
 
-### 为产品集添加访问次数属性
+### 为集合的产品添加访问次数属性
 
 ```php
+/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
 $from = date( 'Y-m-d', time() - 3600 * 24 * 30 );
 $to = date( 'Y-m-d' );
 $collection = $objectManager->create( 'Magento\Reports\Model\ResourceModel\Product\Collection' );
@@ -91,7 +92,8 @@ $collection = $objectManager->create( 'Magento\Catalog\Model\ResourceModel\Produ
         ->addCategoriesFilter( [ 'in' => $categoryIds ] );
 ```
 
-### 不执行 load 方法获取可见产品集
+
+### 获取可见产品集合
 
 如果执行 load 方法则无需添加 stock 相关代码，系统原生插件在 load 之前添加了库存过滤。
 
@@ -110,7 +112,8 @@ if ( !$stockConfig->isShowOutOfStock() ) {
 }
 ```
 
-### 在一个 Collection 加载多个 store view 的属性数据
+
+### 为产品集合加载多个 store 的属性数据
 
 ```php
 /* @var $productCollection \Magento\Catalog\Model\ResourceModel\Product\Collection */

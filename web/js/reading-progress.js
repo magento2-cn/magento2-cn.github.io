@@ -34,8 +34,8 @@ define( [
                 const elProgressBox = $( opts.elProgressBox );
 
                 let data = [ ], html = '<div class="' + opts.clsWrapper + '"><ul>';
-                elContentBox.find( 'h1,h2,h3,h4' ).each( function() {
-                    let el = $( this ), uid = uuidv4();
+                elContentBox.find( 'h1,h2,h3,h4' ).each( function( i ) {
+                    let el = $( this ), uid = 'section-' + ( i + 1 );
                     html += '<li class="idx t-' + this.tagName.toLowerCase() + '"><a href="' + window.location.origin + window.location.pathname + '#' + uid + '"><span>' + el.text() + '</span></a></li>';
                     data.push( {id: uid, size: this.tagName, elm: el} );
                     el.before( '<a id="' + uid + '"></a>' );
