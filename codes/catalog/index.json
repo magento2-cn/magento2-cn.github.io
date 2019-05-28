@@ -1,0 +1,18 @@
+[
+    {
+        "name": "catalog",
+        "title": "产品 Catalog",
+        "children": [
+            {
+                "name": "product",
+                "title": "产品 Product",
+                "href": "codes/catalog/product.html"
+            },
+            {
+                "name": "category",
+                "title": "产品分类 Category",
+                "href": "codes/catalog/category.html"
+            }
+        ]
+    }
+]

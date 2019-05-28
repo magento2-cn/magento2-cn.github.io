@@ -53,6 +53,7 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel' ], function( $,
 
     const markdownConverter = new markdown.Converter();
     const indexData = JSON.parse( index );
+    const baseUrl = window.location.origin;
 
     /**
      * @argument {Object} opts 
@@ -110,13 +111,15 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel' ], function( $,
         }
         if ( evt && evt.dir === 1 && scrollTop > headerH ) { // close
             header.addClass( 'close' );
+            aside.addClass( 'top' );
         } else if ( evt && evt.dir === -1 ) {
             header.removeClass( 'close' );
+            aside.removeClass( 'top' );
         }
     };
 
     const initHeader = function() {
-        header.html( '<div class="box"><div class="content"><div class="logo"><img src="web/images/logo.png" /></div><nav></nav></div></div>' );
+        header.html( '<div class="box"><div class="content"><div class="logo"><a href="index.html"><img src="web/images/logo.png" /></a></div><nav></nav></div></div>' );
         buildMenu( {
             data: indexData.main,
             container: header.find( 'nav' )
@@ -130,6 +133,24 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel' ], function( $,
             main.find( 'article' ).append( markdownConverter.makeHtml( elArticleSource.text() ) );
             elArticleSource.remove();
         }
+
+        aside = main.find( '> aside' );
+        if ( aside.length > 0 ) {
+            let paths = window.location.href.substr( baseUrl.length ).replace( /^\/*(.*)/, '$1' ).split( '/' );
+            if ( paths.length >= 2 ) {
+                $.ajax( {
+                    url: baseUrl + '/' + paths[0] + '/' + paths[1] + '/index.json',
+                    dataType: 'json',
+                    success: function( result ) {
+                        aside.html( '<nav></nav>' );
+                        buildMenu( {
+                            data: result,
+                            container: aside.find( 'nav' )
+                        } );
+                    }
+                } );
+            }
+        }
     };
 
     const initFooter = function() {
@@ -137,6 +158,7 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel' ], function( $,
     };
 
     let headerH;
+    let aside;
 
     initHeader();
     initMain();
