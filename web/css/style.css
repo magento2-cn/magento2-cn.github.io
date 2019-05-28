@@ -55,9 +55,9 @@ main > aside.top { max-height:100%; top:0; }
 main > aside nav a { display:block; text-decoration:none; }
 main > aside nav span { display:block; }
 main > aside nav > ul > li > a { border-bottom:1px solid #e0e0e0; padding:20px 20px 10px; }
-main > aside nav > ul > li > a span { color:#545454; font-weight:bold; }
+main > aside nav > ul > li > a span { color:#666; font-weight:bold; }
 main > aside nav > ul > li li > a { border-bottom:1px solid #e0e0e0; padding:5px 20px; }
-main > aside nav > ul > li li > a span { color:#545454; font-size:12px; font-style:italic; }
+main > aside nav > ul > li li > a span { color:#666; font-size:12px; font-style:italic; }
 main > aside nav > ul > li li.hover > a,
 main > aside nav > ul > li li.active > a,
 main > aside nav > ul > li li.current > a { background:#fff; }
@@ -67,13 +67,13 @@ main > aside nav > ul > li li.current > a span { font-style:normal; }
 /**
  * Atricle contents
  */
-article { background:#fff; box-shadow:0 0 5px #999; color:#545454; flex:1; margin-left:260px; padding:70px 20px 80px; position:relative; z-index:2; }
+article { background:#fff; box-shadow:0 0 5px #999; color:#333; flex:1; margin-left:260px; padding:70px 20px 80px; position:relative; z-index:2; }
 article h1 { font-size:26px; font-weight:normal; line-height:32px; padding:28px 0 10px; }
 article.has-content h1,
 article.has-content .content { margin-right:300px; }
 article .content h2 { font-size:22px; font-weight:normal; line-height:28px; padding:24px 0 20px; }
 article .content h3 { font-size:18px; font-weight:normal; line-height:24px; padding:24px 0 16px; }
-article .content a { color:#545454; border-bottom:1px solid #545454; text-decoration:none; }
+article .content a { color:#222; border-bottom:1px solid #545454; text-decoration:none; }
 article .content a:hover { border:0; }
 article .content p { margin:0 0 16px; }
 article .content code { background:#f4f4f4; padding:4px 8px; }
@@ -91,7 +91,7 @@ article .index.top { max-height:100%; top:0; }
 article .index .caption { font-size:18px; padding:20px 0 10px; }
 article .index ul { border-top:2px solid #e0e0e0; }
 article .index li { border-bottom:1px solid #e0e0e0; list-style:none; display:block; padding:10px 15px; position:relative; }
-article .index li a { color:#545454; display:block; position:relative; text-decoration:none; z-index:2; }
+article .index li a { color:#666; display:block; position:relative; text-decoration:none; z-index:2; }
 article .index li .progress { background:#f0f0f0; bottom:0; left:0; position:absolute; top:0; }
 article .index li.t-h3 a { font-size:10px; line-height:18px; }
 article .index li.t-h4 a { font-size:8px; line-height:12px; }
