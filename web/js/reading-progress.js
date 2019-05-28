@@ -51,7 +51,8 @@ define( [
 
                 const updateProgress = function() {
                     let scrollTop = $( document ).scrollTop();
-                    let maxScrollY = $( document ).height() - $( window ).height();
+                    let winH = $( window ).height();
+                    let maxScrollY = $( document ).height() - winH;
                     let elIdx = [ ];
                     elProgressBox.find( 'li.idx' ).each( function( i, el ) {
                         el = $( el );
@@ -64,6 +65,14 @@ define( [
                         let startY = $( '#' + data[i].id ).offset().top;
                         let endY = $( '#' + data[n].id ).offset().top;
                         let percentage = (scrollTop - startY) / (Math.min( maxScrollY, endY ) - startY);
+
+                        if ( maxScrollY >= endY ) {
+                            percentage = (scrollTop - startY) / (endY - startY);
+                        } else if ( maxScrollY >= startY ) {
+                            percentage = (scrollTop - startY) / (maxScrollY - startY);
+                        } else {
+                            percentage = (scrollTop + winH - startY) / (endY - startY);
+                        }
                         percentage = Math.round( ((percentage < 0) ? 0 : ((percentage < 1) ? percentage : 1)) * 100 );
                         el.data( 'read-progress', percentage );
                         elIdx.push( el );
