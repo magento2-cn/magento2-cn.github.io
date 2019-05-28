@@ -126,6 +126,19 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress' ], 
             container: elHeader.find( 'nav' )
         } );
         headerH = elHeader.outerHeight();
+
+        scrollTo = function( target ) {
+            target = $( target );
+            if ( target.length > 0 ) {
+                $( 'html, body' ).animate( {
+                    scrollTop: target.offset().top
+                }, {
+                    step: function( now, fx ) {
+                        fx.end = elHeader.hasClass( 'close' ) ? target.offset().top : (target.offset().top - headerH);
+                    }
+                } );
+            }
+        };
     };
 
     const initMain = function() {
@@ -151,26 +164,12 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress' ], 
                         if ( target.length === 0 ) {
                             return true;
                         }
-                        $( 'html, body' ).animate( {
-                            scrollTop: target.offset().top
-                        }, {
-                            step: function( now, fx ) {
-                                fx.end = elHeader.hasClass( 'close' ) ? target.offset().top : (target.offset().top + headerH);
-                            }
-                        } );
+                        scrollTo( target );
                         return false;
                     } );
 
                     let target = $( window.location.hash );
-                    if ( target.length > 0 ) {
-                        $( 'html, body' ).animate( {
-                            scrollTop: target.offset().top
-                        }, {
-                            step: function( now, fx ) {
-                                fx.end = elHeader.hasClass( 'close' ) ? target.offset().top : (target.offset().top + headerH);
-                            }
-                        } );
-                    }
+                    scrollTo( target );
                 },
                 onUpdate: function( indexElms ) {
                     for ( let i = 0; i < indexElms.length; i++ ) {
@@ -215,7 +214,7 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress' ], 
         elFooter.html( '<div class="box"><div class="copyright">Copyright &copy; ' + (new Date).getFullYear() + ' Magento 2 笔记</div></div>' );
     };
 
-    let headerH;
+    let headerH, scrollTo = function() {};
 
     initHeader();
     initMain();
