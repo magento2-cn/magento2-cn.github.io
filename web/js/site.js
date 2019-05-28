@@ -142,6 +142,35 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress' ], 
                 onInitialized: function( elProgressBox ) {
                     elProgressBox.find( '.reading-progress' ).before( '<div class="caption">本页目录</div>' );
                     elProgressBox.find( 'li.idx a' ).before( '<div class="progress"></div>' );
+
+                    elProgressBox.find( 'a' ).on( 'click', function() {
+                        if ( !this.hash ) {
+                            return true;
+                        }
+                        let target = $( this.hash );
+                        if ( target.length === 0 ) {
+                            return true;
+                        }
+                        $( 'html, body' ).animate( {
+                            scrollTop: target.offset().top
+                        }, {
+                            step: function( now, fx ) {
+                                fx.end = elHeader.hasClass( 'close' ) ? target.offset().top : (target.offset().top + headerH);
+                            }
+                        } );
+                        return false;
+                    } );
+
+                    let target = $( window.location.hash );
+                    if ( target.length > 0 ) {
+                        $( 'html, body' ).animate( {
+                            scrollTop: target.offset().top
+                        }, {
+                            step: function( now, fx ) {
+                                fx.end = elHeader.hasClass( 'close' ) ? target.offset().top : (target.offset().top + headerH);
+                            }
+                        } );
+                    }
                 },
                 onUpdate: function( indexElms ) {
                     for ( let i = 0; i < indexElms.length; i++ ) {
