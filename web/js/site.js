@@ -42,15 +42,14 @@ require( [ 'jquery' ], function( $ ) {
  * 
  * @param {Object} $
  * @param {String} index
+ * @param {Object} markdown
  */
 require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel' ], function( $, index, markdown ) {
 
     const body = $( 'body' );
     const header = $( 'body > header' );
-    const mainMenu = $( 'body > header > nav' );
     const main = $( 'body > main' );
     const footer = $( 'body > footer' );
-    const footerMenu = $( 'body > footer > nav' );
 
     const markdownConverter = new markdown.Converter();
     const indexData = JSON.parse( index );
@@ -117,11 +116,11 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel' ], function( $,
     };
 
     const initHeader = function() {
+        header.html( '<div class="box"><div class="content"><div class="logo"><img src="web/images/logo.png" /></div><nav></nav></div></div>' );
         buildMenu( {
             data: indexData.main,
-            container: mainMenu
+            container: header.find( 'nav' )
         } );
-        mainMenu.wrap( '<div class="box"></div>' ).find( '> ul' ).before( '<div class="logo"><img src="web/images/logo.png" /></div>' );
         headerH = header.outerHeight();
     };
 
@@ -134,7 +133,7 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel' ], function( $,
     };
 
     const initFooter = function() {
-        footerMenu.wrap( '<div class="box"></div>' ).after( '<div class="copyright">Copyright &copy; ' + (new Date).getFullYear() + ' Magento 2 笔记</div>' );
+        footer.html( '<div class="box"><div class="copyright">Copyright &copy; ' + (new Date).getFullYear() + ' Magento 2 笔记</div></div>' );
     };
 
     let headerH;
