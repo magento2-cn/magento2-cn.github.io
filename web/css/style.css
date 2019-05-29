@@ -40,11 +40,11 @@ header nav > ul > li li.current > a span { color:#000; }
 header nav > ul:after { clear:both; content:''; display:table; }
 header.close .box { top:-100%; }
 header.hide-bg .box:before { opacity:0; }
-header.hide-bg nav > ul > li > a span { color:#d0d0d0; font-size:16px; }
-header.hide-bg nav > ul > li.parent.hover > a span { color:#fff; }
+header.hide-bg nav > ul > li > a span { color:#fff; font-size:16px; }
+header.hide-bg nav > ul > li.parent.hover > a span { color:#000; }
 header.hide-bg nav > ul > li.hover > a span,
 header.hide-bg nav > ul > li.active > a span,
-header.hide-bg nav > ul > li.current > a span { color:#fff; }
+header.hide-bg nav > ul > li.current > a span { color:#000; }
 
 /**
  * Main
