@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>用户 Customer - Magento 2 笔记</title>
+        <base href="/" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+        <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico" />
+        <link rel="stylesheet" type="text/css" media="all" href="web/css/style.css" />
+        <link rel="stylesheet" type="text/css" media="all" href="web/css/jquery.mCustomScrollbar.min.css" />
+    </head>
+    <body>
+        <header></header>
+        <main>
+            <aside></aside>
+            <article>
+                <h1>用户 Customer</h1>
+                <pre id="article-source">
+## 用户属性
+
+### 通过 Setup 添加用户属性
+
+```
+namespace Namespace\Module\Setup;
+
+use Magento\Customer\Model\Customer;
+use Magento\Customer\Setup\CustomerSetupFactory;
+use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
+use Magento\Eav\Setup\EavSetupFactory;
+use Magento\Framework\DB\Ddl\Table;
+use Magento\Framework\Setup\ModuleContextInterface;
+use Magento\Framework\Setup\ModuleDataSetupInterface;
+
+class InstallData implements \Magento\Framework\Setup\InstallDataInterface {
+
+    /**
+     * @var \Magento\Customer\Setup\CustomerSetup
+     */
+    private $customerSetup;
+
+    /**
+     * @var \Magento\Customer\Setup\CustomerSetupFactory
+     */
+    private $customerSetupFactory;
+
+    /**
+     * @var int
+     */
+    private $defaultCustomerAttributeSetId;
+
+    public function __construct( CategorySetupFactory $categorySetupFactory )
+    {
+        $this->customerSetupFactory = $customerSetupFactory;
+    }
+
+    private function addCustomerAttribute()
+    {
+        /* @var $attributeCode string */
+        /* @var $attributeGroupCode string */
+
+        $this->customerSetup->addAttribute( Customer::ENTITY, $attributeCode, [
+            'type' => 'int', // datetime, decimal, int, text, varchar
+            'label' => 'Attribute Name',
+            'input' => 'boolean', // select, text, date, hidden, boolean, multiline, textarea, image, multiselect
+            'source' => 'Magento\Eav\Model\Entity\Attribute\Source\Boolean',
+            'required' => false,
+            'user_defined' => true, // eav_attribute
+            'system' => false, // customer_eav_attribute
+            'is_visible' => true, // set to false if no need to show in front-end
+            'is_used_in_grid' => true,
+            'is_visible_in_grid' => true,
+            'is_filterable_in_grid' => true,
+            'is_searchable_in_grid' => true
+        ] );
+
+        $attributeGroupId = (int) $this->customerSetup->getAttributeGroupByCode( Customer::ENTITY, $this->defaultCustomerAttributeSetId, $attributeGroupCode, 'attribute_group_id' ); // eav_attribute_group
+        $attribute = $this->customerSetup->getEavConfig()->getAttribute( Customer::ENTITY, $attributeCode );
+        $attribute->addData( [ // must specify set and group ID or it can not be saved in customer edit page
+            'attribute_set_id' => $this->defaultCustomerAttributeSetId,
+            'attribute_group_id' => $attributeGroupId,
+            'used_in_forms' => [ 'adminhtml_customer', 'customer_account_edit' ]
+        ] )->save();
+    }
+
+    public function install( ModuleDataSetupInterface $setup, ModuleContextInterface $context )
+    {
+        $this->customerSetup = $this->_customerSetupFactory->create( [ 'setup' => $setup ] );
+        $this->defaultCustomerAttributeSetId = $this->customerSetup->getDefaultAttributeSetId( Customer::ENTITY );
+
+        $this->addCustomerAttribute();
+    }
+}
+```
+
+                </pre>
+            </article>
+        </main>
+        <footer></footer>
+        <script type="text/javascript" src="web/js/require.js"></script>
+        <script type="text/javascript" src="web/js/site.js"></script>
+    </body>
+</html>
