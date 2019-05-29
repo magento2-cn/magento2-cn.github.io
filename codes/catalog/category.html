@@ -17,7 +17,47 @@
             <aside></aside>
             <article>
                 <h1>产品分类 Category</h1>
-                <pre id="article-source"></pre>
+                <pre id="article-source">
+## 获取分类数据集 Collection
+
+```
+/* @var $categoryCollectionFactory \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory */
+$categoryCollection = $categoryCollectionFactory->create();
+```
+
+### 获取当前店铺的所有分类
+
+这个方法仅限于前台使用：
+
+```
+/* @var $categoryRepository \Magento\Catalog\Api\CategoryRepositoryInterface */
+/* @var $storeManager \Magento\Store\Model\StoreManagerInterface */
+$rootCategoryId = $storeManager->getStore()->getRootCategoryId();
+$categories = $categoryRepository->get( $rootCategoryId )
+    ->getChildrenCategories();
+```
+
+
+## 其他
+
+### 创建新分类
+
+```php
+use Magento\Store\Model\Store;
+
+/* @var $categoryFactory \Magento\Catalog\Model\CategoryFactory */
+/* @var $parentId int */
+/* @var $path string */
+/* @var $name string */
+/* @var $description string */
+$categoryFactory->create()->setStoreId( Store::DEFAULT_STORE_ID )->addData( [
+    'parent_id' => $parentId,
+    'path' => $path, // use ID path of parent for creating new category
+    'name' => $name,
+    'description' => $description
+] )->save();
+```
+                </pre>
             </article>
         </main>
         <footer></footer>
