@@ -12,6 +12,11 @@
                 "name": "category",
                 "title": "产品分类 Category",
                 "href": "codes/catalog/category.html"
+            },
+            {
+                "name": "inventory",
+                "title": "产品库存 Inventory",
+                "href": "codes/catalog/inventory.html"
             }
         ]
     }

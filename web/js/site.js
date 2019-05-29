@@ -45,7 +45,7 @@ require( [ 'jquery' ], function( $ ) {
  * @param {String} index
  * @param {Object} markdown
  */
-require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress' ], function( $, index, markdown ) {
+require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 'scrollbar' ], function( $, index, markdown ) {
 
     const elBody = $( 'body' );
     const elHeader = $( 'body > header' );
@@ -147,13 +147,17 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress' ], 
             let elArticle = elMain.find( 'article' );
             elArticle.addClass( 'has-content' )
                     .append( '<div class="content">' + markdownConverter.makeHtml( elArticleSource.text() ) + '</div><div class="index"></div>' );
+            elArticle.find( 'pre' ).mCustomScrollbar( {
+                horizontalScroll: true,
+                theme: 'minimal-dark'
+            } );
             elArticleSource.remove();
 
             let elIndexer = elArticle.find( '> .index' );
             elArticle.find( '> .content' ).readingProgress( {
                 elProgressBox: elIndexer,
                 onInitialized: function( elProgressBox ) {
-                    elProgressBox.find( '.reading-progress' ).before( '<div class="caption">本页目录</div>' );
+                    elProgressBox.find( '.reading-progress' ).mCustomScrollbar( {theme: 'minimal-dark'} ).before( '<div class="caption">本页目录</div>' );
                     elProgressBox.find( 'li.idx a' ).before( '<div class="progress"></div>' );
 
                     elProgressBox.find( 'a' ).on( 'click', function() {
@@ -198,6 +202,7 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress' ], 
                             data: result,
                             container: elNav.find( 'nav' )
                         } );
+                        elNav.mCustomScrollbar( {theme: 'minimal-dark'} );
                         $( document ).on( 'close_header', function() {
                             elNav.addClass( 'top' );
                         } );

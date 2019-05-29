@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>产品分类 Category - Magento 2 笔记</title>
+        <base href="/" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+        <meta name="keywords" content="Magento,Magento 2,Catalog,Product,Category,产品,分类" />
+        <meta name="description" content="记录一切与 Magento 2 使用和开发相关的内容，包括使用指南、常用代码、异常处理、运维优化等等。" />
+        <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico" />
+        <link rel="stylesheet" type="text/css" media="all" href="web/css/style.css" />
+        <link rel="stylesheet" type="text/css" media="all" href="web/css/jquery.mCustomScrollbar.min.css" />
+    </head>
+    <body>
+        <header></header>
+        <main>
+            <aside></aside>
+            <article>
+                <h1>产品库存 Inventory</h1>
+                <pre id="article-source">
+## 获取产品库存
+
+
+## 其他
+
+### 批量更新库存
+
+```php
+/* @var $objectManager \Magento\Framework\App\ObjectManager */
+/* @var $websiteId int */
+/* @var $qtys array */
+
+$dataObjectHelper = $objectManager->get( \Magento\Framework\Api\DataObjectHelper::class );
+$stockRegistry = $objectManager->create( \Magento\CatalogInventory\Api\StockRegistryInterface::class );
+$stockItemRepository = $objectManager->create( \Magento\CatalogInventory\Api\StockItemRepositoryInterface::class );
+
+// prepare inventory data
+$inventoryData = [ ];
+$options = $objectManager->get( \Magento\CatalogInventory\Api\StockConfigurationInterface::class )->getConfigItemOptions();
+foreach ( $options as $option ) {
+    if ( isset( $inventoryData[$option] ) && !isset( $inventoryData['use_config_' . $option] ) ) {
+        $inventoryData['use_config_' . $option] = 0;
+    }
+}
+
+// update stock items
+$productIds = [ ];
+foreach ( $qtys as $sku => $qty ) {
+    try {
+        $stockItem = $stockRegistry->getStockItemBySku( $sku, $websiteId );
+        $stockItemId = $stockItem->getId();
+        $productIds[] = $stockItem->getProductId();
+        $inventoryData['qty'] = $qty;
+        $dataObjectHelper->populateWithArray( $stockItem, $inventoryData, '\Magento\CatalogInventory\Api\Data\StockItemInterface' );
+        $stockItem->setItemId( $stockItemId );
+        $stockItemRepository->save( $stockItem );
+    }
+    catch ( \Exception $e ) {
+        $e->getMessage();
+    }
+}
+
+// update index
+$objectManager->get( \Magento\CatalogInventory\Model\Indexer\Stock\Processor::class )->reindexList( $productIds );
+```
+
+                </pre>
+            </article>
+        </main>
+        <footer></footer>
+        <script type="text/javascript" src="web/js/require.js"></script>
+        <script type="text/javascript" src="web/js/site.js"></script>
+    </body>
+</html>

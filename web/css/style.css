@@ -1,3 +1,4 @@
+@import 'jquery.mCustomScrollbar.min.css';
 
 * { box-sizing:border-box; margin:0; outline:none; padding:0; }
 
@@ -8,8 +9,9 @@ body { background:#f6f6f9; background-size:cover; color:#333; font:15px/24px Con
 /**
  * Header
  */
-header { height:60px; left:0; position:fixed; right:0; top:0; z-index:3; }
-header .box { height:100%; left:0; position:absolute; right:0; top:0; transition:top .3s; }
+header { height:60px; left:0; position:fixed; right:0; top:0; transition:top .3s; z-index:3; }
+header.close { top:-60px; }
+header .box { height:100%; }
 header .box:before { background:#fff; bottom:0; box-shadow:0 1px 6px #999; content:''; display:block; left:0; opacity:1; position:absolute; right:0; top:0; transition:opacity .3s; }
 header .box .content { height:100%; margin:0 20px; }
 header .box .content .logo { float:left; height:100%; margin:0 30px 0 0; padding:15px 0; }
@@ -38,7 +40,6 @@ header nav > ul > li li.hover > a span,
 header nav > ul > li li.active > a span,
 header nav > ul > li li.current > a span { color:#000; }
 header nav > ul:after { clear:both; content:''; display:table; }
-header.close .box { top:-100%; }
 header.hide-bg .box:before { opacity:0; }
 header.hide-bg nav > ul > li > a span { color:#fff; font-size:16px; }
 header.hide-bg nav > ul > li.parent.hover > a span { color:#000; }
@@ -70,13 +71,13 @@ main > aside nav > ul > li li.current > a span { color:#333; font-style:normal; 
 article { background:#fff; box-shadow:0 0 5px #999; color:#333; flex:1; margin-left:260px; padding:70px 20px 80px; position:relative; z-index:2; }
 article h1 { font-size:26px; font-weight:normal; line-height:32px; padding:28px 0 10px; }
 article.has-content h1,
-article.has-content .content { margin-right:320px; }
+article.has-content .content { width:calc( 100% - 320px ); }
 article .content h2 { font-size:22px; font-weight:normal; line-height:28px; padding:24px 0 20px; }
 article .content h3 { font-size:18px; font-weight:normal; line-height:24px; padding:24px 0 16px; }
 article .content a { color:#222; border-bottom:1px solid #545454; text-decoration:none; }
 article .content a:hover { border:0; }
 article .content p { margin:0 0 16px; }
-article .content code { background:#f0f0f6; color:#666; padding:4px 8px; }
+article .content code { background:#f0f0f6; color:#666; font-family:Consolas, Arial, Helvetica, sans-serif; padding:4px 8px; }
 article .content pre { background:#f0f0f6; margin:0 0 1rem; padding:15px 20px; }
 article .content pre code { display:block; font:14px/21px Consolas, Arial, Helvetica, sans-serif; padding:0 0 5px; }
 article .content ul { padding:0 0 15px 22px; }
@@ -87,10 +88,11 @@ article .content ol li { padding:0 0 5px; }
 article .content table { width:100%; }
 article .content table thead th {}
 article .content table tbody td {}
-article .index { max-height:calc( 100% - 60px ); position:fixed; right:20px; top:60px; transition:top .3s; width:300px; }
-article .index.top { max-height:100%; top:0; }
-article .index .caption { font-size:18px; padding:20px 0 10px; }
-article .index ul { border-top:2px solid #ccc; }
+article .index { position:fixed; right:20px; top:60px; transition:top .3s; width:300px; }
+article .index .caption { border-bottom:2px solid #ccc; font-size:18px; padding:20px 0 10px; }
+article .index .reading-progress { max-height:calc( 100% - 60px - 54px ); position:fixed; right:20px; top:116px; transition:top .3s; width:300px; }
+article .index.top { top:0; }
+article .index.top .reading-progress { max-height:calc( 100% - 54px ); top:56px; }
 article .index li { border-bottom:1px solid #e0e0e0; list-style:none; display:block; padding:8px 15px; position:relative; }
 article .index li a { color:#666; display:block; position:relative; text-decoration:none; z-index:2; }
 article .index li .progress { background:#f4f4f9; bottom:0; left:0; position:absolute; top:0; }
