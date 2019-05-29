@@ -22,7 +22,7 @@
 
 ```php
 /* @var $objectManager \Magento\Framework\ObjectManagerInterface */
-$collection = $objectManager->get( 'Magento\Catalog\Model\ProductFactory' )->create()->getCollection();
+$collection = $objectManager->get( \Magento\Catalog\Model\ProductFactory::class )->create()->getCollection();
 ```
 
 以下为 AND 条件使用实例：
@@ -71,7 +71,7 @@ $collection->addAttributeToFilter( [
 /* @var $objectManager \Magento\Framework\ObjectManagerInterface */
 $from = date( 'Y-m-d', time() - 3600 * 24 * 30 );
 $to = date( 'Y-m-d' );
-$collection = $objectManager->create( 'Magento\Reports\Model\ResourceModel\Product\Collection' );
+$collection = $objectManager->create( \Magento\Reports\Model\ResourceModel\Product\Collection::class );
 $collection->addViewsCount( $from, $to ); // $from 及 $to 为可选参数
 foreach( $collection as $product ) {
     $views = $product->getData( 'views' );
@@ -88,7 +88,7 @@ p.s. 开启 full page cache 可能使该方法的结果变得非常不准确，�
 ```php
 /* @var $objectManager \Magento\Framework\ObjectManagerInterface */
 /* @var $categoryIds array */
-$collection = $objectManager->create( 'Magento\Catalog\Model\ResourceModel\Product\Collection' )
+$collection = $objectManager->create( \Magento\Catalog\Model\ResourceModel\Product\Collection::class )
         ->addCategoriesFilter( [ 'in' => $categoryIds ] );
 ```
 
@@ -100,7 +100,7 @@ $collection = $objectManager->create( 'Magento\Catalog\Model\ResourceModel\Produ
 ```php
 /* @var $objectManager \Magento\Framework\ObjectManagerInterface */
 /* @var $catalogProductVisibility \Magento\Catalog\Model\Product\Visibility */
-$productCollection = $objectManager->create( 'Magento\Catalog\Model\ResourceModel\Product\Collection' );
+$productCollection = $objectManager->create( \Magento\Catalog\Model\ResourceModel\Product\Collection::class );
 //$productCollection->setVisibility( $catalogProductVisibility->getVisibleInSearchIds() );
 //$productCollection->setVisibility( $catalogProductVisibility->getVisibleInCatalogIds() );
 $productCollection->setVisibility( $catalogProductVisibility->getVisibleInSiteIds() );
@@ -153,6 +153,151 @@ $productCollection->joinTable( $table, $bind, $fields, $cond, $joinType );
 以字符串作参数时，系统会将 `{{table}}` 解释为联合数据表的别名，比如 `{{table}}.id = 123`；
 以数组作参数时，格式为 `[ field_name => [ condition => value ] ]`，其中 `field_name` 是联合数据表当中的字段名
 - ***$joinType*** - inner / left
+
+
+## 产品属性
+
+
+### 获取属性的所有可选项
+
+如果已经指定产品，可以
+```php
+/* @var $product \Magento\Catalog\Model\Product */
+/* @var $attributeCode string */
+/* @var $withEmptyOption boolean */
+$options = $product->getResource()->getAttribute( $attributeCode )
+    ->getSource()->getAllOptions( $withEmptyOption );
+```
+
+或者
+```
+/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+/* @var $attributeCode string */
+/* @var $withEmptyOption boolean */
+$objectManager->create( \Magento\Catalog\Model\Entity\Attribute::class )
+    ->loadByCode( \Magento\Catalog\Api\ProductAttributeInterface::ENTITY_TYPE_CODE, $attributeCode )
+    ->getSource()->getAllOptions( $withEmptyOption );
+```
+
+
+### 获取属性值的 Label
+
+如果已经指定产品，可以
+```php
+/* @var $product \Magento\Catalog\Model\Product */
+/* @var $attributeCode string */
+$valueTxt = $product->getAttributeText( $attributeCode );
+```
+
+或者通过属性 code 或 ID 及值的 ID 获取值名
+```php
+/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+/* @var $attributeCode string */
+/* @var $attributeOptionId int */
+$objectManager->create( \Magento\Catalog\Model\Entity\Attribute::class )
+    ->loadByCode( \Magento\Catalog\Api\ProductAttributeInterface::ENTITY_TYPE_CODE, $attributeCode )
+    ->getSource()->getOptionText( $attributeOptionId );
+```
+
+
+### 通过属性选项的 Admin Label 取值
+
+```
+/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+/* @var $attributeCode string */
+$options = $objectManager->create( \Magento\Catalog\Model\Entity\Attribute::class )
+    ->loadByCode( \Magento\Catalog\Api\ProductAttributeInterface::ENTITY_TYPE_CODE, $attributeCode )
+    ->getSource()->getAllOptions( false, true );
+
+/* @var $label string */
+foreach ( $options as $option ) {
+    if ( $option['label'] == $label ) {
+        return $option['value'];
+    }
+}
+```
+
+### 获取指定产品的所有属性
+
+获得一个以属性 code 为键名的数组
+```php
+/* @var $productResource \Magento\Catalog\Model\ResourceModel\Product */
+/* @var $attributeSetId int */
+$attributes = $productResource->loadAllAttributes()->getAttributesByCode();
+```
+
+获取指定属性集的所有属性
+```php
+/* @var $productResource \Magento\Catalog\Model\ResourceModel\Product */
+/* @var $attributeSetId int */
+$attributes = $productResource->loadAllAttributes()->getSortedAttributes( $attributeSetId );
+```
+
+## 其他
+
+### 创建一个新产品
+
+以下方法没有使用 Product Repository 以便跳过必填属性检查：
+
+```php
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\Catalog\Model\Product\Type;
+use Magento\Catalog\Model\Product\Visibility;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\Store\Model\Store;
+
+/* @var $productFactory \Magento\Catalog\Model\ProductFactory */
+/* @var $attributeSetId int */
+/* @var $websiteIds array */
+/* @var $categoryIds array */
+/* @var $urlKey string */
+
+$simpleProduct = $productFactory->create()->setStoreId( Store::DEFAULT_STORE_ID )
+    ->setTypeId( Type::TYPE_SIMPLE )
+    ->setAttributeSetId( $attributeSetId )
+    ->setWebsiteIds( $websiteIds )
+    ->setStatus( Status::STATUS_ENABLED )
+    ->setVisibility( Visibility::VISIBILITY_NOT_VISIBLE )
+    ->setCategoryIds( $categoryIds )
+    ->setUrlKey( $urlKey )
+    ->save();
+
+
+/* @var $configAttribute \Magento\Catalog\Model\Entity\Attribute */
+/* @var $optionsFactory \Magento\ConfigurableProduct\Helper\Product\Options\Factory */
+/* @var $childrenIds array */
+
+$configProduct = $productFactory->create()->setStoreId( Store::DEFAULT_STORE_ID )
+    ->setTypeId( Configurable::TYPE_CODE )
+    ->setAttributeSetId( $attributeSetId )
+    ->setWebsiteIds( $websiteIds )
+    ->setStatus( Status::STATUS_ENABLED )
+    ->setVisibility( Visibility::VISIBILITY_BOTH )
+    ->setCategoryIds( $categoryIds )
+    ->setUrlKey( $urlKey );
+
+$attributeValues = [];
+foreach ( $configAttribute->getOptions() as $option ) {
+    if ( $option->getValue() ) {
+        $attributeValues[] = [
+            'label' => $option->getLabel(),
+            'attribute_id' => $configAttribute->getId(),
+            'value_index' => $option->getValue() ];
+    }
+}
+
+$configurableOptionsData = [];
+$configurableOptionsData[] = [
+    'attribute_id' => $configAttribute->getId(),
+    'code' => $configAttribute->getAttributeCode(),
+    'label' => $configAttribute->getStoreLabel(),
+    'values' => $attributeValues ];
+
+$options = $optionsFactory->create( $configurableOptionsData );
+$configProduct->getExtensionAttributes()->setConfigurableProductOptions( $options );
+$configProduct->getExtensionAttributes()->setConfigurableProductLinks( $childrenIds );
+$configProduct->save();
+```
 
                 </pre>
             </article>

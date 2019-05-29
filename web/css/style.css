@@ -81,6 +81,7 @@ article .content pre { background:#f0f0f6; margin:0 0 1rem; padding:15px 20px; }
 article .content pre code { display:block; font:14px/21px Consolas, Arial, Helvetica, sans-serif; padding:0 0 5px; }
 article .content ul { padding:0 0 15px 22px; }
 article .content ul li { padding:0 0 5px; }
+article .content ul li ul { padding:5px 0 5px 22px; }
 article .content ol { padding:0 0 0 22px; }
 article .content ol li { padding:0 0 5px; }
 article .content table { width:100%; }
@@ -89,10 +90,11 @@ article .content table tbody td {}
 article .index { max-height:calc( 100% - 60px ); position:fixed; right:20px; top:60px; transition:top .3s; width:300px; }
 article .index.top { max-height:100%; top:0; }
 article .index .caption { font-size:18px; padding:20px 0 10px; }
-article .index ul { border-top:2px solid #e0e0e0; }
+article .index ul { border-top:2px solid #ccc; }
 article .index li { border-bottom:1px solid #e0e0e0; list-style:none; display:block; padding:8px 15px; position:relative; }
 article .index li a { color:#666; display:block; position:relative; text-decoration:none; z-index:2; }
 article .index li .progress { background:#f4f4f9; bottom:0; left:0; position:absolute; top:0; }
+article .index li.t-h2 { border-top:1px solid #e0e0e0; }
 article .index li.t-h3 a { font-size:10px; line-height:18px; }
 article .index li.t-h4 a { font-size:8px; line-height:12px; }
 
