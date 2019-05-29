@@ -50,7 +50,7 @@ header.hide-bg nav > ul > li.current > a span { color:#000; }
 /**
  * Main
  */
-main { display:flex; min-height:800px; position:relative; z-index:1; }
+main { min-height:600px; position:relative; z-index:1; }
 main > aside { left:0; max-height:calc( 100% - 60px ); position:fixed; top:60px; transition:top .3s; width:260px; z-index:1; }
 main > aside.top { max-height:100%; top:0; }
 main > aside nav a { display:block; text-decoration:none; }
@@ -68,7 +68,7 @@ main > aside nav > ul > li li.current > a span { color:#333; font-style:normal; 
 /**
  * Atricle contents
  */
-article { background:#fff; box-shadow:0 0 5px #999; color:#333; flex:1; margin-left:260px; padding:70px 20px 80px; position:relative; z-index:2; }
+article { background:#fff; box-shadow:0 0 5px #999; color:#333; margin-left:260px; min-height:800px; padding:70px 20px 80px; position:relative; z-index:2; }
 article h1 { font-size:26px; font-weight:normal; line-height:32px; padding:28px 0 10px; }
 article.has-content h1,
 article.has-content .content { width:calc( 100% - 320px ); }

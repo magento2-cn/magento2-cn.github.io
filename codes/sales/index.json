@@ -1,0 +1,13 @@
+[
+    {
+        "name": "sales",
+        "title": "销售 Sales",
+        "children": [
+            {
+                "name": "order",
+                "title": "订单 Order",
+                "href": "codes/sales/order.html"
+            }
+        ]
+    }
+]

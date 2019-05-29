@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>其他 - Magento 2 笔记</title>
+        <title>订单 Order - Magento 2 笔记</title>
         <base href="/" />
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
@@ -14,10 +14,17 @@
         <main>
             <aside></aside>
             <article>
-                <h1>其他</h1>
+                <h1>订单 Order</h1>
                 <pre id="article-source">
-- [日期和时间](codes/others/datetime.html#section-1)
-- [文件路径和 URL](codes/others/resources.html#section-1)
+## 获取订单
+
+### 通过 Increment ID 获得订单
+
+```php
+/* @var $objectManager \Magento\Framework\ObjectManager\ObjectManager */
+/* @var $incrementId string */
+$order = $objectManager->create( \Magento\Sales\Model\Order::class )->loadByIncrementId( $incrementId );
+```
                 </pre>
             </article>
         </main>
