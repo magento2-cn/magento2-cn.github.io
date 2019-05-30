@@ -140,15 +140,16 @@ body.home > main { background:#f6f6f6; display:block; margin:640px 0 0; width:10
 
     header { position:relative; top:auto; }
     header.close { top:auto; }
-    header .box .content { margin:0 15px; }
-    header .btn-nav { background:no-repeat; display:block; height:54px; position:fixed; right:2px; text-align:center; top:2px; width:54px; }
+    header .box .content { margin:0 15px; position:relative; }
+    header .btn-nav { background:no-repeat; display:block; height:54px; position:absolute; right:-15px; text-align:center; top:2px; width:54px; }
     header .btn-nav:before {  color:#999; content:'\f0c9'; font:28px/54px 'Awesome Solid'; }
-    header .btn-close { background:no-repeat; display:block; height:54px; position:fixed; right:2px; text-align:center; top:2px; width:54px; }
+    header .btn-close { background:no-repeat; display:block; height:54px; position:absolute; right:2px; text-align:center; top:2px; width:54px; }
     header .btn-close:before {  color:#a8acb1; content:'\f00d'; font:28px/54px 'Awesome Solid'; }
     header nav { bottom:0; display:none; float:none; left:0; position:fixed; right:0; top:0; }
     header nav.active { display:block; }
     header nav:before { background:#000; bottom:0; content:''; display:block; left:0; opacity:.6; position:absolute; right:0; top:0; }
-    header nav ul { background:#f6f6f6; bottom:0; float:none; padding:55px 0 0; position:absolute; right:0; top:0; width:calc( 100% - 50px ); }
+    header nav ul { background:#f6f6f6; bottom:0; float:none; padding:55px 0 0; position:absolute; right:-100%; top:0; transition:right .5s; width:calc( 100% - 50px ); }
+    header nav.active ul { right:0; }
     header nav > ul > li { float:none; height:auto; margin:0; }
     header nav > ul > li:nth-child(2) { border-top:1px solid #e0e0e0; }
     header nav > ul > li > a { background:#fff; border-bottom:1px solid #e0e0e0; padding:10px 10px 10px 20px; }

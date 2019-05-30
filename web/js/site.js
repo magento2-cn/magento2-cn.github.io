@@ -131,10 +131,13 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
             container: elNav
         } );
         elNav.find( '> ul' ).prepend( '<div class="btn-close"></div>' ).find( '.btn-close' ).on( 'click', function() {
-            elNav.removeClass( 'active' );
+            elNav.hide().removeClass( 'active' );
         } );
         elHeader.find( '.btn-nav' ).on( 'click', function() {
-            elNav.addClass( 'active' );
+            elNav.show();
+            setTimeout( function() {
+                elNav.addClass( 'active' );
+            }, 1 );
         } );
         headerH = elHeader.outerHeight();
 
