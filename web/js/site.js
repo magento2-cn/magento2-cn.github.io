@@ -120,10 +120,21 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
     };
 
     const initHeader = function() {
-        elHeader.html( '<div class="box"><div class="content"><div class="logo"><a href="index.html"><img src="web/images/logo.png" /></a></div><nav></nav></div></div>' );
+        let html = '<div class="box"><div class="content">' +
+                '<div class="logo"><a href="index.html"><img src="web/images/logo.png" /></a></div>' +
+                '<div class="btn-nav"></div><nav></nav>' +
+                '</div></div>';
+        elHeader.html( html );
+        let elNav = elHeader.find( 'nav' );
         buildMenu( {
             data: indexData.main,
-            container: elHeader.find( 'nav' )
+            container: elNav
+        } );
+        elNav.find( '> ul' ).prepend( '<div class="btn-close"></div>' ).find( '.btn-close' ).on( 'click', function() {
+            elNav.removeClass( 'active' );
+        } );
+        elHeader.find( '.btn-nav' ).on( 'click', function() {
+            elNav.addClass( 'active' );
         } );
         headerH = elHeader.outerHeight();
 
