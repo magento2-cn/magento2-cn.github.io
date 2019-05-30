@@ -35,13 +35,14 @@ header nav > ul > li:nth-last-child(1) > ul,
 header nav > ul > li:nth-last-child(2) > ul { left:auto; right:0; }
 header nav > ul > li.hover > ul { display:block; }
 header nav > ul > li li { list-style:none; }
-header nav > ul > li li > a span { color:#7d7d7d; line-height:40px; padding:0 15px; }
+header nav > ul > li li > a { padding:0 15px; }
+header nav > ul > li li > a span { color:#7d7d7d; line-height:40px; }
 header nav > ul > li li.hover > a span,
 header nav > ul > li li.active > a span,
 header nav > ul > li li.current > a span { color:#000; }
 header nav > ul:after { clear:both; content:''; display:table; }
 header.hide-bg .box:before { opacity:0; }
-header.hide-bg nav > ul > li > a span { color:#fff; font-size:16px; }
+header.hide-bg nav > ul > li > a span { color:#fff; }
 header.hide-bg nav > ul > li.parent.hover > a span { color:#000; }
 header.hide-bg nav > ul > li.hover > a span,
 header.hide-bg nav > ul > li.active > a span,
@@ -112,13 +113,41 @@ footer .box:after { clear:both; content:''; display:table; }
 /**
  * Home page
  */
-body.home > header .box .content { margin:0 auto; width:1280px; }
-body.home > .info { left:0; position:fixed; right:0; top:0; z-index:0; }
-body.home > .info .bg { left:0; position:absolute; right:0; top:0; z-index:1; }
+body.home > .info { left:0; overflow:hidden; position:fixed; right:0; top:0; z-index:0; }
+body.home > .info .bg { position:relative; z-index:1; }
 body.home > .info .bg img { display:block; width:100%; }
-body.home > .info .content { color:#fff; margin:200px auto 0; position:relative; text-align:center; width:800px; z-index:2; }
-body.home > .info .content .box { position:relative; }
+body.home > .info .content { align-items:center; bottom:0; color:#fff; display:flex; height:100%; left:0; justify-content:center; position:absolute; right:0; top:0; z-index:2; }
+body.home > .info .content .box { margin:-30px 0 0; padding:0 20px; position:relative; text-align:center; }
 body.home > .info .content h1 { font-size:32px; font-weight:normal; margin:0 0 45px; }
 body.home > .info .content p { font-size:16px; }
-body.home > main { background:#f6f6f6; display:block; margin:600px 0 0; width:100%; }
-body.home > footer .box { margin:0 auto; width:1280px; }
+body.home > main { background:#f6f6f6; display:block; margin:640px 0 0; width:100%; }
+
+
+
+@media only screen and (max-width:768px) {
+
+    header { position:relative; top:auto; }
+    header.close { top:auto; }
+    header nav { bottom:0; display:none; float:none; left:0; position:fixed; right:0; top:0; }
+    header nav:before { background:#000; bottom:0; content:''; display:block; left:0; opacity:.6; position:absolute; right:0; top:0; }
+    header nav ul { background:#f3f3f9; bottom:0; float:none; position:absolute; right:0; top:0; width:calc( 100% - 50px ); }
+    header nav > ul > li { float:none; height:auto; margin:0; }
+    header nav > ul > li > a { background:#fff; border-bottom:1px solid #e0e0e0; padding:10px 10px 10px 20px; }
+    header nav > ul > li > a span { color:#666; }
+    header nav > ul > li.active > a span,
+    header nav > ul > li.current > a span { color:#000; }
+    header nav > ul > li.parent.hover > a { border-bottom:1px solid #e0e0e0; padding:10px 10px 10px 20px; }
+    header nav > ul > li.parent.hover > a span { color:#000; }
+    header nav > ul > li > ul { background:#f3f3f9; border-radius:0; box-shadow:none; padding:0; position:static; width:auto; }
+    header nav > ul > li li > a { background:#f3f3f9; border-bottom:1px solid #e0e0e0; padding:8px 10px 5px 40px; }
+    header nav > ul > li li > a span { color:#7d7d7d; line-height:inherit; }
+    header.hide-bg nav > ul > li > a span { color:#666; }
+    header.hide-bg nav > ul > li.active > a span,
+    header.hide-bg nav > ul > li.current > a span { color:#000; }
+
+    body.home > .info { left:auto; position:relative; right:auto; top:auto; z-index:0; }
+    body.home > .info .content .box { margin:0; }
+    body.home > .info .content h1 { font-size:24px; font-weight:normal; margin:0 0 20px; }
+    body.home > .info .content p { font-size:14px; }
+
+}

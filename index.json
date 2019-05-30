@@ -1,28 +1,28 @@
 {
     "main": [
         {
-            "name": "user-guide",
-            "title": "使用指南",
+            "name": "dig",
+            "title": "原理剖析",
             "children": [
                 {
                     "name": "catalog",
                     "title": "产品 CATALOG",
-                    "href": "user-guide/catalog"
+                    "href": "dig/catalog"
                 },
                 {
                     "name": "customers",
                     "title": "用户 CUSTOMERS",
-                    "href": "user-guide/customers"
+                    "href": "dig/customers"
                 },
                 {
                     "name": "marketing",
                     "title": "营销 MARKETING",
-                    "href": "user-guide/marketing"
+                    "href": "dig/marketing"
                 },
                 {
                     "name": "sales",
                     "title": "销售 SALES",
-                    "href": "user-guide/sales"
+                    "href": "dig/sales"
                 }
             ]
         },
