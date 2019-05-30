@@ -137,7 +137,7 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
             elNav.show();
             setTimeout( function() {
                 elNav.addClass( 'active' );
-            }, 1 );
+            }, 10 );
         } );
         headerH = elHeader.outerHeight();
 
