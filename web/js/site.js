@@ -36,6 +36,31 @@ require( [ 'jquery' ], function( $ ) {
         scrollTop = tmpScrollTop;
     } );
 
+    let touchStartX, touchStartY;
+    $( document ).on( {
+        touchstart: function( evt ) {
+            touchStartX = evt.changedTouches[0].screenX;
+            touchStartY = evt.changedTouches[0].screenY;
+        },
+        touchend: function( evt ) {
+            let dx = evt.changedTouches[0].screenX - touchStartX;
+            let dy = evt.changedTouches[0].screenY - touchStartY;
+            if ( Math.abs( dx ) > Math.abs( dy ) ) {
+                if ( dx > 0 ) {
+                    $( document ).trigger( 'touch_to_right' );
+                } else {
+                    $( document ).trigger( 'touch_to_left' );
+                }
+            } else {
+                if ( dy > 0 ) {
+                    $( document ).trigger( 'touch_to_down' );
+                } else {
+                    $( document ).trigger( 'touch_to_up' );
+                }
+            }
+        }
+    } );
+
 } );
 
 /**
@@ -170,15 +195,12 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
         elNav.find( '> .box' ).prepend( '<div class="btn-close"></div>' );
 
         elNav.find( '.bg, .btn-close' ).on( 'click', function() {
-            elNav.hide().removeClass( 'active' );
+            elNav.removeClass( 'active' );
         } );
 
         elHeader.find( '.btn-nav' ).on( 'click', function() {
-            elNav.show();
             elNav.find( 'li' ).removeClass( 'hover' );
-            setTimeout( function() {
-                elNav.addClass( 'active' );
-            }, 10 );
+            elNav.addClass( 'active' );
         } );
 
         headerH = elHeader.outerHeight();
@@ -203,7 +225,7 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
                 theme: 'minimal-dark'
             } );
             elArticleSource.remove();
-            elBody.find( '.original-article' ).html( '<div class="info">原创文章，转载请注明出处。</div>' ).appendTo( elArticle.find( '.content' ) );
+            elBody.find( '.original-article' ).html( '<div class="info">支持原创，转载请注明出处。</div>' ).appendTo( elArticle.find( '.content' ) );
 
             /**
              * Build index
@@ -255,19 +277,28 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
                     url: baseUrl + '/' + paths[0] + '/' + paths[1] + '/index.json',
                     dataType: 'json',
                     success: function( result ) {
-                        elNav.html( '<nav></nav>' );
+                        let elNavWrapper = elNav;
+                        elNav.html( '<div class="bg"></div><nav></nav>' );
+                        elNav = elNav.find( 'nav' );
                         buildMenu( {
                             data: result,
-                            container: elNav.find( 'nav' )
+                            container: elNav
                         } );
                         elNav.mCustomScrollbar( {theme: 'minimal-dark'} );
                         $( document ).on( {
                             close_header: function() {
-                                elNav.addClass( 'top' );
+                                elNavWrapper.addClass( 'top' );
                             },
                             open_header: function() {
-                                elNav.removeClass( 'top' );
+                                elNavWrapper.removeClass( 'top' );
+                            },
+                            touch_to_right: function() {
+                                elNavWrapper.addClass( 'active' );
                             }
+                        } );
+
+                        elNavWrapper.find( '.bg' ).on( 'click', function() {
+                            elNavWrapper.removeClass( 'active' );
                         } );
                     }
                 } );
@@ -277,7 +308,13 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
     };
 
     const initFooter = function() {
-        elFooter.html( '<div class="box"><div class="copyright">Copyright &copy; ' + (new Date).getFullYear() + ' Magento 2 笔记</div></div>' );
+
+        let html = '<div class="box">' +
+                '<div class="copyright">Copyright &copy; ' + (new Date).getFullYear() + ' Magento 2 笔记</div>' +
+                '</div>';
+
+        elFooter.html( html );
+
     };
 
     let headerH;

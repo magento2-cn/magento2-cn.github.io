@@ -68,15 +68,15 @@ main > aside { left:0; max-height:calc( 100% - 60px ); position:fixed; top:60px;
 main > aside.top { max-height:100%; top:0; }
 main > aside nav a { display:block; text-decoration:none; }
 main > aside nav span { display:block; }
-main > aside nav > ul > li > a { border-bottom:1px solid #e0e0e0; padding:20px 20px 10px; }
-main > aside nav > ul > li > a span { color:#666; font-size:14px; font-weight:bold; }
-main > aside nav > ul > li li > a { border-bottom:1px solid #e0e0e0; padding:5px 20px; }
-main > aside nav > ul > li li > a span { color:#999; font-size:12px; font-style:italic; }
-main > aside nav > ul > li li.hover > a,
-main > aside nav > ul > li li.active > a,
-main > aside nav > ul > li li.current > a { background:#fff; }
-main > aside nav > ul > li li.active > a span,
-main > aside nav > ul > li li.current > a span { color:#333; font-style:normal; }
+main > aside nav div > ul > li > a { border-bottom:1px solid #e0e0e0; padding:20px 20px 10px; }
+main > aside nav div > ul > li > a span { color:#666; font-size:14px; font-weight:bold; }
+main > aside nav div > ul > li li > a { border-bottom:1px solid #e0e0e0; padding:5px 20px; }
+main > aside nav div > ul > li li > a span { color:#999; font-size:12px; font-style:italic; }
+main > aside nav div > ul > li li.hover > a,
+main > aside nav div > ul > li li.active > a,
+main > aside nav div > ul > li li.current > a { background:#fff; }
+main > aside nav div > ul > li li.active > a span,
+main > aside nav div > ul > li li.current > a span { color:#333; font-style:normal; }
 
 /**
  * Atricle contents
@@ -141,14 +141,14 @@ body.home > main { background:#f6f6f6; display:block; margin:640px 0 0; width:10
     header > .box .content { margin:0 15px; position:relative; }
     header .btn-nav { background:no-repeat; display:block; height:54px; position:absolute; right:-15px; text-align:center; top:2px; width:54px; }
     header .btn-nav:before {  color:#999; content:'\f0c9'; font:28px/54px 'Awesome Solid'; }
-    header nav { bottom:0; display:none; float:none; left:0; position:fixed; right:0; top:0; }
-    header nav.active { display:block; }
+    header nav { bottom:0; float:none; position:fixed; right:0; top:0; width:0; }
+    header nav.active { width:100%; }
     header nav > .bg { background:#000; bottom:0; left:0; opacity:.6; position:absolute; right:0; top:0; z-index:1; }
-    header nav > .box { background:#f6f6f6; bottom:0; float:none; padding:55px 0 0; position:absolute; right:-100%; top:0; transition:right .5s; width:calc( 100% - 50px ); z-index:2; }
+    header nav > .box { background:#f6f6f6; bottom:0; float:none; position:absolute; right:-100%; text-align:right; top:0; transition:right .5s; width:calc( 100% - 50px ); z-index:2; }
     header nav.active > .box { right:0; }
-    header nav > .box .btn-close { background:no-repeat; display:block; height:54px; position:absolute; right:2px; text-align:center; top:2px; width:54px; }
+    header nav > .box .btn-close { background:no-repeat; display:inline-block; height:54px; right:2px; text-align:center; top:2px; width:54px; }
     header nav > .box .btn-close:before {  color:#a8acb1; content:'\f00d'; font:28px/54px 'Awesome Solid'; }
-    header nav > .box > ul { border-top:1px solid #e0e0e0; }
+    header nav > .box > ul { border-top:1px solid #e0e0e0; text-align:left; }
     header nav > .box > ul > li { float:none; height:auto; margin:0; }
     header nav > .box > ul > li > a { background:#fff; border-bottom:1px solid #e0e0e0; padding:10px 10px 10px 20px; }
     header nav > .box > ul > li > a span,
@@ -163,6 +163,12 @@ body.home > main { background:#f6f6f6; display:block; margin:640px 0 0; width:10
     header.hide-bg nav > ul > li > a span { color:#666; }
     header.hide-bg nav > ul > li.active > a span,
     header.hide-bg nav > ul > li.current > a span { color:#000; }
+
+    main > aside { display:block; height:100%; width:0; z-index:3; }
+    main > aside.active { width:100%; }
+    main > aside nav { background:#f6f6f6; box-shadow:0 1px 6px #999; height:100%; left:-266px; transition:left .5s; width:260px; z-index:2; }
+    main > aside.active nav { left:0; }
+    main > aside .bg { bottom:0; left:0; opacity:.6; position:absolute; right:0; top:0; z-index:1; }
 
     article { margin:0; padding:70px 12px 50px; }
     article .index { display:none; }
