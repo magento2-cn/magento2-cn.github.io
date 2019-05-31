@@ -140,14 +140,14 @@ body.home > main { background:#f6f6f6; display:block; margin:640px 0 0; width:10
 
     header > .box .content { margin:0 15px; position:relative; }
     header .btn-nav { background:no-repeat; display:block; height:54px; position:absolute; right:-15px; text-align:center; top:2px; width:54px; }
-    header .btn-nav:before {  color:#999; content:'\f0c9'; font:28px/54px 'Awesome Solid'; }
+    header .btn-nav:before {  color:#999; content:'\f0c9'; font:24px/54px 'Awesome Solid'; }
     header nav { bottom:0; float:none; position:fixed; right:0; top:0; width:0; }
     header nav.active { width:100%; }
     header nav > .bg { background:#000; bottom:0; left:0; opacity:.6; position:absolute; right:0; top:0; z-index:1; }
     header nav > .box { background:#f6f6f6; bottom:0; float:none; position:absolute; right:-100%; text-align:right; top:0; transition:right .5s; width:calc( 100% - 50px ); z-index:2; }
     header nav.active > .box { right:0; }
     header nav > .box .btn-close { background:no-repeat; display:inline-block; height:54px; right:2px; text-align:center; top:2px; width:54px; }
-    header nav > .box .btn-close:before {  color:#a8acb1; content:'\f00d'; font:28px/54px 'Awesome Solid'; }
+    header nav > .box .btn-close:before {  color:#a8acb1; content:'\f00d'; font:24px/54px 'Awesome Solid'; }
     header nav > .box > ul { border-top:1px solid #e0e0e0; text-align:left; }
     header nav > .box > ul > li { float:none; height:auto; margin:0; }
     header nav > .box > ul > li > a { background:#fff; border-bottom:1px solid #e0e0e0; padding:10px 10px 10px 20px; }

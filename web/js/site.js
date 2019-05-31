@@ -259,7 +259,7 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
                 theme: 'minimal-dark'
             } );
             elArticleSource.remove();
-            elBody.find( '.original-article' ).html( '<div class="info">本文为原创文章，转载请注明出处。</div>' ).appendTo( elArticle.find( '.content' ) );
+            elBody.find( '.original-article' ).html( '<div class="info">本文为站长原创，转载请注明出处。</div>' ).appendTo( elArticle.find( '.content' ) );
 
             /**
              * Build index
