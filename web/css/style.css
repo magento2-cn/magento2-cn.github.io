@@ -12,7 +12,7 @@
         url(../fonts/fa-solid-900.svg#fontawesome) format('svg');
 }
 
-* { box-sizing:border-box; margin:0; outline:none; padding:0; }
+* { box-sizing:border-box; margin:0; outline:none; padding:0; touch-action:pan-y; }
 
 body { background:#f6f6f9; background-size:cover; color:#333; font:15px/24px Consolas, Arial, Helvetica, sans-serif; }
 
@@ -164,7 +164,7 @@ body.home > main { background:#f6f6f6; display:block; margin:640px 0 0; width:10
     header.hide-bg nav > ul > li.active > a span,
     header.hide-bg nav > ul > li.current > a span { color:#000; }
 
-    main > aside { display:block; height:100%; width:0; z-index:3; }
+    main > aside { display:block; height:100%; max-height:100%; width:0; z-index:3; }
     main > aside.active { width:100%; }
     main > aside nav { background:#f6f6f6; box-shadow:0 1px 6px #999; height:100%; left:-266px; transition:left .5s; width:260px; z-index:2; }
     main > aside.active nav { left:0; }
