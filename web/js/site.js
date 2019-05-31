@@ -259,7 +259,7 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
                 theme: 'minimal-dark'
             } );
             elArticleSource.remove();
-            elBody.find( '.original-article' ).html( '<div class="info">支持原创，转载请注明出处。</div>' ).appendTo( elArticle.find( '.content' ) );
+            elBody.find( '.original-article' ).html( '<div class="info">本文为原创文章，转载请注明出处。</div>' ).appendTo( elArticle.find( '.content' ) );
 
             /**
              * Build index
@@ -362,5 +362,9 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
     updateStage();
 
     $( document ).on( 'scroll', updateStage );
+    $( document ).on( 'touchmove', function( evt ) {
+        evt.preventDefault();
+        return false;
+    } );
 
 } );
