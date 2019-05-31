@@ -99,8 +99,7 @@ article .content ul li ul { padding:5px 0 5px 22px; }
 article .content ol { padding:0 0 0 22px; }
 article .content ol li { padding:0 0 5px; }
 article .content table { width:100%; }
-article .content table thead th {}
-article .content table tbody td {}
+article .content .original-article { border-top:1px dotted #999; font-size:18px; margin:50px 0 80px; padding:30px 0 0; }
 article .index { position:fixed; right:20px; top:60px; transition:top .3s; width:300px; }
 article .index .caption { border-bottom:2px solid #ccc; font-size:18px; padding:20px 0 10px; }
 article .index .reading-progress { max-height:calc( 100% - 60px - 54px ); position:fixed; right:20px; top:116px; transition:top .3s; width:300px; }
@@ -163,10 +162,11 @@ body.home > main { background:#f6f6f6; display:block; margin:640px 0 0; width:10
     header.hide-bg nav > ul > li.active > a span,
     header.hide-bg nav > ul > li.current > a span { color:#000; }
 
-    article { margin:0; padding:20px 12px 50px; }
+    article { margin:0; padding:70px 12px 50px; }
     article .index { display:none; }
     article.has-content h1,
     article.has-content .content { width:auto; }
+    article .original-article { padding:50px 0; }
 
     footer { text-align:center; }
     footer .box nav { float:none; }

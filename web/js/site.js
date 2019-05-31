@@ -203,6 +203,7 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
                 theme: 'minimal-dark'
             } );
             elArticleSource.remove();
+            elBody.find( '.original-article' ).html( '<p>原创文章，转载请注明出处。</p>' ).appendTo( elArticle.find( '.content' ) );
 
             /**
              * Build index
@@ -272,6 +273,7 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
                 } );
             }
         }
+
     };
 
     const initFooter = function() {
