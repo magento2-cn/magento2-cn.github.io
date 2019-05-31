@@ -12,9 +12,21 @@
         url(../fonts/fa-solid-900.svg#fontawesome) format('svg');
 }
 
+@font-face {
+    font-family: 'Consolas';
+    font-style: normal;
+    font-weight: 900;
+    src: url(../fonts/consolas.eot);
+    src: url(../fonts/consolas.eot?#iefix) format('embedded-opentype'),
+        url(../fonts/consolas.woff2) format('woff2'),
+        url(../fonts/consolas.woff) format('woff'),
+        url(../fonts/consolas.ttf) format('truetype'),
+        url(../fonts/consolas.svg#fontawesome) format('svg');
+}
+
 * { box-sizing:border-box; margin:0; outline:none; padding:0; touch-action:pan-y; }
 
-body { background:#f6f6f9; background-size:cover; color:#333; font:15px/24px Consolas, Arial, Helvetica, sans-serif; }
+body { background:#f6f6f9; background-size:cover; color:#333; font:15px/24px Arial, Helvetica, sans-serif; }
 
 .clr:after { clear:both; content:''; display:table; }
 
