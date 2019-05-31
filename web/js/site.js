@@ -175,6 +175,7 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
 
         elHeader.find( '.btn-nav' ).on( 'click', function() {
             elNav.show();
+            elNav.find( 'li' ).removeClass( 'hover' );
             setTimeout( function() {
                 elNav.addClass( 'active' );
             }, 10 );
@@ -184,8 +185,16 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
     };
 
     const initMain = function() {
+
+        /**
+         * Article
+         */
         let elArticleSource = elMain.find( '#article-source' );
         if ( elArticleSource.length > 0 ) {
+
+            /**
+             * Rebuild article content
+             */
             let elArticle = elMain.find( 'article' );
             elArticle.addClass( 'has-content' )
                     .append( '<div class="content">' + markdownConverter.makeHtml( elArticleSource.text() ) + '</div><div class="index"></div>' );
@@ -195,6 +204,9 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
             } );
             elArticleSource.remove();
 
+            /**
+             * Build index
+             */
             let elIndexer = elArticle.find( '> .index' );
             elArticle.find( '> .content' ).readingProgress( {
                 elProgressBox: elIndexer,
@@ -231,6 +243,9 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
             } );
         }
 
+        /**
+         * Left hand menu
+         */
         let elNav = elMain.find( '> aside' );
         if ( elNav.length > 0 ) {
             let paths = window.location.href.substr( baseUrl.length ).replace( /^\/*(.*)/, '$1' ).split( '/' );
@@ -245,11 +260,13 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
                             container: elNav.find( 'nav' )
                         } );
                         elNav.mCustomScrollbar( {theme: 'minimal-dark'} );
-                        $( document ).on( 'close_header', function() {
-                            elNav.addClass( 'top' );
-                        } );
-                        $( document ).on( 'open_header', function() {
-                            elNav.removeClass( 'top' );
+                        $( document ).on( {
+                            close_header: function() {
+                                elNav.addClass( 'top' );
+                            },
+                            open_header: function() {
+                                elNav.removeClass( 'top' );
+                            }
                         } );
                     }
                 } );
