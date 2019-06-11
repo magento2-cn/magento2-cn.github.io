@@ -318,6 +318,7 @@ use Magento\Catalog\Model\Product\Visibility;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Store\Model\Store;
 
+/* @var $resourceModel \Magento\Catalog\Model\ResourceModel\Product */
 /* @var $productFactory \Magento\Catalog\Model\ProductFactory */
 /* @var $attributeSetId int */
 /* @var $websiteIds array */
@@ -331,8 +332,9 @@ $simpleProduct = $productFactory->create()->setStoreId( Store::DEFAULT_STORE_ID 
     ->setStatus( Status::STATUS_ENABLED )
     ->setVisibility( Visibility::VISIBILITY_NOT_VISIBLE )
     ->setCategoryIds( $categoryIds )
-    ->setUrlKey( $urlKey )
-    ->save();
+    ->setUrlKey( $urlKey );
+
+$resourceModel->save( $simpleProduct );
 
 
 /* @var $configAttribute \Magento\Catalog\Model\Entity\Attribute */
@@ -368,7 +370,7 @@ $configurableOptionsData[] = [
 $options = $optionsFactory->create( $configurableOptionsData );
 $configProduct->getExtensionAttributes()->setConfigurableProductOptions( $options );
 $configProduct->getExtensionAttributes()->setConfigurableProductLinks( $childrenIds );
-$configProduct->save();
+$resourceModel->save( $configProduct );
 ```
 
                 </pre>
