@@ -149,13 +149,13 @@ body.home > main .section { position:relative; }
 body.home > main .section .bg { opacity:.3; position:relative; z-index:1; }
 body.home > main .section .bg img { display:block; width:100%; }
 body.home > main .section .content { align-items:center; bottom:0; display:flex; height:100%; left:0; justify-content:center; position:absolute; right:0; top:0; z-index:2; }
-body.home > main .section .content .box { margin:-30px 0 0; position:relative; width:960px; }
+body.home > main .section .content .box { margin:-30px 0 0; position:relative; width:1000px; }
 body.home > main .section .content h2 { font-size:24px; font-weight:normal; margin:0 0 30px; }
 body.home > main .section .content p { font-size:16px; padding:0 0 5px; }
-body.home > main .section.dig .content .box { text-align:right; }
-body.home > main .section.codes .content .box { text-align:left; }
-body.home > main .section.exceptions .content .box { text-align:right; }
-body.home > main .section.about .content .box { padding:0 320px 0 0; text-align:left; }
+body.home > main .section.dig .content .box { padding:0 20px 0 320px; text-align:right; }
+body.home > main .section.codes .content .box { padding:0 320px 0 20px; text-align:left; }
+body.home > main .section.exceptions .content .box { padding:0 20px 0 320px; text-align:right; }
+body.home > main .section.about .content .box { padding:0 320px 0 20px; text-align:left; }
 
 
 
