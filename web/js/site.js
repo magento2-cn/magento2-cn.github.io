@@ -25,13 +25,15 @@ require.config( {
  */
 require( [ 'jquery' ], function( $ ) {
 
+    const elDoc = $( document );
+
     /**
      * Add direction flag in scroll event
      * down: 1, up: -1
      */
-    let scrollTop = $( document ).scrollTop();
-    $( document ).on( 'scroll', function( evt ) {
-        let tmpScrollTop = $( document ).scrollTop();
+    let scrollTop = elDoc.scrollTop();
+    elDoc.on( 'scroll', function( evt ) {
+        let tmpScrollTop = elDoc.scrollTop();
         evt.dir = tmpScrollTop > scrollTop ? 1 : -1;
         scrollTop = tmpScrollTop;
     } );
@@ -106,6 +108,8 @@ require( [ 'jquery' ], function( $ ) {
  */
 require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 'scrollbar' ], function( $, index, markdown ) {
 
+    const elWin = $( window );
+    const elDoc = $( document );
     const elBody = $( 'body' );
     const elHeader = $( 'body > header' );
     const elMain = $( 'body > main' );
@@ -166,20 +170,20 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
 
         menu.find( 'li' ).on( {
             mouseenter: function() {
-                if ( $( window ).width() <= mobileW ) {
+                if ( elWin.width() <= mobileW ) {
                     return;
                 }
                 $( this ).addClass( opts.clsHover );
             },
             mouseleave: function() {
-                if ( $( window ).width() <= mobileW ) {
+                if ( elWin.width() <= mobileW ) {
                     return;
                 }
                 $( this ).removeClass( opts.clsHover );
             }
         } ).filter( '.parent' ).find( '> a' ).on( {
             touchstart: function() {
-                if ( $( window ).width() > mobileW ) {
+                if ( elWin.width() > mobileW ) {
                     return;
                 }
                 $( this ).parent().toggleClass( opts.clsHover );
@@ -196,7 +200,10 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
     };
 
     const updateStage = function( evt ) {
-        let scrollTop = $( document ).scrollTop();
+        let scrollTop = elDoc.scrollTop();
+        if ( elBody.hasClass( 'home' ) && elWin.width() > mobileW ) {
+            elMain.css( 'marginTop', Math.floor( elBody.find( '> .info' ).outerHeight() ) );
+        }
         if ( elBody.hasClass( 'home' ) && scrollTop < headerH ) {
             elHeader.addClass( 'hide-bg' );
         } else {
@@ -204,9 +211,9 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
         }
         if ( evt && evt.dir === 1 && scrollTop > headerH ) { // close
             elHeader.addClass( 'close' );
-            $( document ).trigger( 'close_header' );
+            elDoc.trigger( 'close_header' );
         } else if ( evt && evt.dir === -1 ) {
-            $( document ).trigger( 'open_header' );
+            elDoc.trigger( 'open_header' );
             elHeader.removeClass( 'close' );
         }
     };
@@ -292,10 +299,10 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
                     }
                 }
             } );
-            $( document ).on( 'close_header', function() {
+            elDoc.on( 'close_header', function() {
                 elIndexer.addClass( 'top' );
             } );
-            $( document ).on( 'open_header', function() {
+            elDoc.on( 'open_header', function() {
                 elIndexer.removeClass( 'top' );
             } );
         }
@@ -319,7 +326,7 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
                             container: elNav
                         } );
                         elNav.mCustomScrollbar( {theme: 'minimal-dark'} );
-                        $( document ).on( {
+                        elDoc.on( {
                             close_header: function() {
                                 elNavWrapper.addClass( 'top' );
                             },
@@ -361,8 +368,9 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
     initFooter();
     updateStage();
 
-    $( document ).on( 'scroll', updateStage );
-    $( document ).on( 'touchmove', function( evt ) {
+    elDoc.on( 'scroll', updateStage );
+    elWin.on( 'resize', updateStage );
+    elDoc.on( 'touchmove', function( evt ) {
         evt.preventDefault();
         return false;
     } );
