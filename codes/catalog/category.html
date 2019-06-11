@@ -33,8 +33,7 @@ $categoryCollection = $categoryCollectionFactory->create();
 /* @var $categoryRepository \Magento\Catalog\Api\CategoryRepositoryInterface */
 /* @var $storeManager \Magento\Store\Model\StoreManagerInterface */
 $rootCategoryId = $storeManager->getStore()->getRootCategoryId();
-$categories = $categoryRepository->get( $rootCategoryId )
-    ->getChildrenCategories();
+$categories = $categoryRepository->get( $rootCategoryId )->getChildrenCategories();
 ```
 
 

@@ -1,9 +1,24 @@
 [
     {
         "name": "oters",
-        "title": "其他",
+        "title": "常用代码",
         "href": "codes/others",
         "children": [
+            {
+                "name": "debug",
+                "title": "测试 Debug",
+                "href": "codes/others/debug.html"
+            },
+            {
+                "name": "di",
+                "title": "常用类和接口",
+                "href": "codes/others/di.html"
+            },
+            {
+                "name": "constants",
+                "title": "常用常量",
+                "href": "codes/others/constants.html"
+            },
             {
                 "name": "datetime",
                 "title": "日期和时间",
