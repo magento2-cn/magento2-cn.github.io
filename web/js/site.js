@@ -367,8 +367,8 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
     initFooter();
     updateStage();
 
-    elDoc.on( 'scroll', updateStage );
     elWin.on( 'resize', updateStage );
+    elDoc.on( 'scroll', updateStage );
     elDoc.on( 'touchmove', function( evt ) {
         evt.preventDefault();
         return false;

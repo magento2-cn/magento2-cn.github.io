@@ -214,11 +214,11 @@ body.home > main .section.about .content .box { padding:0 320px 0 20px; text-ali
     body.home > main .section .bg { display:none; }
     body.home > main .section .content { position:relative; }
     body.home > main .section .content .box { margin:0; }
-    body.home > main .section .content h2 { font-size:20px; margin:0 0 10px; }
+    body.home > main .section .content h2 { font-size:20px; margin:0 0 12px; }
     body.home > main .section .content p { font-size:14px; }
     body.home > main .section.dig .content .box { padding:0 20px; text-align:left; }
     body.home > main .section.codes .content .box { padding:0 20px; }
     body.home > main .section.exceptions .content .box { padding:0 20px; text-align:left; }
-    body.home > main .section.about .content .box { padding:0 20px 50px; }
+    body.home > main .section.about .content .box { padding:0 20px 80px; }
 
 }
