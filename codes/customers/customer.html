@@ -26,7 +26,6 @@ namespace Namespace\Module\Setup;
 use Magento\Customer\Model\Customer;
 use Magento\Customer\Setup\CustomerSetupFactory;
 use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
-use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
@@ -84,7 +83,7 @@ class InstallData implements \Magento\Framework\Setup\InstallDataInterface {
 
     public function install( ModuleDataSetupInterface $setup, ModuleContextInterface $context )
     {
-        $this->customerSetup = $this->_customerSetupFactory->create( [ 'setup' => $setup ] );
+        $this->customerSetup = $this->customerSetupFactory->create( [ 'setup' => $setup ] );
         $this->defaultCustomerAttributeSetId = $this->customerSetup->getDefaultAttributeSetId( Customer::ENTITY );
 
         $this->addCustomerAttribute();

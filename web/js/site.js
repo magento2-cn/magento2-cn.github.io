@@ -287,7 +287,6 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
                             return true;
                         }
                         scrollTo( target );
-                        return false;
                     } );
 
                     let target = $( window.location.hash );
