@@ -115,9 +115,9 @@ article .content .original-article { border-top:1px dotted #999; font-size:18px;
 article .content .original-article .info:before { content:'\f071'; font-family:'Awesome Solid'; margin:0 10px 0 0; }
 article .index { position:fixed; right:20px; top:60px; transition:top .3s; width:300px; }
 article .index .caption { border-bottom:2px solid #ccc; font-size:18px; padding:20px 0 10px; }
-article .index .reading-progress { max-height:calc( 100% - 60px - 54px ); position:fixed; right:20px; top:116px; transition:top .3s; width:300px; }
+article .index .reading-progress { max-height:calc( 100% - 60px - 54px - 50px ); position:fixed; right:20px; top:116px; transition:top .3s; width:300px; }
 article .index.top { top:0; }
-article .index.top .reading-progress { max-height:calc( 100% - 54px ); top:56px; }
+article .index.top .reading-progress { max-height:calc( 100% - 54px - 50px ); top:56px; }
 article .index li { border-bottom:1px solid #e0e0e0; list-style:none; display:block; padding:8px 15px; position:relative; }
 article .index li a { color:#666; display:block; position:relative; text-decoration:none; z-index:2; }
 article .index li .progress { background:#f4f4f9; bottom:0; left:0; position:absolute; top:0; }
