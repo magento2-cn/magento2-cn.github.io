@@ -155,6 +155,16 @@ class Debug {
 
 }
 ```
+
+创建此 Helper 后可在任意位置调用如下代码：
+
+```php
+/* @var $target mixed */
+/* @var $print boolean */
+\Namespace\Module\Helper\Debug::traceVar( $target, $print );
+```
+
+`$print` 为 true 时直接打印结果，否则将内容记录到 system.log 文件中。
                 </pre>
             </article>
             <div class="original-article"></div>
