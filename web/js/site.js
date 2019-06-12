@@ -199,11 +199,8 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
 
     };
 
-    const updateStage = function( evt ) {
+    const updateOnScroll = function( evt ) {
         let scrollTop = elDoc.scrollTop();
-        if ( elBody.hasClass( 'home' ) && elWin.width() > mobileW ) {
-            elMain.css( 'marginTop', Math.floor( elBody.find( '> .info' ).outerHeight() ) );
-        }
         if ( elBody.hasClass( 'home' ) && scrollTop < headerH ) {
             elHeader.addClass( 'hide-bg' );
         } else {
@@ -218,6 +215,14 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
         }
     };
 
+    const updateStage = function() {
+        if ( elBody.hasClass( 'home' ) && elWin.width() > mobileW ) {
+            elMain.css( 'marginTop', Math.floor( elBody.find( '> .info' ).outerHeight() ) );
+        }
+        updateOnScroll();
+        elDoc.trigger( 'update_stage' );
+    };
+
     const initHeader = function() {
 
         let html = '<div class="box"><div class="content">' +
@@ -226,22 +231,22 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
                 '</div></div>';
         elHeader.html( html );
 
-        let elNav = elHeader.find( 'nav' );
+        let elMenu = elHeader.find( 'nav' );
         buildMenu( {
             data: indexData.main,
-            container: elNav
+            container: elMenu
         } );
-        elNav.prepend( '<div class="bg"></div>' );
-        elNav.find( '> ul' ).wrap( '<div class="box"></div>' );
-        elNav.find( '> .box' ).prepend( '<div class="btn-close"></div>' );
+        elMenu.prepend( '<div class="bg"></div>' );
+        elMenu.find( '> ul' ).wrap( '<div class="box"></div>' );
+        elMenu.find( '> .box' ).prepend( '<div class="btn-close"></div>' );
 
-        elNav.find( '.bg, .btn-close' ).on( 'click', function() {
-            elNav.removeClass( 'active' );
+        elMenu.find( '.bg, .btn-close' ).on( 'click', function() {
+            elMenu.removeClass( 'active' );
         } );
 
         elHeader.find( '.btn-nav' ).on( 'click', function() {
-            elNav.find( 'li' ).removeClass( 'hover' );
-            elNav.addClass( 'active' );
+            elMenu.find( 'li' ).removeClass( 'hover' );
+            elMenu.addClass( 'active' );
         } );
 
         headerH = elHeader.outerHeight();
@@ -275,7 +280,13 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
             elArticle.find( '> .content' ).readingProgress( {
                 elProgressBox: elIndexer,
                 onInitialized: function( elProgressBox ) {
-                    elProgressBox.find( '.reading-progress' ).mCustomScrollbar( {theme: 'minimal-dark'} ).before( '<div class="caption">本页目录</div>' );
+                    let elProgress = elProgressBox.find( '.reading-progress' );
+                    elProgress.mCustomScrollbar( {theme: 'minimal-dark'} );
+                    elProgress.before( '<div class="caption">本页目录</div>' );
+                    elDoc.on( 'update_stage', function() {
+                        elProgress.mCustomScrollbar( 'update' );
+                    } );
+
                     elProgressBox.find( 'li.idx a' ).before( '<div class="progress"></div>' );
 
                     elProgressBox.find( 'a' ).on( 'click', function() {
@@ -318,8 +329,8 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
                     dataType: 'json',
                     success: function( result ) {
                         let elNavWrapper = elNav;
-                        elNav.html( '<div class="bg"></div><nav></nav>' );
-                        elNav = elNav.find( 'nav' );
+                        elNavWrapper.html( '<div class="bg"></div><nav></nav>' );
+                        elNav = elNavWrapper.find( 'nav' );
                         buildMenu( {
                             data: result,
                             container: elNav
@@ -331,6 +342,9 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
                             },
                             open_header: function() {
                                 elNavWrapper.removeClass( 'top' );
+                            },
+                            update_stage: function() {
+                                elNav.mCustomScrollbar( 'update' );
                             },
                             touchtoright: function() {
                                 elNavWrapper.addClass( 'active' );
@@ -368,7 +382,8 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
     updateStage();
 
     elWin.on( 'resize', updateStage );
-    elDoc.on( 'scroll', updateStage );
+    elDoc.on( 'scroll', updateOnScroll );
+
     elDoc.on( 'touchmove', function( evt ) {
         evt.preventDefault();
         return false;
