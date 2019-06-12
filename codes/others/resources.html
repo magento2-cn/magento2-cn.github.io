@@ -16,14 +16,16 @@
             <article>
                 <h1>文件路径和 URL</h1>
                 <pre id="article-source">
-### 获取当前页面 URL
+## 获取 URL
+
+### 当前页面 URL
 
 ```php
 /* @var $objectManager \Magento\Framework\ObjectManagerInterface */
 $currentUrl = $objectManager->get( \Magento\Framework\UrlInterface )->getCurrentUrl();
 ```
 
-### 获取指定路由及参数的 URL
+### 指定路由及参数的 URL
 
 ```php
 /* @var $objectManager \Magento\Framework\ObjectManagerInterface */
@@ -32,7 +34,7 @@ $currentUrl = $objectManager->get( \Magento\Framework\UrlInterface )->getCurrent
 $url = $objectManager->get( \Magento\Store\Model\StoreManagerInterface::class )->getStore()->getUrl( $path, $params );
 ```
 
-### 获取各种目录 URL
+### 各种目录 URL
 
 ```php
 /* @var $objectManager \Magento\Framework\ObjectManagerInterface */
@@ -75,7 +77,7 @@ $scopeResolver = $objectManager->create( \Magento\Framework\Url\ScopeResolverInt
 $url = $objectManager->create( \Magento\Framework\Url::class, [ 'scopeResolver' => $scopeResolver ] )->setScope( $store )->getUrl( $path, [ '_scope_to_url' => false, '_nosid' => true ] );
 ```
 
-### 获取指定店铺视图的 URL
+### 指定店铺视图的 URL
 
 ```
 /* @var $urlHandler \Magento\Framework\UrlInterface */
@@ -88,17 +90,19 @@ $url = $urlHandler->getUrl( 'stores/store/switch', [
 ] );
 ```
 
-### 获取资源文件路径及 URL
+### 资源文件 URL
 
 ```php
 /* @var $objectManager \Magento\Framework\ObjectManagerInterface */
 $assetRepo = $objectManager->get( \Magento\Framework\View\Asset\Repository::class );
 $asset = $assetRepo->createAsset( 'Vendor_Module::js/script.js' );
-$filePath = $asset->getFilePath();
 $url = $asset->getUrl();
 ```
 
-### 获取文件目录路径
+
+## 获取文件或目录路径
+
+### 文件目录路径
 
 ```php
 use Magento\Framework\App\Filesystem\DirectoryList;
@@ -127,8 +131,17 @@ $dirSource = $filesystem->getDirectoryRead( DirectoryList::COMPOSER_HOME ); // [
 $dirSource = $filesystem->getDirectoryRead( DirectoryList::TMP_MATERIALIZATION_DIR ); // [root]/var/view_preprocessed
 $dirSource = $filesystem->getDirectoryRead( DirectoryList::TEMPLATE_MINIFICATION_DIR ); // [root]/var/view_preprocessed/html
 
-$absolutePath = $dirSource->getAbsolutePath(); // 绝对路径
-$relativePath = $dirSource->getRelativePath(); // 相对路径
+$absolutePath = $dirSource->getAbsolutePath();
+$relativePath = $dirSource->getRelativePath();
+```
+
+### 资源文件路径
+
+```php
+/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+$assetRepo = $objectManager->get( \Magento\Framework\View\Asset\Repository::class );
+$asset = $assetRepo->createAsset( 'Vendor_Module::js/script.js' );
+$filePath = $asset->getFilePath();
 ```
                 </pre>
             </article>
