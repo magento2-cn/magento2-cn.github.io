@@ -280,6 +280,10 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
             elArticle.find( '> .content' ).readingProgress( {
                 elProgressBox: elIndexer,
                 onInitialized: function( elProgressBox ) {
+                    if ( elProgressBox.find( 'li' ).length === 0 ) {
+                        return;
+                    }
+
                     let elProgress = elProgressBox.find( '.reading-progress' );
                     elProgress.mCustomScrollbar( {theme: 'minimal-dark'} );
                     elProgress.before( '<div class="caption">本页目录</div>' );
