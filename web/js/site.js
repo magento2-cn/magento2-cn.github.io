@@ -258,14 +258,15 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
          * Article
          */
         let elArticleSource = elMain.find( '#article-source' );
-        if ( elArticleSource.length > 0 ) {
+
+        let rebuildArticle = function( articleContent ) {
 
             /**
              * Rebuild article content
              */
             let elArticle = elMain.find( 'article' );
             elArticle.addClass( 'has-content' )
-                    .append( '<div class="content">' + markdownConverter.makeHtml( elArticleSource.text() ) + '</div><div class="index"></div>' );
+                    .append( '<div class="content">' + markdownConverter.makeHtml( articleContent ) + '</div><div class="index"></div>' );
             elArticle.find( 'pre' ).mCustomScrollbar( {
                 horizontalScroll: true,
                 theme: 'minimal-dark'
@@ -319,6 +320,16 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
             elDoc.on( 'open_header', function() {
                 elIndexer.removeClass( 'top' );
             } );
+        };
+
+        if ( elArticleSource.length > 0 ) {
+            if ( elArticleSource.data( 'source' ) ) {
+                require( [ 'text!' + elArticleSource.data( 'source' ) ], function( articleContent ) {
+                    rebuildArticle( articleContent );
+                } );
+            } else {
+                rebuildArticle( elArticleSource.text() );
+            }
         }
 
         /**

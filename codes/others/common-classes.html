@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>常用类和接口 Magento 2 笔记</title>
+        <base href="/" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+        <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico" />
+        <link rel="stylesheet" type="text/css" media="all" href="web/css/style.css" />
+        <link rel="stylesheet" type="text/css" media="all" href="web/css/jquery.mCustomScrollbar.min.css" />
+    </head>
+    <body>
+        <header></header>
+        <main>
+            <aside></aside>
+            <article>
+                <h1>常用类和接口</h1>
+                <pre id="article-source">
+
+## Framework
+
+```php
+Magento\Framework\App\Config\ScopeConfigInterface // Magento\Framework\App\Config
+Magento\Framework\App\RequestInterface // Magento\Framework\App\Request\Http
+Magento\Framework\App\ResponseInterface // Magento\Framework\App\Response\Http
+Magento\Framework\ObjectManagerInterface // Magento\Framework\ObjectManager\ObjectManager
+
+Magento\Framework\App\DeploymentConfig
+Magento\Framework\App\ResourceConnection
+Magento\Framework\App\State
+Magento\Framework\Registry
+```
+
+
+## Store
+
+```php
+Magento\Store\Model\StoreManagerInterface // Magento\Store\Model\StoreManager
+```
+
+
+## Catalog
+
+```php
+Magento\Catalog\Api\CategoryRepositoryInterface // Magento\Catalog\Model\CategoryRepository
+Magento\Catalog\Api\ProductRepositoryInterface // Magento\Catalog\Model\ProductRepository
+
+Magento\Catalog\Model\CategoryFactory
+Magento\Catalog\Model\ProductFactory
+
+Magento\Catalog\Model\ResourceModel\Category
+Magento\Catalog\Model\ResourceModel\Product
+```
+
+
+## Customer
+
+```php
+Magento\Customer\Api\AddressRepositoryInterface // Magento\Customer\Model\ResourceModel\AddressRepository
+Magento\Customer\Api\CustomerRepositoryInterface // Magento\Customer\Model\ResourceModel\CustomerRepository
+Magento\Customer\Api\GroupRepositoryInterface // Magento\Customer\Model\ResourceModel\GroupRepository
+
+Magento\Customer\Model\AddressFactory
+Magento\Customer\Model\CustomerFactory
+Magento\Customer\Model\GroupFactory
+
+Magento\Catalog\Model\ResourceModel\Address
+Magento\Catalog\Model\ResourceModel\Customer
+Magento\Catalog\Model\ResourceModel\Group
+```
+
+
+## Log
+
+```php
+Psr\Log\LoggerInterface // Magento\Framework\Logger\Monolog
+```
+
+                </pre>
+            </article>
+            <div class="original-article"></div>
+        </main>
+        <footer></footer>
+        <script type="text/javascript" src="web/js/require.js"></script>
+        <script type="text/javascript" src="web/js/site.js"></script>
+    </body>
+</html>

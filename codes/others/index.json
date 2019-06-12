@@ -10,14 +10,19 @@
                 "href": "codes/others/debug.html"
             },
             {
-                "name": "di",
+                "name": "common-classes",
                 "title": "常用类和接口",
-                "href": "codes/others/di.html"
+                "href": "codes/others/common-classes.html"
             },
             {
                 "name": "constants",
                 "title": "常用常量",
                 "href": "codes/others/constants.html"
+            },
+            {
+                "name": "di",
+                "title": "依赖注入",
+                "href": "codes/others/di.html"
             },
             {
                 "name": "datetime",
