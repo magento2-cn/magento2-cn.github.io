@@ -34,7 +34,18 @@ before 侦听方法的命名规则是，将原生方法的首字母改成大写�
 
 before 侦听方法的第一个参数是原生方法所属类的实例。如果原生方法有参数，则从第二个参数起往后分别对应原生方法的各个参数。参数类型可以与原生方法不一致，这相当于在 di.xml 中指定对应参数的类。
 
-如果需要修改原生方法的参数，可以在 before 侦听方法中返回一个数组，数组第一到 n 个元素依次为原生方法的入参。
+如果需要修改原生方法的参数，可以在 before 侦听方法中返回一个数组，数组第一到 n 个元素依次为原生方法的入参；不返回任何值则原生方法的入参内容不变。
+
+下边是原生插件 `Magento\Catalog\Model\Indexer\Product\Flat\Plugin` 的 before 侦听方法的内容：
+
+```php
+public function beforeSave(\Magento\Store\Model\ResourceModel\Store $subject, \Magento\Framework\Model\AbstractModel $object)
+{
+    if (!$object->getId() || $object->dataHasChangedFor('group_id')) {
+        $this->_productFlatIndexerProcessor->markIndexerAsInvalid();
+    }
+}
+```
 
 
 ### after 侦听方法
@@ -47,6 +58,18 @@ after 侦听方法的第一个参数是原生方法所属类的实例。如果�
 
 after 侦听方法的返回值类型必须与原生方法一致。
 
+下边是原生插件 `Magento\Catalog\Plugin\Model\Indexer\Category\Product\Execute` 的 after 侦听方法的内容：
+
+```php
+public function afterExecute(AbstractAction $subject, AbstractAction $result)
+{
+    if ($this->config->isEnabled()) {
+        $this->typeList->invalidate('full_page');
+    }
+    return $result;
+}
+```
+
 
 ### around 侦听方法
 
@@ -57,6 +80,22 @@ around 侦听方法的命名规则是，将原生方法的首字母改成大写�
 around 侦听方法的第一个参数是原生方法所属类的实例。第二个参数是针对同一原生方法的下一个插件的 around 侦听方法，或者原生方法本身。如果原生方法有参数，则以同一顺序依次跟在第二个参数之后。
 
 around 侦听方法的返回值类型必须与原生方法一致。
+
+下边是原生插件 `Magento\Catalog\Plugin\Model\ResourceModel\Attribute\Save` 的 around 侦听方法的内容：
+
+```php
+public function aroundSave(
+    \Magento\Catalog\Model\ResourceModel\Attribute $subject,
+    \Closure $proceed,
+    \Magento\Framework\Model\AbstractModel $attribute
+) {
+    $result = $proceed($attribute);
+    if ($this->config->isEnabled()) {
+        $this->typeList->invalidate('full_page');
+    }
+    return $result;
+}
+```
 
 
 ### 执行顺序
