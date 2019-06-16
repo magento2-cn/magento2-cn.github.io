@@ -1,3 +1,73 @@
+
+Magento 2 允许开发者通过组件的 `di.xml` 文件对类进行配置。 这个机制方便我们在不修改核心代码的前提下对原生功能进行修改，令定制开发在不影响系统升级的同时也非常灵活。
+
+指定 `area` 下的 `di.xml` 文件（比如 `etc/frontend/di.xml`）只会在这个作用域里起作用，对其他作用域的同一个类/接口都没有影响。
+
+`di.xml` 文件的所有配置内容都在 `config` 节点中进行：
+
+```xml
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    ...
+</config>
+```
+
+
+## 指定单例
+
+通过 `peference` 标签可以指定接口所对应的类：
+
+```xml
+<preference for="Magento\Catalog\Api\Data\ProductInterface"
+    type="Namespace\Module\Model\Product" />
+```
+
+或者设置使用一个新的类来代替（重写）已经存在的类：
+
+```xml
+<preference for="Magento\Catalog\Model\ResourceModel\Product\Collection"
+    type="Namespace\Module\Override\Magento\Catalog\Model\ResourceModel\Product\Collection" />
+```
+
+
+## 指定注入某个类的参数
+
+```xml
+<type name="Magento\Catalog\Helper\Product">
+    <arguments>
+        <argument name="catalogSession" xsi:type="object">Magento\Catalog\Model\Session\Proxy</argument>
+        <argument name="reindexPriceIndexerData" xsi:type="array">
+            <item name="byDataResult" xsi:type="array">
+                <item name="tier_price_changed" xsi:type="string">tier_price_changed</item>
+            </item>
+            <item name="byDataChange" xsi:type="array">
+                <item name="status" xsi:type="string">status</item>
+                <item name="price" xsi:type="string">price</item>
+                <item name="special_price" xsi:type="string">special_price</item>
+                <item name="special_from_date" xsi:type="string">special_from_date</item>
+                <item name="special_to_date" xsi:type="string">special_to_date</item>
+                <item name="website_ids" xsi:type="string">website_ids</item>
+                <item name="gift_wrapping_price" xsi:type="string">gift_wrapping_price</item>
+                <item name="tax_class_id" xsi:type="string">tax_class_id</item>
+            </item>
+        </argument>
+        <argument name="reindexProductCategoryIndexerData" xsi:type="array">
+            <item name="byDataChange" xsi:type="array">
+                <item name="category_ids" xsi:type="string">category_ids</item>
+                <item name="entity_id" xsi:type="string">entity_id</item>
+                <item name="store_id" xsi:type="string">store_id</item>
+                <item name="website_ids" xsi:type="string">website_ids</item>
+                <item name="visibility" xsi:type="string">visibility</item>
+                <item name="status" xsi:type="string">status</item>
+            </item>
+        </argument>
+        <argument name="productRepository" xsi:type="object">Magento\Catalog\Api\ProductRepositoryInterface\Proxy</argument>
+    </arguments>
+</type>
+```
+
+
 ## 插件 Plugin
 
 在 Magento 2 中，我们可以通过定义插件来修改或者扩展原生类的行为。
@@ -8,8 +78,6 @@
 
 
 ### 插件的定义
-
-通过对组件的 `di.xml` 文件的 `config` 节点加入以下代码定义插件：
 
 ```xml
 <type name="Original\Class\Name">

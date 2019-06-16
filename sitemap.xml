@@ -25,16 +25,19 @@
         <loc>https://magento2cn.github.io/codes/others/</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/codes/others/constants.html</loc>
-    </url>
-    <url>
-        <loc>https://magento2cn.github.io/codes/others/datetime.html</loc>
-    </url>
-    <url>
         <loc>https://magento2cn.github.io/codes/others/debug.html</loc>
     </url>
     <url>
+        <loc>https://magento2cn.github.io/codes/others/common-classes.html</loc>
+    </url>
+    <url>
+        <loc>https://magento2cn.github.io/codes/others/constants.html</loc>
+    </url>
+    <url>
         <loc>https://magento2cn.github.io/codes/others/di.html</loc>
+    </url>
+    <url>
+        <loc>https://magento2cn.github.io/codes/others/datetime.html</loc>
     </url>
     <url>
         <loc>https://magento2cn.github.io/codes/others/resources.html</loc>
