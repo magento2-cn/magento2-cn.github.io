@@ -232,7 +232,10 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
             let dyContent = boxH * .8;
             let dyBg = boxH * .2;
             let percentage = scrollTop / boxH;
-            elInfo.find( '.content .box' ).css( 'marginTop', -30 - dyContent * percentage );
+            elInfo.find( '.content .box' ).css( {
+                marginTop: -30 - dyContent * percentage,
+                opacity: 1 - percentage
+            } );
             elInfo.find( '.bg' ).css( 'marginTop', -dyBg * percentage );
         }
 
