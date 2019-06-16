@@ -200,12 +200,21 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
     };
 
     const updateOnScroll = function( evt ) {
+
         let scrollTop = elDoc.scrollTop();
+
+        /**
+         * For home page, hide backgroud of header on scroll to top
+         */
         if ( elBody.hasClass( 'home' ) && scrollTop < headerH ) {
             elHeader.addClass( 'hide-bg' );
         } else {
             elHeader.removeClass( 'hide-bg' );
         }
+
+        /**
+         * Expand header on scroll up, close on scroll down
+         */
         if ( evt && evt.dir === 1 && scrollTop > headerH ) { // close
             elHeader.addClass( 'close' );
             elDoc.trigger( 'close_header' );
@@ -213,6 +222,20 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
             elDoc.trigger( 'open_header' );
             elHeader.removeClass( 'close' );
         }
+
+        /**
+         * Home page background
+         */
+        if ( elBody.hasClass( 'home' ) && elWin.width() > mobileW ) {
+            let elInfo = elBody.find( '> .info' );
+            let boxH = elInfo.outerHeight();
+            let dyContent = boxH * .8;
+            let dyBg = boxH * .2;
+            let percentage = scrollTop / boxH;
+            elInfo.find( '.content .box' ).css( 'marginTop', -30 - dyContent * percentage );
+            elInfo.find( '.bg' ).css( 'marginTop', -dyBg * percentage );
+        }
+
     };
 
     const updateStage = function() {
