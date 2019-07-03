@@ -155,6 +155,29 @@ $productCollection->joinTable( $table, $bind, $fields, $cond, $joinType );
 - ***$joinType*** - inner / left
 
 
+### 同时获取多个 Website 的产品页链接
+
+```php
+/* @var $storeManager \Magento\Store\Model\StoreManagerInterface */
+/* @var $productCollectionFactory \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory */
+foreach ( $storeManager->getWebsites() as $website ) {
+    $storeManager->setCurrentStore( $website->getDefaultStore() );
+
+    $productCollection = $productCollectionFactory->create()
+            ->setStore( $website->getDefaultStore()->getId() )
+            ->addWebsiteFilter( $website->getId() )
+            ->load()
+            // Below methods only run completely after collection loaded
+            ->addUrlRewrite();
+
+    foreach ( $productCollection as $product ) {
+        $product->getProductUrl();
+    }
+}
+```
+
+
+
 ## 产品属性
 
 

@@ -24,6 +24,7 @@
 namespace Namespace\Module\Setup;
 
 use Magento\Customer\Model\Customer;
+use Magento\Customer\Model\ResourceModel\Attribute as CustomerAttributeResource;
 use Magento\Customer\Setup\CustomerSetupFactory;
 use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
 use Magento\Framework\DB\Ddl\Table;
@@ -31,6 +32,11 @@ use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 
 class InstallData implements \Magento\Framework\Setup\InstallDataInterface {
+
+    /**
+     * @var \Magento\Customer\Model\ResourceModel\Attribute
+     */
+    private $customerAttributeResource;
 
     /**
      * @var \Magento\Customer\Setup\CustomerSetup
@@ -47,8 +53,10 @@ class InstallData implements \Magento\Framework\Setup\InstallDataInterface {
      */
     private $defaultCustomerAttributeSetId;
 
-    public function __construct( CategorySetupFactory $categorySetupFactory )
+    public function __construct( CustomerAttributeResource $customerAttributeResource,
+            CustomerSetupFactory $customerSetupFactory )
     {
+        $this->customerAttributeResource = $customerAttributeResource;
         $this->customerSetupFactory = $customerSetupFactory;
     }
 
@@ -72,13 +80,18 @@ class InstallData implements \Magento\Framework\Setup\InstallDataInterface {
             'is_searchable_in_grid' => true
         ] );
 
-        $attributeGroupId = (int) $this->customerSetup->getAttributeGroupByCode( Customer::ENTITY, $this->defaultCustomerAttributeSetId, $attributeGroupCode, 'attribute_group_id' ); // eav_attribute_group
+        /**
+         * Both 'customer_account_edit' and 'adminhtml_customer' are required if we need
+         *     to show the attribute in backend customer edit page.
+         */
         $attribute = $this->customerSetup->getEavConfig()->getAttribute( Customer::ENTITY, $attributeCode );
-        $attribute->addData( [ // must specify set and group ID or it can not be saved in customer edit page
-            'attribute_set_id' => $this->defaultCustomerAttributeSetId,
-            'attribute_group_id' => $attributeGroupId,
-            'used_in_forms' => [ 'adminhtml_customer', 'customer_account_edit' ]
-        ] )->save();
+        $this->customerAttributeResource->save( $attribute->addData( [ 'used_in_forms' => [
+            'adminhtml_checkout', 'adminhtml_customer', 'adminhtml_customer_address',
+            'customer_account_create', 'customer_account_edit', 'customer_address_edit', 'customer_register_address'
+        ] ] ) );
+
+        $attributeGroupId = (int) $this->customerSetup->getAttributeGroupByCode( Customer::ENTITY, $this->defaultCustomerAttributeSetId, $attributeGroupCode, 'attribute_group_id' ); // eav_attribute_group
+        $this->customerSetup->addAttributeToSet( Customer::ENTITY, $this->defaultCustomerAttributeSetId, $attributeGroupId, $attribute->getId() );
     }
 
     public function install( ModuleDataSetupInterface $setup, ModuleContextInterface $context )
@@ -91,6 +104,23 @@ class InstallData implements \Magento\Framework\Setup\InstallDataInterface {
 }
 ```
 
+
+## 数据操作
+
+
+### 保存数据
+
+```php
+use Magento\Customer\Api\CustomerMetadataInterface;
+
+/* @var $customerId int */
+/* @var $customerFactory \Magento\Customer\Model\CustomerFactory */
+/* @var $customerResource \Magento\Customer\Model\ResourceModel\Customer */
+$customer = $customerFactory->create()
+    ->setAttributeSetId( CustomerMetadataInterface::ATTRIBUTE_SET_ID_CUSTOMER );
+$customerResource->load( $customer, $customerId );
+$customerResource->save( $customer );
+```
                 </pre>
             </article>
             <div class="original-article"></div>
