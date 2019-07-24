@@ -81,6 +81,11 @@
                     "name": "glossary",
                     "title": "词汇表",
                     "href": "appendices/glossary.html"
+                },
+                {
+                    "name": "dev-windows",
+                    "title": "Windows 开发环境",
+                    "href": "appendices/dev-windows.html"
                 }
             ]
         }
