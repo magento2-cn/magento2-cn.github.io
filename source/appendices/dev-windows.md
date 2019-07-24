@@ -17,7 +17,7 @@ Docker 是一个基于虚拟化技术的环境部署工具。为了完全读懂�
 
 ### 创建 network
 
-在本机 Windows（宿主机）下通过 Bash Shell 或 Docker Engine 执行如下指令，创建一个名为 dev 的 network 来连接几个容器：
+在本机 Windows（宿主机）下通过 Bash Shell 或 Docker Engine 执行如下指令，创建一个名为 `dev` 的 network 来连接几个容器：
 
 ```sh
 $ docker network create --driver 'bridge' 'dev'
@@ -27,30 +27,6 @@ $ docker network create --driver 'bridge' 'dev'
 
 要知道更多 network 相关信息，请移步 [https://docs.docker.com/network/network-tutorial-standalone/](https://docs.docker.com/network/network-tutorial-standalone/)。
 
-
-
-### 基于 nginx 的请求转发容器
-
-在宿主机执行如下指令，创建一个基于 nginx 的请求转发容器：
-
-```sh
-$ docker run -d \
-  --name 'web' \
-  --network 'dev' \
-  --restart 'on-failure' \
-  -p '0.0.0.0:80:80' \
-  -v 'D:\Docker\www\_config\webs:/etc/nginx/conf.d' \
-  'nginx'
-```
-
-这个容器的作用是转发浏览器请求到不同的自定义 web 容器，这样我们就可以同时拥有多个不同版本的 php 开发环境。
-
-以下是各参数的作用：
-- *--name 'web'* - 指定容器名为 web
-- *--network 'dev'* - 连接名为 dev 的 network
-- *--restart 'on-failure'* - 意外关闭后自动重启
-- *-p '0.0.0.0:80:80'* - 暴露容器的 80 端口到宿主机的 80 端口。<br />*这里用 0.0.0.0 而非 127.0.0.1 指代本机，否则通过 Docker Toolbox 安装的 Docker 会不生效*
-- *-v 'D:\Docker\www\_config\webs:/etc/nginx/conf.d'* - 绑定容器的文件夹和宿主机文件夹，方便以后添加修改配置文件
 
 
 ### 自定义 web 容器
@@ -77,10 +53,10 @@ CMD /bin/bash /etc/init.d/boot.sh
 这时新建的文件夹包含 3 个文件，我们在这个目录下执行如下指令，创建一个名为 web-php-7.2 的自定义镜像：
 
 ```sh
-$ docker build -t web-php-7.2 .
+$ docker build -t web-php:7.2 .
 ```
 
-再执行如下指令，生成一个基于自定义镜像的名为 php72 的容器：
+再执行如下指令，生成一个基于自定义镜像的名为 `php72` 的容器：
 
 ```sh
 $ docker run -it \
@@ -88,12 +64,18 @@ $ docker run -it \
   --network 'dev' \
   --restart 'on-failure' \
   -p '0.0.0.0:2272:22' \
-  'web-php-7.2'
+  'web-php:7.2'
 ```
 
-这里暴露容器的 22 端口到宿主机的 2272 端口，方便以后使用 SSH/SFTP 访问容器而无需通过 Docker 指令。
+以下是各参数的作用：
+- *--name 'php72'* - 指定容器名为 `php72`
+- *--network 'dev'* - 连接名为 `dev` 的 network
+- *--restart 'on-failure'* - 意外关闭后自动重启
+- *-p '0.0.0.0:2272:22'* - 暴露容器的 22 端口到宿主机的 2272 端口，方便以后使用 SSH/SFTP 访问容器而无需通过 Docker 指令。<br />*这里用 0.0.0.0 而非 127.0.0.1 指代本机，否则在通过 Docker Toolbox 安装的 Docker 中，这项参数会不生效*
 
-**注意：创建这个容器的时候，千万不要为了方便日后直接修改代码而绑定容器的文件夹与宿主机文件夹！否则完成部署后，网站的执行速度还不如直接上 WAMP。**<br />
+
+**注意：创建这个容器的时候，千万不要为了方便日后直接修改代码而绑定容器的文件夹与宿主机文件夹！否则完成部署后，网站的运行速度还不如直接上 WAMP。**<br />
+
 
 
 #### 容器里的操作
@@ -112,53 +94,53 @@ $ mv /etc/apt/sources.list /etc/apt/sources.list.bak; \
 ```
 
 
-安装 PHP 7.2：
+安装 PHP 7.2、PHP-FPM 以及 [Magento 2.3 所需插件](https://devdocs.magento.com/guides/v2.3/install-gde/system-requirements-tech.html)：
 
 ```sh
-apt-get update; \
-apt-get -y upgrade; \
-apt-get -y install \
-  gcc g++ make \
-  libterm-ui-perl \
-  libcurl4-openssl-dev \
-  libjpeg62-turbo-dev libpng-dev libxpm-dev libfreetype6-dev \
-  libicu-dev \
-  libssl-dev \
-  libxml2-dev \
-  libxslt-dev \
-  libzip-dev; \
+$ apt-get update; \
+  apt-get -y upgrade; \
+  apt-get -y install \
+    gcc g++ make \
+    libterm-ui-perl \
+    libcurl4-openssl-dev \
+    libjpeg62-turbo-dev libpng-dev libxpm-dev libfreetype6-dev \
+    libicu-dev \
+    libssl-dev \
+    libxml2-dev \
+    libxslt-dev \
+    libzip-dev; \
 
-ln -s /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib; \
-ln -s /usr/include/x86_64-linux-gnu/curl /usr/include/curl; \
+  ln -s /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib; \
+  ln -s /usr/include/x86_64-linux-gnu/curl /usr/include/curl; \
 
-tar zxvf /usr/local/src/php-7.2.20.tar.gz -C /usr/local/src; \
-mkdir /usr/local/etc/php; \
-mkdir /usr/local/etc/php/conf.d; \
-cd /usr/local/src/php-7.2.20; \
-cp ./php.ini-development /usr/local/etc/php/php.ini; \
-./configure \
-  --build=x86_64-linux-gnu \
-  --with-config-file-path=/usr/local/etc/php \
-  --with-config-file-scan-dir=/usr/local/etc/php/conf.d \
-  --enable-bcmath \
-  -with-curl \
-  --enable-fpm --with-fpm-user=www-data --with-fpm-group=www-data --disable-cgi \
-  --with-jpeg-dir --with-png-dir --with-zlib-dir --with-freetype-dir --enable-gd-native-ttf --with-gd \
-  --enable-intl \
-  --enable-mbstring \
-  --with-openssl \
-  --with-pdo-mysql \
-  --enable-soap \
-  --with-xsl \
-  --with-libzip --enable-zip \
-  build_alias=x86_64-linux-gnu; \
+  tar zxvf /usr/local/src/php-7.2.20.tar.gz -C /usr/local/src; \
+  mkdir /usr/local/etc/php; \
+  mkdir /usr/local/etc/php/conf.d; \
+  cd /usr/local/src/php-7.2.20; \
+  cp ./php.ini-development /usr/local/etc/php/php.ini; \
+  ./configure \
+    --build=x86_64-linux-gnu \
+    --with-config-file-path=/usr/local/etc/php \
+    --with-config-file-scan-dir=/usr/local/etc/php/conf.d \
+    --enable-bcmath \
+    -with-curl \
+    --enable-fpm --with-fpm-user=www-data --with-fpm-group=www-data --disable-cgi \
+    --with-jpeg-dir --with-png-dir --with-zlib-dir --with-freetype-dir --enable-gd-native-ttf --with-gd \
+    --enable-intl \
+    --enable-mbstring \
+    --with-openssl \
+    --with-pdo-mysql \
+    --enable-soap \
+    --with-xsl \
+    --with-libzip --enable-zip \
+    build_alias=x86_64-linux-gnu; \
   make; \
   make install; \
 
-cp /usr/local/etc/php-fpm.conf.default /usr/local/etc/php-fpm.conf; \
-sed -i 's!=NONE/!=!g' /usr/local/etc/php-fpm.conf; \
-cp /usr/local/etc/php-fpm.d/www.conf.default /usr/local/etc/php-fpm.d/www.conf; \
-/usr/local/sbin/php-fpm;
+  cp /usr/local/etc/php-fpm.conf.default /usr/local/etc/php-fpm.conf; \
+  sed -i 's!=NONE/!=!g' /usr/local/etc/php-fpm.conf; \
+  cp /usr/local/etc/php-fpm.d/www.conf.default /usr/local/etc/php-fpm.d/www.conf; \
+  /usr/local/sbin/php-fpm;
 ```
 
 
@@ -178,6 +160,13 @@ $ apt-get -y install openssh-server; \
   /etc/init.d/ssh start;
 ```
 
+设置用户密码：
+
+```sh
+$ passwd root
+```
+
+
 容器内的 Linux 系统不会随容器的开启而启动守护进程，只能通过镜像的最后一个 CMD 命令来启动。由于我们有多个服务要启用，因此将它们全部写到一个脚本里执行，修改 boot.sh：
 
 ```sh
@@ -191,28 +180,79 @@ $ echo '#!/bin/sh' > /etc/init.d/boot.sh; \
 这里的最后一个指令 `/bin/bash` 是为了保持容器在服务启动完毕后不会自动关闭而加入的，不能删除。
 
 
+### 基于 nginx 的请求转发容器
 
-## PHP 组件及依赖库列表
+在宿主机创建一个新文件夹，比如 D:\Docker\www\_config\webs，在里边创建一个 nginx 配置文件：
 
-- libterm-ui-perl - Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module)
+**default.conf**
 
-| PHP | Reference | Debian Library | Compile |
-| - | - | - | - |
-| bcmath | https://www.php.net/manual/zh/book.bc.php | - | --enable-bcmath |
-| ctype | https://www.php.net/manual/zh/book.ctype.php | - | - |
-| curl | https://www.php.net/manual/zh/book.curl.php | libcurl4-openssl-dev | -with-curl |
-| dom | https://www.php.net/manual/zh/book.dom.php | libxml2-dev | - |
-| fpm | https://www.php.net/manual/zh/book.fpm.php | - | --enable-fpm <br />--with-fpm-user=www-data <br />--with-fpm-group=www-data |
-| gd | https://www.php.net/manual/zh/book.image.php | libjpeg62-turbo-dev libpng-dev libxpm-dev libfreetype6-dev | --with-jpeg-dir<br />--with-png-dir<br />--with-zlib-dir<br />--with-freetype-dir<br />--enable-gd-native-ttf<br />--with-gd |
-| hash | https://www.php.net/manual/zh/book.hash.php | - | - |
-| iconv | https://www.php.net/manual/zh/book.iconv.php | - | - |
-| intl | https://www.php.net/manual/zh/book.intl.php | libicu-dev | --enable-intl |
-| mbstring | https://www.php.net/manual/zh/book.mbstring.php | - | --enable-mbstring |
-| openssl | https://www.php.net/manual/zh/book.openssl.php | libssl-dev | --with-openssl |
-| pdo_mysql | https://www.php.net/manual/zh/ref.pdo-mysql.php | - | --with-pdo-mysql |
-| simplexml | https://www.php.net/manual/zh/book.simplexml.php | libxml2-dev | - |
-| soap | https://www.php.net/manual/zh/book.soap.php | libxml2-dev | --enable-soap |
-| spl | https://www.php.net/manual/zh/book.spl.php | - | - |
-| xsl | https://www.php.net/manual/zh/book.xsl.php | libxml2-dev libxslt-dev | --with-xsl |
-| zip | https://www.php.net/manual/zh/book.zip.php | libzip-dev | --with-libzip --enable-zip |
-| libxml | https://www.php.net/manual/zh/book.libxml.php | libxml2-dev | - |
+```
+upstream php {
+    server php72:80;
+}
+
+server {
+    listen 80 default_server;
+    server_name _;
+    location / {
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_pass  http://php;
+    }
+}
+```
+
+在宿主机执行如下指令，创建一个基于 nginx 的名为 `web` 的请求转发容器：
+
+```sh
+$ docker run -d \
+  --name 'web' \
+  --network 'dev' \
+  --restart 'on-failure' \
+  -p '0.0.0.0:80:80' \
+  -v 'D:\Docker\www\_config\webs:/etc/nginx/conf.d' \
+  'nginx'
+```
+
+这个容器的作用是转发浏览器请求到不同的自定义 web 容器，这样我们就可以同时拥有多个不同版本的 php 开发环境。
+
+以下是各参数的作用：
+- *--name 'web'* - 指定容器名为 web
+- *--network 'dev'* - 连接名为 dev 的 network
+- *--restart 'on-failure'* - 意外关闭后自动重启
+- *-p '0.0.0.0:80:80'* - 暴露容器的 80 端口到宿主机的 80 端口。<br />*这里用 0.0.0.0 而非 127.0.0.1 指代本机，否则在通过 Docker Toolbox 安装的 Docker 中，这项参数会不生效*
+- *-v 'D:\Docker\www\_config\webs:/etc/nginx/conf.d'* - 绑定容器的配置文件夹和宿主机文件夹，方便以后添加修改配置文件
+
+
+在宿主机执行以下指令，将配置文件更新到容器中，注意不要将这个文件放到绑定的配置文件夹里：
+
+```sh
+$ docker cp nginx.conf web:/etc/nginx/nginx.conf
+```
+
+**nginx.conf**
+
+```
+user  nginx;
+worker_processes  1;
+
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include /etc/nginx/conf.d/*.conf;
+}
+```
+
+
+在宿主机执行以下指令，重启 Nginx 以更新设置：
+
+```sh
+$ docker exec -it web service nginx reload
+```
