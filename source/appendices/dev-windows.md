@@ -31,8 +31,29 @@ $ docker network create --driver 'bridge' 'dev'
 
 ### 自定义 web 容器
 
+考虑到国内访问官方镜像库的速度有点不太靠谱，没将自定义容器做成镜像发布，下边提供容器制作步骤。
+
 
 #### 容器外的准备
+
+
+在创建容器前，首先将 Docker 源更换为国内源。使用 Docker Desktop for Windows 的用户可以通过 Hyper-V 管理器访问虚拟机；使用 Docker Toolbox 的用户可以通过 docker-machine 命令访问虚拟机：
+
+```sh
+$ docker-machine ssh default
+```
+
+修改或添加虚拟机的 `/etc/docker/daemon.json` 文件，加入镜像地址后重启 Docker：
+
+```json
+{
+    "registry-mirrors": [
+        "http://hub-mirror.c.163.com",
+        "https://docker.mirrors.ustc.edu.cn"
+    ]
+}
+```
+
 
 在宿主机新建一个空文件夹，下载 php 7.2 安装包（[https://www.php.net/distributions/php-7.2.20.tar.gz](https://www.php.net/distributions/php-7.2.20.tar.gz)）到这个文件夹，并新建如下两个文件：
 
@@ -93,6 +114,11 @@ $ mv /etc/apt/sources.list /etc/apt/sources.list.bak; \
   echo 'deb http://mirrors.ustc.edu.cn/debian stretch-updates main' >> /etc/apt/sources.list;
 ```
 
+还可以试下这些：
+
+- 网易开源镜像<br />http://mirrors.163.com/debian/<br />http://mirrors.163.com/debian-security/
+- 搜狐开源镜像<br />http://mirrors.sohu.com/debian/<br />http://mirrors.sohu.com/debian-security/
+- 清华 TUNA<br />http://mirror.tuna.tsinghua.edu.cn/debian/<br />http://mirror.tuna.tsinghua.edu.cn/debian-security/
 
 安装 PHP 7.2、PHP-FPM 以及 [Magento 2.3 所需插件](https://devdocs.magento.com/guides/v2.3/install-gde/system-requirements-tech.html)：
 
