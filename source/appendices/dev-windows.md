@@ -256,3 +256,51 @@ http {
 ```sh
 $ docker exec -it web service nginx reload
 ```
+
+
+### MySQL 容器
+
+
+在宿主机执行以下指令，创建一个基于 mysql:5.7 的名为 `mysql` 的 MySQL 服务容器：
+
+```sh
+$ docker run -d \
+  --name 'mysql' \
+  --network 'dev' \
+  --restart 'on-failure' \
+  -e 'MYSQL_ROOT_PASSWORD=root' \
+  'mysql:5.7'
+```
+
+
+成功后可通过以下指令访问容器，通过输入 MySQL 命令管理数据库：
+
+```sh
+$ docker run -it --rm \
+  --network 'dev' \
+  'mysql:5.7' \
+  mysql -h mysql -u root -p
+```
+
+
+### Redis 容器
+
+
+在宿主机执行以下指令，创建一个基于 redis 的名为 `redis` 的容器：
+
+```sh
+$ docker run -d \
+  --name 'redis' \
+  --network 'dev' \
+  --restart 'on-failure' \
+  'redis'
+```
+
+成功后可通过以下指令访问容器，通过输入 redis 命令管理数据库：
+
+```sh
+$ docker run -it --rm \
+  --network 'dev' \
+  'redis' \
+  redis-cli -h redis
+```
