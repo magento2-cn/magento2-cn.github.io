@@ -1,4 +1,4 @@
-<br>
+<br />
 Windows 环境下运行 Magento 2 站点速度感人，这对习惯使用 Windows 系统的 Magento 2 开发人员来说简直是折磨。现在，通过 Docker 部署本地开发环境可以完美解决这个问题。
 
 Docker 是一个基于虚拟化技术的环境部署工具。为了完全读懂本文，我们需要先对它的使用有基本认识：
@@ -49,11 +49,14 @@ $ docker run -d \
 - *--name 'web'* - 指定容器名为 web
 - *--network 'dev'* - 连接名为 dev 的 network
 - *--restart 'on-failure'* - 意外关闭后自动重启
-- *-p '0.0.0.0:80:80'* - 暴露容器的 80 端口到宿主机的 80 端口。<br>*这里用 0.0.0.0 而非 127.0.0.1 指代本机，否则通过 Docker Toolbox 安装的 Docker 会不生效*
+- *-p '0.0.0.0:80:80'* - 暴露容器的 80 端口到宿主机的 80 端口。<br />*这里用 0.0.0.0 而非 127.0.0.1 指代本机，否则通过 Docker Toolbox 安装的 Docker 会不生效*
 - *-v 'D:\Docker\www\_config\webs:/etc/nginx/conf.d'* - 绑定容器的文件夹和宿主机文件夹，方便以后添加修改配置文件
 
 
 ### 自定义 web 容器
+
+
+#### 容器外的准备
 
 在宿主机新建一个空文件夹，下载 php 7.2 安装包（[https://www.php.net/distributions/php-7.2.20.tar.gz](https://www.php.net/distributions/php-7.2.20.tar.gz)）到这个文件夹，并新建如下两个文件：
 
@@ -71,27 +74,36 @@ COPY boot.sh /etc/init.d/boot.sh
 CMD /bin/bash /etc/init.d/boot.sh
 ```
 
-这时新建的文件夹包含 3 个文件，我们在这个目录下执行如下指令，创建一个自定义 web 镜像：
+这时新建的文件夹包含 3 个文件，我们在这个目录下执行如下指令，创建一个名为 web-php-7.2 的自定义镜像：
 
 ```sh
-docker build -t web-php-7.2 .
+$ docker build -t web-php-7.2 .
 ```
 
-生成容器
+再执行如下指令，生成一个基于自定义镜像的名为 php72 的容器：
 
 ```sh
 $ docker run -it \
---name 'web-php-7.2' \
---network 'dev' \
---restart 'on-failure' \
--p '0.0.0.0:2272:22' \
-'web-php-7.2'
+  --name 'php72' \
+  --network 'dev' \
+  --restart 'on-failure' \
+  -p '0.0.0.0:2272:22' \
+  'web-php-7.2'
 ```
 
+这里暴露容器的 22 端口到宿主机的 2272 端口，方便以后使用 SSH/SFTP 访问容器而无需通过 Docker 指令。
 
-在容器内执行以下指令：
+**注意：创建这个容器的时候，千万不要为了方便日后直接修改代码而绑定容器的文件夹与宿主机文件夹！否则完成部署后，网站的执行速度还不如直接上 WAMP。**<br />
 
-使用国内源
+
+#### 容器里的操作
+
+
+上述指令执行成功的话，我们已经进入容器内部了，在容器中执行下边的指令来安装开发环境。
+
+
+修改 apt 源地址，改为使用国内源：
+
 ```sh
 $ mv /etc/apt/sources.list /etc/apt/sources.list.bak; \
   echo 'deb http://mirrors.ustc.edu.cn/debian stretch main' >> /etc/apt/sources.list; \
@@ -99,7 +111,9 @@ $ mv /etc/apt/sources.list /etc/apt/sources.list.bak; \
   echo 'deb http://mirrors.ustc.edu.cn/debian stretch-updates main' >> /etc/apt/sources.list;
 ```
 
-PHP 7.2
+
+安装 PHP 7.2：
+
 ```sh
 apt-get update; \
 apt-get -y upgrade; \
@@ -147,13 +161,16 @@ cp /usr/local/etc/php-fpm.d/www.conf.default /usr/local/etc/php-fpm.d/www.conf; 
 /usr/local/sbin/php-fpm;
 ```
 
-Nginx
+
+安装 Nginx：
+
 ```sh
 $ apt-get -y install nginx; \
   /etc/init.d/nginx start;
 ```
 
-SSH
+安装 SSH：
+
 ```sh
 $ apt-get -y install openssh-server; \
   sed -i 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config; \
@@ -161,7 +178,8 @@ $ apt-get -y install openssh-server; \
   /etc/init.d/ssh start;
 ```
 
-boot.sh
+容器内的 Linux 系统不会随容器的开启而启动守护进程，只能通过镜像的最后一个 CMD 命令来启动。由于我们有多个服务要启用，因此将它们全部写到一个脚本里执行，修改 boot.sh：
+
 ```sh
 $ echo '#!/bin/sh' > /etc/init.d/boot.sh; \
   echo '/usr/local/sbin/php-fpm;' >> /etc/init.d/boot.sh; \
@@ -169,6 +187,9 @@ $ echo '#!/bin/sh' > /etc/init.d/boot.sh; \
   echo '/etc/init.d/ssh start;' >> /etc/init.d/boot.sh; \
   echo '/bin/bash;' >> /etc/init.d/boot.sh;
 ```
+
+这里的最后一个指令 `/bin/bash` 是为了保持容器在服务启动完毕后不会自动关闭而加入的，不能删除。
+
 
 
 ## PHP 组件及依赖库列表
@@ -181,8 +202,8 @@ $ echo '#!/bin/sh' > /etc/init.d/boot.sh; \
 | ctype | https://www.php.net/manual/zh/book.ctype.php | - | - |
 | curl | https://www.php.net/manual/zh/book.curl.php | libcurl4-openssl-dev | -with-curl |
 | dom | https://www.php.net/manual/zh/book.dom.php | libxml2-dev | - |
-| fpm | https://www.php.net/manual/zh/book.fpm.php | - | --enable-fpm <br>--with-fpm-user=www-data <br>--with-fpm-group=www-data |
-| gd | https://www.php.net/manual/zh/book.image.php | libjpeg62-turbo-dev libpng-dev libxpm-dev libfreetype6-dev | --with-jpeg-dir<br>--with-png-dir<br>--with-zlib-dir<br>--with-freetype-dir<br>--enable-gd-native-ttf<br>--with-gd |
+| fpm | https://www.php.net/manual/zh/book.fpm.php | - | --enable-fpm <br />--with-fpm-user=www-data <br />--with-fpm-group=www-data |
+| gd | https://www.php.net/manual/zh/book.image.php | libjpeg62-turbo-dev libpng-dev libxpm-dev libfreetype6-dev | --with-jpeg-dir<br />--with-png-dir<br />--with-zlib-dir<br />--with-freetype-dir<br />--enable-gd-native-ttf<br />--with-gd |
 | hash | https://www.php.net/manual/zh/book.hash.php | - | - |
 | iconv | https://www.php.net/manual/zh/book.iconv.php | - | - |
 | intl | https://www.php.net/manual/zh/book.intl.php | libicu-dev | --enable-intl |

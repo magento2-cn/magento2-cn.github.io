@@ -96,11 +96,12 @@ main > aside.top nav { max-height:100%; }
  * Atricle contents
  */
 article { background:#fff; box-shadow:0 0 5px #999; color:#333; margin-left:260px; min-height:800px; padding:70px 20px 80px; position:relative; z-index:2; }
-article h1 { font-size:26px; font-weight:normal; line-height:32px; padding:28px 0 10px; }
+article h1 { color:#666699; font-size:30px; font-weight:normal; line-height:32px; padding:28px 0 10px; }
 article.has-content h1,
 article.has-content .content { width:calc( 100% - 320px ); }
-article .content h2 { font-size:22px; font-weight:normal; line-height:28px; padding:24px 0 20px; }
-article .content h3 { font-size:18px; font-weight:normal; line-height:24px; padding:24px 0 16px; }
+article .content h2 { color:#666699; font-size:26px; font-weight:normal; line-height:28px; padding:24px 0 20px; }
+article .content h3 { color:#666699; font-size:22px; font-weight:normal; line-height:24px; padding:24px 0 16px; }
+article .content h4 { color:#666699; font-size:18px; font-weight:normal; line-height:22px; padding:20px 0 16px; }
 article .content a { color:#222; border-bottom:1px solid #545454; text-decoration:none; }
 article .content a:hover { border:0; }
 article .content p { margin:0 0 16px; }
