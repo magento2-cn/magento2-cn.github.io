@@ -28,16 +28,12 @@ $ docker network create --driver 'bridge' 'dev'
 要知道更多 network 相关信息，请移步 [https://docs.docker.com/network/network-tutorial-standalone/](https://docs.docker.com/network/network-tutorial-standalone/)。
 
 
-
-### 自定义 web 容器
-
-考虑到国内访问官方镜像库的速度有点不太靠谱，没将自定义容器做成镜像发布，下边提供容器制作步骤。
+### 将 Docker 源更换为国内源
 
 
-#### 容器外的准备
+在创建容器前，先将 Docker 源更换为国内源以提升镜像下载速度。
 
-
-在创建容器前，首先将 Docker 源更换为国内源。使用 Docker Desktop for Windows 的用户可以通过 Hyper-V 管理器访问虚拟机；使用 Docker Toolbox 的用户可以通过 docker-machine 命令访问虚拟机：
+使用 Docker Desktop for Windows 的用户可以通过 Hyper-V 管理器访问虚拟机；使用 Docker Toolbox 的用户可以通过 docker-machine 命令访问虚拟机：
 
 ```sh
 $ docker-machine ssh default
@@ -53,6 +49,14 @@ $ docker-machine ssh default
     ]
 }
 ```
+
+
+### 自定义 web 容器
+
+考虑到国内访问官方镜像库的速度有点不太靠谱，没将自定义容器做成镜像发布，下边提供容器制作步骤。
+
+
+#### 容器外的准备
 
 
 在宿主机新建一个空文件夹，下载 php 7.2 安装包（[https://www.php.net/distributions/php-7.2.20.tar.gz](https://www.php.net/distributions/php-7.2.20.tar.gz)）到这个文件夹，并新建如下两个文件：
