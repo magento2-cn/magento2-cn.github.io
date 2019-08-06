@@ -143,6 +143,14 @@ $assetRepo = $objectManager->get( \Magento\Framework\View\Asset\Repository::clas
 $asset = $assetRepo->createAsset( 'Vendor_Module::js/script.js' );
 $filePath = $asset->getFilePath();
 ```
+
+### 模板文件路径
+
+```php
+/* @var $templateFileResolver \Magento\Framework\View\Element\Template\File\Resolver */
+/* @var $templateName string */
+$filePath = $templateFileResolver->getTemplateFileName( $templateName )
+```
                 </pre>
             </article>
             <div class="original-article"></div>
