@@ -29,11 +29,25 @@ $categoryCollection = $categoryCollectionFactory->create();
 
 这个方法仅限于前台使用：
 
-```
+```php
 /* @var $categoryRepository \Magento\Catalog\Api\CategoryRepositoryInterface */
 /* @var $storeManager \Magento\Store\Model\StoreManagerInterface */
 $rootCategoryId = $storeManager->getStore()->getRootCategoryId();
 $categories = $categoryRepository->get( $rootCategoryId )->getChildrenCategories();
+```
+
+获取分类树：
+```php
+/* @var $categoryTreeFactory \Magento\Catalog\Model\ResourceModel\Category\TreeFactory */
+/* @var $storeManager \Magento\Store\Model\StoreManagerInterface */
+/* @var $categoryCollectionFactory \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory */
+$categoryCollection = $categoryCollectionFactory->create()
+    ->addAttributeToSelect( [ 'name' ] )
+    ->addAttributeToSort( 'name' );
+$rootCategoryId = $storeManager->getStore()->getRootCategoryId();
+$categoryTree = $categoryTreeFactory->create();
+$nodes = $categoryTree->loadNode( $rootCategoryId )->loadChildren( 0 )->getChildren();
+$categoryTree->addCollectionData( $categoryCollection, true, [], true, true ); // this line MUST execute after `loadNode` method
 ```
 
 
