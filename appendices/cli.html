@@ -97,8 +97,16 @@ find ./pub/static/ -name '*.css' -print|xargs rm -rf
 
 
 ### 文件用户组及权限
+
+```sh
+chown -R www-data:www-data .
 ```
+
+```sh
 chown -R apache:apache .
+```
+
+```sh
 find ./ -type f -print|xargs chmod 644;
 find ./ -type d -print|xargs chmod 755;
 ```
