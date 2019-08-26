@@ -85,7 +85,12 @@
                 {
                     "name": "dev-windows",
                     "title": "Windows 开发环境",
-                    "href": "appendices/dev-windows.html"
+                    "href": "appendices/dev-windows"
+                },
+                {
+                    "name": "cli",
+                    "title": "常用命令及参数",
+                    "href": "appendices/cli.html"
                 }
             ]
         }

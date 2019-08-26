@@ -1,0 +1,19 @@
+[
+    {
+        "name": "dev-windows",
+        "title": "Windows 开发环境",
+        "href": "appendices/dev-windows",
+        "children": [
+            {
+                "name": "quick",
+                "title": "使用 docker-compose 快速部署",
+                "href": "appendices/dev-windows/quick.html"
+            },
+            {
+                "name": "step-by-step",
+                "title": "使用 Docker 分步部署",
+                "href": "appendices/dev-windows/step-by-step.html"
+            }
+        ]
+    }
+]
