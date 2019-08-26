@@ -25,6 +25,11 @@
                 "href": "codes/others/di.html"
             },
             {
+                "name": "collection",
+                "title": "集合 Collection.xml",
+                "href": "codes/others/collection.html"
+            },
+            {
                 "name": "datetime",
                 "title": "日期和时间",
                 "href": "codes/others/datetime.html"
