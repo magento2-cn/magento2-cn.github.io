@@ -28,11 +28,13 @@ rm -rf var/view_preprocessed
 ```
 
 
-### 清空所有临时文件
+### 开启维护模式，清空所有临时文件
 
 ```sh
 php bin/magento maintenance:enable
+```
 
+```sh
 rm -rf generated/*
 rm -rf pub/static/*
 rm -rf var/di
@@ -40,7 +42,6 @@ rm -rf var/generation
 rm -rf var/view_preprocessed
 rm -rf var/cache
 rm -rf var/page_cache
-
 ```
 
 ```sh
