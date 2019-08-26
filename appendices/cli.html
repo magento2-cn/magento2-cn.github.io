@@ -77,7 +77,7 @@ php bin/magento setup:static-content:deploy zh_Hans_CN
 
 ### 更新静态文件（无需开启维护模式）
 
-```
+```sh
 rm -rf var/view_preprocessed
 rm -rf var/cache
 rm -rf var/page_cache
@@ -87,8 +87,10 @@ php bin/magento setup:static-content:deploy zh_Hant_HK
 php bin/magento setup:static-content:deploy en_US
 php bin/magento setup:static-content:deploy zh_Hans_CN
 
-find ./pub/static/ -name '*.css' -print|xargs rm -rf
+```
 
+```sh
+find ./pub/static/ -name '*.css' -print|xargs rm -rf
 ```
 
 ## Linux 命令
