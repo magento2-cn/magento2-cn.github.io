@@ -33,3 +33,51 @@
 ## 税费计算方式
 
 税费计算方式根据不同的商铺设置，以及不同的情景而有所区别。
+
+
+## 税费相关的商铺设置
+
+***SALES / Tax / Shopping Cart Display Settings***
+
+| 设置 | 描述 |
+| --- | --- |
+| Include Tax In Order Total | Yes - 仅显示带税的 Order Total。<br />No  - 同时显示 Order Total Incl. Tax 及 Order Total Excl. Tax。 |
+| Display Full Tax Summary | Yes - 在 Tax 栏出现折叠内容，展开后显示购物车内所有税目的详细情况。<br />No  - 在 Tax 栏仅显示总税价。 |
+| Display Zero Tax Subtotal | Yes - 当购物车内所有项目（包括产品及运费）均不含税时，仍显示 Tax 栏。<br />No  - 当购物车内所有项目（包括产品及运费）均不含税时，不显示 Tax 栏。 |
+
+***SALES / Tax / Tax Classes***
+
+| 设置 | 描述 |
+| --- | --- |
+| Tax Class for Shipping | 选择用于计算运输税的 Tax Rule 关联的 Product Tax Class。 |
+| Default Tax Class for Product | 选择用于匹配 Tax Rule 的默认 Customer Tax Class。 |
+| Default Tax Class for Customer | 选择用于匹配 Tax Rule 的默认 Product Tax Class。 |
+
+***SALES / Tax / Calculation Settings***
+
+| 设置 | 描述 |
+| --- | --- |
+| Tax Calculation Method Based On | Unit Price - 基于单个产品计算税费。<br />Row Total  - 基于购物车的一行产品计算税费。<br />Total      - 基于所有产品总价计算税费。 |
+| Tax Calculation Based On | Shipping Address - 基于收货地址计算税费，虚拟订单基于账单地址计算税费。<br />Billing Address  - 基于账单地址计算税费。<br />Shipping Orign   - 基于发货地址计算税费。 |
+| Catalog Prices | Excluding Tax - 后台产品价格设定不包含税费。<br />Including Tax - 后台产品价格设定已包含税费。 |
+| Shipping Prices | Excluding Tax - 后台运费设定不包含税费。<br />Including Tax - 后台运费设定已包含税费。 |
+| Apply Customer Tax | After Discount  - 在计算折扣价之后计算税费。<br />Before Discount - 在这算折扣价之前计算税费。 |
+| Apply Discount On Prices | 这项设置仅在 Apply Customer Tax 为 After Discount 时生效：<br /><br />Excluding Tax - 折扣不含税费。<br />Including Tax - 折扣已包含税费。 |
+| Apply Tax On | Custom price if available - 基于不同产品设置生效之后的价格计算税费。<br />Original price only       - 仅基于产品原价计算税费。 |
+| Enable Cross Border Trade | Yes - 当 Catalog Prices 为 Including Tax 时，不管税率为多少均保持该税后价不变。下边举例说明：<br /><br />设置 Tax Calculation Based On 为 Shipping Address，Catalog Prices 为 Including Tax，一产品在后台设定含税价为 $66.50，默认目的地对应税率为 10%，前台列表页时显示为 $66.50。<br /><br />该项设置为 No（默认值）：当用户把产品加入到购物车并选择一个税率不同于默认地址的运送地，系统会先通过默认地址对应税率和含税价计算得到不含税的价格 $60.45，然后乘上所选运送地对应税率得出最终价格。<br /><br />该项设置为 Yes：用户把产品加入到购物车后，不管选择任何收货地址都不会影响产品含税价，始终为 $66.50。 |
+
+***SALES / Tax / Default Tax Destination Calculation***
+
+| 设置 | 描述 |
+| --- | --- |
+| Default Country | 用于匹配 Tax Rate 的默认地址。 |
+| Default State | 用于匹配 Tax Rate 的默认地址。 |
+| Default Post Code | 用于匹配 Tax Rate 的默认地址。 |
+
+***SALES / Shipping Settings / Origin***
+
+| 设置 | 描述 |
+| --- | --- |
+| Country | 发货地址，后台以此地址作为税价计算依据。 |
+| Region/State | 发货地址，后台以此地址作为税价计算依据。 |
+| ZIP/Postal Code | 发货地址，后台以此地址作为税价计算依据。 |
