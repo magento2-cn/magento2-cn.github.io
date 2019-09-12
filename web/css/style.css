@@ -128,7 +128,7 @@ article .index li a { color:#666; display:block; position:relative; text-decorat
 article .index li .progress { background:#f4f4f9; bottom:0; left:0; position:absolute; top:0; }
 article .index li.t-h2 { border-top:1px solid #e0e0e0; }
 article .index li.t-h3 { padding:8px 15px 8px 30px; }
-article .index li.t-h3 a { font-size:10px; line-height:18px; }
+article .index li.t-h3 a { font-size:14px; line-height:18px; }
 article .index li.t-h4 { padding:8px 15px 8px 50px; }
 article .index li.t-h4 a { font-size:8px; line-height:12px; }
 
