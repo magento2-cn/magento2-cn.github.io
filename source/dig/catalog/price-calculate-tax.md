@@ -64,7 +64,7 @@
 | Apply Customer Tax | After Discount  - 在计算折扣价之后计算税费。<br />Before Discount - 在这算折扣价之前计算税费。 |
 | Apply Discount On Prices | 这项设置仅在 Apply Customer Tax 为 After Discount 时生效：<br /><br />Excluding Tax - 折扣不含税费。<br />Including Tax - 折扣已包含税费。 |
 | Apply Tax On | Custom price if available - 基于不同产品设置生效之后的价格计算税费。<br />Original price only       - 仅基于产品原价计算税费。 |
-| Enable Cross Border Trade | Yes - 当 Catalog Prices 为 Including Tax 时，不管税率为多少均保持该税后价不变。下边举例说明：<br /><br />设置 Tax Calculation Based On 为 Shipping Address，Catalog Prices 为 Including Tax，一产品在后台设定含税价为 $66.50，默认目的地对应税率为 10%，前台列表页时显示为 $66.50。<br /><br />该项设置为 No（默认值）：当用户把产品加入到购物车并选择一个税率不同于默认地址的运送地，系统会先通过默认地址对应税率和含税价计算得到不含税的价格 $60.45，然后乘上所选运送地对应税率得出最终价格。<br /><br />该项设置为 Yes：用户把产品加入到购物车后，不管选择任何收货地址都不会影响产品含税价，始终为 $66.50。 |
+| Enable Cross Border Trade | Yes - 当 Catalog Prices 为 Including Tax 时，不管税率为多少均保持该税后价不变。下边举例说明：<br /><br />*设置 Tax Calculation Based On 为 Shipping Address，Catalog Prices 为 Including Tax，一产品在后台设定含税价为 $66.50，默认目的地对应税率为 10%，前台列表页时显示为 $66.50。<br /><br />该项设置为 No（默认值）：当用户把产品加入到购物车并选择一个税率不同于默认地址的运送地，系统会先通过默认地址对应税率和含税价计算得到不含税的价格 $60.45，然后乘上所选运送地对应税率得出最终价格。<br /><br />该项设置为 Yes：用户把产品加入到购物车后，不管选择任何收货地址都不会影响产品含税价，始终为 $66.50。* |
 
 ***SALES / Tax / Default Tax Destination Calculation***
 
