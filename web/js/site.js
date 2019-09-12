@@ -117,7 +117,7 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
 
     const baseUrl = window.location.origin;
     const indexData = JSON.parse( index );
-    const markdownConverter = new markdown.Converter();
+    const markdownConverter = new markdown.Converter({tables: true, strikethrough: true});
     const mobileW = 768;
 
     /**

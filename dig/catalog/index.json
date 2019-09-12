@@ -1,0 +1,19 @@
+[
+    {
+        "name": "catalog",
+        "title": "产品 Catalog",
+        "href": "dig/catalog",
+        "children": [
+            {
+                "name": "price-display",
+                "title": "价格的显示",
+                "href": "dig/catalog/price-display.html"
+            },
+            {
+                "name": "price-calculate-tax",
+                "title": "税价计算",
+                "href": "dig/catalog/price-calculate-tax.html"
+            }
+        ]
+    }
+]
