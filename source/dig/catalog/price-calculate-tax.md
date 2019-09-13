@@ -19,9 +19,12 @@
 
 后台产品信息编辑页以 ***SALES / Shipping Settings / Origin*** 设定的地址作为参考地址。
 
+关于后台产品价格设定需要注意的是，当店铺设置 ***SALES / Tax / Calculation Settings > Catalog Prices*** 为 Including Tax 时，后台设置的产品价格不一定已经含税，还要看该产品的 Tax Class 和参考地址是否匹配。 
+
+
 #### 前台税率计算的参考地址
 
-前台则根据不同的商铺设置、不同的用户状态，以及不同的情景使用不同的参考地址。当 ***SALES / Tax / Calculation Settings / Tax Calculation Based On*** 为默认值 Shipping Address 时如下表：
+前台则根据不同的店铺设置、不同的用户状态，以及不同的情景使用不同的参考地址。当 ***SALES / Tax / Calculation Settings / Tax Calculation Based On*** 为默认值 Shipping Address 时如下表：
 
 |         | Product List / Detail | Cart Page Summary  | Shopping Cart |
 | --- | --- | --- | --- |
@@ -32,10 +35,12 @@
 
 ## 税费计算方式
 
-税费计算方式根据不同的商铺设置，以及不同的情景而有所区别。
+税费计算方式根据不同的店铺设置，以及不同的情景而有所区别。
+
+SALES / Tax / Calculation Settings > Catalog Prices
 
 
-## 税费相关的商铺设置
+## 税费相关的店铺设置
 
 ***SALES / Tax / Shopping Cart Display Settings***
 

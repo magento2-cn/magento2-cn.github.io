@@ -1,4 +1,4 @@
-### 记录指定内容到 system.log 文件
+## 记录指定内容到 system.log 文件
 
 ```php
 /* @var $target mixed */
@@ -7,7 +7,7 @@
 ```
 
 
-### 追踪当前代码的位置
+## 追踪当前代码的位置
 
 ```php
 try {
@@ -20,7 +20,7 @@ catch ( \Exception $ex ) {
 ```
 
 
-### 通过定制 Helper 记录任意类型变量
+## 通过定制 Helper 记录任意类型变量
 
 类似于 Model 的 `debug` 方法
 
@@ -147,3 +147,25 @@ class Debug {
 ```
 
 `$print` 为 true 时直接打印结果，否则将内容记录到 system.log 文件中。
+
+
+## 追踪执行时间和内存使用状况
+
+在索引文件（index.php 或 pub/index.php）的 `try {` 前添加如下代码：
+
+```php
+$_SERVER['MAGE_PROFILER'] = 'html';
+```
+
+有如下可选值：
+
+- ***html*** - 直接将结果输出到页面底部
+- ***csvfile*** - 将结果输出到 var/log/profiler.csv
+- ***firebug*** - 将结果输出到 Firebug
+
+
+## 在正式站 Debug
+
+为了不影响网站正常运行，可以复制一份索引文件（index.php 或 pub/index.php）并重命名为 test.php，配合上边提及的几个方法在正式站进行测试 debug，比如
+
+`http://demo.magento.mine.com/test.php/catalogsearch/result/?q=test`
