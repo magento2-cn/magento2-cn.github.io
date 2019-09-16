@@ -1,0 +1,14 @@
+[
+    {
+        "name": "sales",
+        "title": "销售 Sales",
+        "href": "dig/sales",
+        "children": [
+            {
+                "name": "checkout-price-calculate",
+                "title": "购物车的价格计算",
+                "href": "dig/sales/checkout-price-calculate.html"
+            }
+        ]
+    }
+]
