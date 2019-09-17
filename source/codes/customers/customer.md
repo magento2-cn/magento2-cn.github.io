@@ -103,3 +103,13 @@ $customer = $customerFactory->create()
 $customerResource->load( $customer, $customerId );
 $customerResource->save( $customer );
 ```
+
+### 通过数据库修改密码
+
+```mysql
+SET @email = 'email@example.com', @passwd = '123456', @salt = MD5( RAND() );
+
+UPDATE `customer_entity`
+SET `password_hash` = CONCAT( SHA2( CONCAT( @salt, @passwd ), 256 ), ':', @salt, ':1')
+WHERE `email` = @email;
+```

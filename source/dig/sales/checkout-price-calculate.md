@@ -1,3 +1,19 @@
+## 基本规则
+
+价格计算有如下基本规则：
+
+- 所有计算均基于 base currency
+
+- 取按不同优惠规则计算后得到的最小值作为基值：<br />
+`min( fn( price, catalog price rule ), special_price )`
+
+- 当 ***SALES / Tax / Calculation Settings > Catalog Prices*** 为 Excluding Tax 时（默认），以这个基值作为不含税单价 base\_price<br />
+`base_tax_amount = base_price * tax_percent / 100`
+
+- 当 ***SALES / Tax / Calculation Settings > Catalog Prices*** 为 Including Tax 时，以这个基值作为含税单价 base\_price\_incl\_tax<br />
+`base_tax_amount = base_price_incl_tax - base_price_incl_tax / ( 1 + tax_percent / 100 )`
+
+
 ## 计价过程简述
 
 下单过程中，商品价格计算由 Quote 组件进行处理，里边涉及两层循环，流程大致如下：
@@ -132,6 +148,16 @@ WEEE 是欧盟关于报废电子电器的回收指令，出口到欧盟的电子
 
 ```
 \Magento\SalesRule\Model\Quote\Discount :: collect
+    foreach ( $items as $item )
+        \Magento\SalesRule\Model\Validator :: process( $item )
+            \Magento\SalesRule\Model\RulesApplier :: applyRules( $item, $rules )
+                foreach ( $rules as $rule )
+                    \Magento\SalesRule\Model\Utility :: canProcessRule
+                    \Magento\Rule\Model\Action\Collection [ Magento\Rule\Model\Condition\Combine ] :: validate
+                    \Magento\SalesRule\Model\RulesApplier :: applyRule( $item, $rule )
+                        \Magento\SalesRule\Model\RulesApplier :: getDiscountData( $item, $rule )
+                            xxx [ Magento\SalesRule\Model\Rule\Action\Discount\AbstractDiscount ] :: fixQuantity( $qty, $rule )
+                            xxx [ Magento\SalesRule\Model\Rule\Action\Discount\AbstractDiscount ] :: calculate( $rule, $item, $qty )
 ```
 
 

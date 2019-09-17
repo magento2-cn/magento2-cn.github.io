@@ -35,9 +35,26 @@
 
 ## 税费计算方式
 
-税费计算方式根据不同的店铺设置，以及不同的情景而有所区别。
+系统取按不同优惠规则计算后得到的最小值作为计算基值：
 
-SALES / Tax / Calculation Settings > Catalog Prices
+```
+min( fn( price, catalog price rule ), special_price )
+```
+
+根据不同的店铺设置，有如下区别：
+
+当 ***SALES / Tax / Calculation Settings > Catalog Prices*** 为 Excluding Tax 时（默认），以这个基值作为不含税单价 `base_price`，税费为
+
+```
+base_tax_amount = base_price * tax_percent / 100
+```
+
+当 ***SALES / Tax / Calculation Settings > Catalog Prices*** 为 Including Tax 时，以这个基值作为含税单价 `base_price_incl_tax`，税费为
+
+```
+base_tax_amount = base_price_incl_tax - base_price_incl_tax / ( 1 + tax_percent / 100 )
+```
+
 
 
 ## 税费相关的店铺设置

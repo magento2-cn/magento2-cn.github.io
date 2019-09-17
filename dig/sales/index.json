@@ -8,6 +8,11 @@
                 "name": "checkout-price-calculate",
                 "title": "购物车的价格计算",
                 "href": "dig/sales/checkout-price-calculate.html"
+            },
+            {
+                "name": "checkout-price-record",
+                "title": "购物车的价格记录",
+                "href": "dig/sales/checkout-price-record.html"
             }
         ]
     }
