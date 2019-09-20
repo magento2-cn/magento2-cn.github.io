@@ -129,7 +129,7 @@ find ./ -type d -print|xargs chmod 775;
 
 ### 导出 GIT 最新更新
 
-```
+```sh
 git archive --output=latest.tar HEAD \
 $(git diff-tree -r --no-commit-id --name-only --diff-filter=ACMRT <CommitID1> <CommitID2>)
 ```
@@ -137,6 +137,29 @@ $(git diff-tree -r --no-commit-id --name-only --diff-filter=ACMRT <CommitID1> <C
 
 ### 在 GIT 中忽略本地文件
 
-```
+```sh
 git update-index --skip-worktree path/to/file
+```
+
+
+## 数据库指令
+
+### 访问数据库
+
+```sh
+mysql --default-character-set utf8 -u root -p
+```
+
+### 导入数据
+
+```mysql
+use `database`;
+set FOREIGN_KEY_CHECKS = 0;
+source database_source_file.sql;
+```
+
+### 导出数据
+
+```sh
+mysqldump -h host -u root -p database > database_source_file.sql
 ```
