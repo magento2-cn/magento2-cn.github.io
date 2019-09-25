@@ -5,11 +5,8 @@ Magento 通过以下两个 layout 定义了每个页面的默认价格渲染器�
 - `Magento_Catalog/view/layout/base/empty.xml`
 - `Magento_Catalog/view/layout/base/defalut.xml`
 
-渲染器的具体内容则由如下 layout 定义：
+渲染器的具体内容由 `catalog_product_prices.xml` 定义，下边是各原生组件的这个 layout 合并整理后的内容：
 
-- `Magento_Catalog/view/layout/base/catalog_product_prices.xml`
-
-下边是这个 layout 合并整理后的内容：
 ```xml
 <block class="Magento\Framework\Pricing\Render\RendererPool" name="render.product.prices">
     <arguments>
@@ -124,7 +121,7 @@ Magento 通过以下两个 layout 定义了每个页面的默认价格渲染器�
 </block>
 ```
 
-从该 layout 的内容可以看出，产品价格的显示都由 `\Magento\Framework\Pricing\Render\PriceBox` 这个类控制，不同类型的价格（special price、configured price、custom option price、tier price、final price 等）通过不同的模板输出。
+从中可看出，不同类型产品（default、configurable、bundle、grouped、giftcard）的各种价格（special price、configured price、custom option price、tier price、final price 等等）都是通过不同的渲染类和模板输出的。
 
 
 
