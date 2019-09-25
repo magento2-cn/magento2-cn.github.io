@@ -9,7 +9,125 @@ Magento 通过以下两个 layout 定义了每个页面的默认价格渲染器�
 
 - `Magento_Catalog/view/layout/base/catalog_product_prices.xml`
 
+下边是这个 layout 合并整理后的内容：
+```xml
+<block class="Magento\Framework\Pricing\Render\RendererPool" name="render.product.prices">
+    <arguments>
+
+        <argument name="default" xsi:type="array">
+            <item name="default_render_class" xsi:type="string">Magento\Catalog\Pricing\Render\PriceBox</item>
+            <item name="default_render_template" xsi:type="string">Magento_Catalog::product/price/default.phtml</item>
+            <item name="default_amount_render_class" xsi:type="string">Magento\Framework\Pricing\Render\Amount</item>
+            <item name="default_amount_render_template" xsi:type="string">Magento_Catalog::product/price/amount/default.phtml</item>
+            <item name="prices" xsi:type="array">
+                <item name="final_price" xsi:type="array">
+                    <item name="render_class" xsi:type="string">Magento\Catalog\Pricing\Render\FinalPriceBox</item>
+                    <item name="render_template" xsi:type="string">Magento_Catalog::product/price/final_price.phtml</item>
+                </item>
+                <item name="special_price" xsi:type="array">
+                    <item name="render_template" xsi:type="string">Magento_Catalog::product/price/special_price.phtml</item>
+                </item>
+                <item name="tier_price" xsi:type="array">
+                    <item name="render_template" xsi:type="string">Magento_Catalog::product/price/tier_prices.phtml</item>
+                </item>
+                <item name="custom_option_price" xsi:type="array">
+                    <item name="amount_render_template" xsi:type="string">Magento_Catalog::product/price/amount/default.phtml</item>
+                </item>
+                <item name="configured_price" xsi:type="array">
+                    <item name="render_class" xsi:type="string">Magento\Catalog\Pricing\Render\ConfiguredPriceBox</item>
+                    <item name="render_template" xsi:type="string">Magento_Catalog::product/price/configured_price.phtml</item>
+                </item>
+                <item name="msrp_price" xsi:type="array">
+                    <item name="render_class" xsi:type="string">Magento\Catalog\Pricing\Render\PriceBox</item>
+                    <item name="render_template" xsi:type="string">Magento_Msrp::product/price/msrp.phtml</item>
+                </item>
+                <item name="wishlist_configured_price" xsi:type="array">
+                    <item name="render_class" xsi:type="string">Magento\Wishlist\Pricing\Render\ConfiguredPriceBox</item>
+                    <item name="render_template" xsi:type="string">Magento_Catalog::product/price/configured_price.phtml</item>
+                </item>
+            </item>
+            <item name="adjustments" xsi:type="array">
+                <item name="default" xsi:type="array">
+                    <item name="tax" xsi:type="array">
+                        <item name="adjustment_render_class" xsi:type="string">Magento\Weee\Pricing\Render\TaxAdjustment</item>
+                        <item name="adjustment_render_template" xsi:type="string">Magento_Tax::pricing/adjustment.phtml</item>
+                    </item>
+                    <item name="weee" xsi:type="array">
+                        <item name="adjustment_render_class" xsi:type="string">Magento\Weee\Pricing\Render\Adjustment</item>
+                        <item name="adjustment_render_template" xsi:type="string">Magento_Weee::pricing/adjustment.phtml</item>
+                    </item>
+                </item>
+            </item>
+        </argument>
+
+        <argument name="configurable" xsi:type="array">
+            <item name="prices" xsi:type="array">
+                <item name="final_price" xsi:type="array">
+                    <item name="render_class" xsi:type="string">Magento\ConfigurableProduct\Pricing\Render\FinalPriceBox</item>
+                    <item name="render_template" xsi:type="string">Magento_ConfigurableProduct::product/price/final_price.phtml</item>
+                </item>
+                <item name="tier_price" xsi:type="array">
+                    <item name="render_class" xsi:type="string">Magento\ConfigurableProduct\Pricing\Render\TierPriceBox</item>
+                    <item name="render_template" xsi:type="string">Magento_ConfigurableProduct::product/price/tier_price.phtml</item>
+                </item>
+                <item name="wishlist_configured_price" xsi:type="array">
+                    <item name="render_template" xsi:type="string">Magento_Wishlist::product/price/configurable/configured_price.phtml</item>
+                </item>
+            </item>
+        </argument>
+
+        <argument name="bundle" xsi:type="array">
+            <item name="prices" xsi:type="array">
+                <item name="final_price" xsi:type="array">
+                    <item name="render_class" xsi:type="string">Magento\Bundle\Pricing\Render\FinalPriceBox</item>
+                    <item name="render_template" xsi:type="string">Magento_Bundle::product/price/final_price.phtml</item>
+                </item>
+                <item name="tier_price" xsi:type="array">
+                    <item name="render_template" xsi:type="string">Magento_Bundle::product/price/tier_prices.phtml</item>
+                </item>
+                <item name="bundle_option" xsi:type="array">
+                    <item name="amount_render_template" xsi:type="string">Magento_Bundle::product/price/selection/amount.phtml</item>
+                </item>
+                <item name="wishlist_configured_price" xsi:type="array">
+                    <item name="render_template" xsi:type="string">Magento_Wishlist::product/price/bundle/configured_price.phtml</item>
+                </item>
+            </item>
+            <item name="adjustments" xsi:type="array">
+                <item name="bundle_option" xsi:type="array">
+                    <item name="tax" xsi:type="array">
+                        <item name="adjustment_render_class" xsi:type="string">Magento\Tax\Pricing\Render\Adjustment</item>
+                        <item name="adjustment_render_template" xsi:type="string">Magento_Tax::pricing/adjustment/bundle.phtml</item>
+                    </item>
+                </item>
+            </item>
+        </argument>
+
+        <argument name="grouped" xsi:type="array">
+            <item name="prices" xsi:type="array">
+                <item name="final_price" xsi:type="array">
+                    <item name="render_class" xsi:type="string">Magento\Catalog\Pricing\Render\FinalPriceBox</item>
+                    <item name="render_template" xsi:type="string">Magento_GroupedProduct::product/price/final_price.phtml</item>
+                </item>
+            </item>
+        </argument>
+
+        <argument name="giftcard" xsi:type="array">
+            <item name="prices" xsi:type="array">
+                <item name="final_price" xsi:type="array">
+                    <item name="render_class" xsi:type="string">Magento\GiftCard\Pricing\Render\FinalPriceBox</item>
+                    <item name="render_template" xsi:type="string">Magento_GiftCard::product/price/final_price.phtml</item>
+                </item>
+            </item>
+        </argument>
+
+    </arguments>
+</block>
+```
+
 从该 layout 的内容可以看出，产品价格的显示都由 `\Magento\Framework\Pricing\Render\PriceBox` 这个类控制，不同类型的价格（special price、configured price、custom option price、tier price、final price 等）通过不同的模板输出。
+
+
+
 
 
 
