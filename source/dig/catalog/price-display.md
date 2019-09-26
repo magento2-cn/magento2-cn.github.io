@@ -1,6 +1,17 @@
 ## 概述
 
-Magento 通过以下两个 layout 定义了每个页面的默认价格渲染器：
+### 价格的计算
+
+Magento 通过 `Magento\Framework\Pricing\PriceInfo\Factory`（`Price Info Factory`）为产品对象创建 `Magento\Framework\Pricing\PriceInfo\Base` （`Price Info`）实例来寄存价格信息。这些实例都有一个 `Magento\Framework\Pricing\Price\Collection`（`Price Collection`），不同类型产品的  `Price Collection` 包含不同的 `Magento\Framework\Pricing\Price\Pool`（`Price Pool`），每个 `Price Pool` 又包含若干种计价逻辑。
+
+不同组件的 `di.xml` 定义了不同类型产品的 `Price Info Factory`、`Price Collection`、`Price Pool`，具体结构后面分类型描述。
+
+通过产品对象 `Magento\Catalog\Model\Product` 的 `getPriceInfo` 方法可获得 `Price Info`，再由 `Price Info` 的 `getPrice` 方法得到指定计价逻辑（`regular_price`、`final_price`、`tier_price`、`special_price`、`base_price`、`custom_option_price`、`configured_price`、`configured_regular_price` 等等）的对应类的实例，而价格的显示则是基于这些计价逻辑。
+
+
+### 价格的显示
+
+Magento 通过以下两个 layout 定义了价格渲染器：
 
 - `Magento_Catalog/view/layout/base/empty.xml`
 - `Magento_Catalog/view/layout/base/defalut.xml`
@@ -121,14 +132,41 @@ Magento 通过以下两个 layout 定义了每个页面的默认价格渲染器�
 </block>
 ```
 
-从中可看出，不同类型产品（default、configurable、bundle、grouped、giftcard）的各种价格（special price、configured price、custom option price、tier price、final price 等等）都是通过不同的渲染类和模板输出的。
+各类型产品（default、configurable、bundle、grouped、giftcard）的各种计价逻辑都是由这里指定的渲染类和模板输出的。
 
 
 
 
+## 默认
 
+```xml
+<type name="Magento\Framework\Pricing\PriceInfo\Factory">
+    <arguments>
+        <argument name="types" xsi:type="array">
+            <item name="default" xsi:type="array">
+                <item name="infoClass" xsi:type="string">Magento\Framework\Pricing\PriceInfo\Base</item>
+                <item name="prices" xsi:type="string">Magento\Catalog\Pricing\Price\Collection</item>
+            </item>
+        </argument>
+    </arguments>
+</type>
+```
 
-## 普通产品
+```
+Magento\Catalog\Model\Product
+    Magento\Framework\Pricing\PriceInfo\Base
+        Magento\Framework\Pricing\Price\Collection
+            Magento\Framework\Pricing\Price\Pool
+                regular_price : Magento\Catalog\Pricing\Price\RegularPrice
+                final_price : Magento\Catalog\Pricing\Price\FinalPrice
+                tier_price : Magento\Catalog\Pricing\Price\TierPrice
+                special_price : Magento\Catalog\Pricing\Price\SpecialPrice
+                base_price : Magento\Catalog\Pricing\Price\BasePrice
+                custom_option_price : Magento\Catalog\Pricing\Price\CustomOptionPrice
+                configured_price : Magento\Catalog\Pricing\Price\ConfiguredPrice
+                configured_regular_price : Magento\Catalog\Pricing\Price\ConfiguredRegularPrice
+```
+
 
 `Magento_Catalog::product/price/final_price.phtml`
 
@@ -137,45 +175,82 @@ Magento 通过以下两个 layout 定义了每个页面的默认价格渲染器�
 
 ## 可配置产品
 
+```xml
+<type name="Magento\Framework\Pricing\PriceInfo\Factory">
+    <arguments>
+        <argument name="types" xsi:type="array">
+            <item name="configurable" xsi:type="array">
+                <item name="infoClass" xsi:type="string">Magento\Framework\Pricing\PriceInfo\Base</item>
+                <item name="prices" xsi:type="string">Magento\ConfigurableProduct\Pricing\Price\Collection</item>
+            </item>
+        </argument>
+    </arguments>
+</type>
+```
+
+```
+Magento\Catalog\Model\Product
+    Magento\Framework\Pricing\PriceInfo\Base
+        Magento\Framework\Pricing\Price\Collection
+            Magento\Framework\Pricing\Price\Pool
+                regular_price : Magento\Catalog\Pricing\Price\RegularPrice
+                final_price : Magento\Catalog\Pricing\Price\FinalPrice
+                tier_price : Magento\Catalog\Pricing\Price\TierPrice
+                special_price : Magento\Catalog\Pricing\Price\SpecialPrice
+                base_price : Magento\Catalog\Pricing\Price\BasePrice
+                custom_option_price : Magento\Catalog\Pricing\Price\CustomOptionPrice
+                configured_price : Magento\Catalog\Pricing\Price\ConfiguredPrice
+                configured_regular_price : Magento\Catalog\Pricing\Price\ConfiguredRegularPrice
+```
+
 Configurable 产品获取每种价格的执行过程当中都会用到 `Magento\ConfigurableProduct\Pricing\Price\LowestPriceOptionsProvider` 这个类，其作用是分别获取各类价格中最低价的那个子产品的 ID。
 
-`Magento_ConfigurableProduct::product/price/final_price.phtml`
 
-`Magento\ConfigurableProduct\Pricing\Render\FinalPriceBox`
-
-### 原价
+### 最低价 `final_price`
 
 ```
-Magento\ConfigurableProduct\Pricing\Price\ConfigurableRegularPrice :: getAmount
-    Magento\ConfigurableProduct\Pricing\Price\ConfigurableRegularPrice ::doGetMinRegularAmount
-        $products = Magento\ConfigurableProduct\Pricing\Price\LowestPriceOptionsProvider :: getProducts
-            Magento\Catalog\Model\ResourceModel\Product\LinkedProductSelectBuilderComposite
-                Magento\Catalog\Model\ResourceModel\Product\LinkedProductSelectBuilderByBasePrice :: build
-                Magento\Catalog\Model\ResourceModel\Product\LinkedProductSelectBuilderBySpecialPrice :: build
-                Magento\Catalog\Model\ResourceModel\Product\LinkedProductSelectBuilderByTierPrice :: build
-                Magento\Catalog\Model\ResourceModel\Product\Indexer\LinkedProductSelectBuilderByIndexPrice :: build
-                Magento\CatalogRule\Model\ResourceModel\Product\LinkedProductSelectBuilderByCatalogRulePrice :: build
-        [foreach] $products
-            Magento\Catalog\Pricing\Price\RegularPrice :: getAmount
-    Magento\Framework\Pricing\Price\AbstractPrice :: getAmount
+Magento_ConfigurableProduct::product/price/final_price.phtml
+    Magento\ConfigurableProduct\Pricing\Render\FinalPriceBox [Magento\Framework\Pricing\Render\PriceBox] :: getPriceType
+    Magento\ConfigurableProduct\Pricing\Price\FinalPrice [Magento\Framework\Pricing\Price\AbstractPrice] :: getAmount
+        Magento\ConfigurableProduct\Pricing\Price\FinalPrice :: getValue
+            Magento\ConfigurableProduct\Pricing\Price\ConfigurablePriceResolver :: resolvePrice( $product )
+                $associatedProducts = Magento\ConfigurableProduct\Pricing\Price\LowestPriceOptionsProvider :: getProducts
+                foreach ( $associatedProducts as $associatedProduct )
+                    $productPrice = Magento\ConfigurableProduct\Pricing\Price\FinalPriceResolver :: resolvePrice( $associatedProduct )
+                        Magento\Framework\Pricing\PriceInfo\Base :: getPrice
+                        Magento\Catalog\Pricing\Price\FinalPrice :: getValue
+                            Magento\Catalog\Pricing\Price\BasePrice :: getValue
+                                $associatedProductPrices = Magento\Framework\Pricing\PriceInfo\Base :: getPrices
+                                foreach ( $associatedProductPrices as $associatedProductPrice )
+                                    if ( $associatedProductPrice instanceof Magento\Framework\Pricing\Price\BasePriceProviderInterface )
+                                        min( $associatedProductPrice :: getValue )
+                    min( $productPrice )
 ```
 
-### 最低价
 
-```
-Magento\ConfigurableProduct\Pricing\Price\FinalPrice [Magento\Framework\Pricing\Price\AbstractPrice] :: getAmount
-    Magento\ConfigurableProduct\Pricing\Price\FinalPrice :: getValue
-        Magento\ConfigurableProduct\Pricing\Price\FinalPriceResolver :: resolvePrice
-            Magento\Framework\Pricing\PriceInfo\Base :: getPrice
-            Magento\Catalog\Pricing\Price\FinalPrice :: getValue
-                Magento\Catalog\Pricing\Price\BasePrice :: getValue
-                    [foreach] $price = $Magento\Framework\Pricing\PriceInfo\Base :: getPrices
-                        [if] $price instanceof Magento\Framework\Pricing\Price\BasePriceProviderInterface
-                            min( $price :: getValue )
-```
+### `tier_price`
+
+
+### `wishlist_configured_price`
+
 
 
 ## 捆绑产品
+
+
+
+```xml
+<type name="Magento\Framework\Pricing\PriceInfo\Factory">
+    <arguments>
+        <argument name="types" xsi:type="array">
+            <item name="bundle" xsi:type="array">
+                <item name="infoClass" xsi:type="string">Magento\Bundle\Pricing\PriceInfo</item>
+                <item name="prices" xsi:type="string">Magento\Bundle\Pricing\Price\Collection</item>
+            </item>
+        </argument>
+    </arguments>
+</type>
+```
 
 `Magento_Bundle::product/price/final_price.phtml`
 
@@ -184,12 +259,59 @@ Magento\ConfigurableProduct\Pricing\Price\FinalPrice [Magento\Framework\Pricing\
 
 ## 组合产品
 
+```xml
+<type name="Magento\Framework\Pricing\PriceInfo\Factory">
+    <arguments>
+        <argument name="types" xsi:type="array">
+            <item name="grouped" xsi:type="array">
+                <item name="infoClass" xsi:type="string">Magento\Framework\Pricing\PriceInfo\Base</item>
+                <item name="prices" xsi:type="string">Magento\GroupedProduct\Pricing\Price\Collection</item>
+            </item>
+        </argument>
+    </arguments>
+</type>
+```
+
 `Magento_GroupedProduct::product/price/final_price.phtml`
 
 `Magento\Catalog\Pricing\Render\FinalPriceBox`
 
 
+## 可下载产品
+
+
+
+```xml
+<type name="Magento\Framework\Pricing\PriceInfo\Factory">
+    <arguments>
+        <argument name="types" xsi:type="array">
+            <item name="downloadable" xsi:type="array">
+                <item name="infoClass" xsi:type="string">Magento\Framework\Pricing\PriceInfo\Base</item>
+                <item name="prices" xsi:type="string">Magento\Downloadable\Pricing\Price\Collection</item>
+            </item>
+        </argument>
+    </arguments>
+</type>
+```
+
+
+
 ## 礼金券
+
+
+
+```xml
+<type name="Magento\Framework\Pricing\PriceInfo\Factory">
+    <arguments>
+        <argument name="types" xsi:type="array">
+            <item name="giftcard" xsi:type="array">
+                <item name="infoClass" xsi:type="string">Magento\Framework\Pricing\PriceInfo\Base</item>
+                <item name="prices" xsi:type="string">Magento\GiftCard\Pricing\Price\Collection</item>
+            </item>
+        </argument>
+    </arguments>
+</type>
+```
 
 `Magento_GiftCard::product/price/final_price.phtml`
 
