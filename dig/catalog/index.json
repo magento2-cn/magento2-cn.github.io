@@ -5,9 +5,9 @@
         "href": "dig/catalog",
         "children": [
             {
-                "name": "price-display",
-                "title": "价格的显示",
-                "href": "dig/catalog/price-display.html"
+                "name": "product-price",
+                "title": "产品价格",
+                "href": "dig/catalog/product-price.html"
             },
             {
                 "name": "price-calculate-tax",

@@ -2,11 +2,22 @@
 
 ### 价格的计算
 
-Magento 通过 `Magento\Framework\Pricing\PriceInfo\Factory`（`Price Info Factory`）为产品对象创建 `Magento\Framework\Pricing\PriceInfo\Base` （`Price Info`）实例来寄存价格信息。这些实例都有一个 `Magento\Framework\Pricing\Price\Collection`（`Price Collection`），不同类型产品的  `Price Collection` 包含不同的 `Magento\Framework\Pricing\Price\Pool`（`Price Pool`），每个 `Price Pool` 又包含若干种计价逻辑。
+Magento 产品价格的实现思想，主要是将各种计价逻辑的实现寄存在产品对象中，需要计算价钱时通过以下方法执行这些逻辑运算：
 
-不同组件的 `di.xml` 定义了不同类型产品的 `Price Info Factory`、`Price Collection`、`Price Pool`，具体结构后面分类型描述。
+```php
+/* @var $product \Magento\Catalog\Model\Product */
+/* @var $priceType string */
+/* @var $priceModel \Magento\Framework\Pricing\Price\PriceInterface */
+/* @var $price float */
+$priceModel = $product->getPriceInfo()->getPrice( $priceType );
+$price = $priceModel->getValue();
+```
 
-通过产品对象 `Magento\Catalog\Model\Product` 的 `getPriceInfo` 方法可获得 `Price Info`，再由 `Price Info` 的 `getPrice` 方法得到指定计价逻辑（`regular_price`、`final_price`、`tier_price`、`special_price`、`base_price`、`custom_option_price`、`configured_price`、`configured_regular_price` 等等）的对应类的实例，而价格的显示则是基于这些计价逻辑。
+这些计价逻辑包括 `regular_price`、`final_price`、`tier_price`、`special_price`、`base_price`、`custom_option_price`、`configured_price`、`configured_regular_price` 等等。
+
+系统通过 `Magento\Framework\Pricing\PriceInfo\Factory`（Price Info Factory）为产品对象创建 `Magento\Framework\Pricing\PriceInfo\Base` （Price Info）实例来寄存价格信息。这些实例都有一个 `Magento\Framework\Pricing\Price\Collection`（Price Collection），不同类型产品的  Price Collection 包含不同的 `Magento\Framework\Pricing\Price\Pool`（Price Pool），而各种计价逻辑就包含在这个 Price Pool 中。
+
+不同类型的产品包含不同的计价逻辑，而所有产品又存在一些默认的逻辑。这是通过各组件的 `di.xml` 文件，对各类型产品的 Price Info Factory、Price Collection、Price Pool 指定不同参数来定义的，具体结构后面分产品类型进行描述。
 
 
 ### 价格的显示
@@ -132,12 +143,14 @@ Magento 通过以下两个 layout 定义了价格渲染器：
 </block>
 ```
 
-各类型产品（default、configurable、bundle、grouped、giftcard）的各种计价逻辑都是由这里指定的渲染类和模板输出的。
+各类型产品（default、configurable、bundle、grouped、giftcard）的各种计价逻辑都是由这里指定的渲染类和模板输出。
 
 
 
 
-## 默认
+## 默认计价逻辑
+
+`Magento_Catalog::etc/di.xml`
 
 ```xml
 <type name="Magento\Framework\Pricing\PriceInfo\Factory">
@@ -152,28 +165,35 @@ Magento 通过以下两个 layout 定义了价格渲染器：
 </type>
 ```
 
-```
-Magento\Catalog\Model\Product
-    Magento\Framework\Pricing\PriceInfo\Base
-        Magento\Framework\Pricing\Price\Collection
-            Magento\Framework\Pricing\Price\Pool
-                regular_price : Magento\Catalog\Pricing\Price\RegularPrice
-                final_price : Magento\Catalog\Pricing\Price\FinalPrice
-                tier_price : Magento\Catalog\Pricing\Price\TierPrice
-                special_price : Magento\Catalog\Pricing\Price\SpecialPrice
-                base_price : Magento\Catalog\Pricing\Price\BasePrice
-                custom_option_price : Magento\Catalog\Pricing\Price\CustomOptionPrice
-                configured_price : Magento\Catalog\Pricing\Price\ConfiguredPrice
-                configured_regular_price : Magento\Catalog\Pricing\Price\ConfiguredRegularPrice
+```xml
+<virtualType name="Magento\Catalog\Pricing\Price\Collection" type="Magento\Framework\Pricing\Price\Collection">
+    <arguments>
+        <argument name="pool" xsi:type="object">Magento\Catalog\Pricing\Price\Pool</argument>
+    </arguments>
+</virtualType>
 ```
 
-
-`Magento_Catalog::product/price/final_price.phtml`
-
-`Magento\Catalog\Pricing\Render\FinalPriceBox`
+```xml
+<virtualType name="Magento\Catalog\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool">
+    <arguments>
+        <argument name="prices" xsi:type="array">
+            <item name="regular_price" xsi:type="string">Magento\Catalog\Pricing\Price\RegularPrice</item>
+            <item name="final_price" xsi:type="string">Magento\Catalog\Pricing\Price\FinalPrice</item>
+            <item name="tier_price" xsi:type="string">Magento\Catalog\Pricing\Price\TierPrice</item>
+            <item name="special_price" xsi:type="string">Magento\Catalog\Pricing\Price\SpecialPrice</item>
+            <item name="base_price" xsi:type="string">Magento\Catalog\Pricing\Price\BasePrice</item>
+            <item name="custom_option_price" xsi:type="string">Magento\Catalog\Pricing\Price\CustomOptionPrice</item>
+            <item name="configured_price" xsi:type="string">Magento\Catalog\Pricing\Price\ConfiguredPrice</item>
+            <item name="configured_regular_price" xsi:type="string">Magento\Catalog\Pricing\Price\ConfiguredRegularPrice</item>
+        </argument>
+    </arguments>
+</virtualType>
+```
 
 
 ## 可配置产品
+
+`Magento_ConfigurableProduct::etc/di.xml`
 
 ```xml
 <type name="Magento\Framework\Pricing\PriceInfo\Factory">
@@ -188,19 +208,36 @@ Magento\Catalog\Model\Product
 </type>
 ```
 
+```xml
+<virtualType name="Magento\ConfigurableProduct\Pricing\Price\Collection" type="Magento\Framework\Pricing\Price\Collection">
+    <arguments>
+        <argument name="pool" xsi:type="object">Magento\ConfigurableProduct\Pricing\Price\Pool</argument>
+    </arguments>
+</virtualType>
 ```
-Magento\Catalog\Model\Product
-    Magento\Framework\Pricing\PriceInfo\Base
-        Magento\Framework\Pricing\Price\Collection
-            Magento\Framework\Pricing\Price\Pool
-                regular_price : Magento\Catalog\Pricing\Price\RegularPrice
-                final_price : Magento\Catalog\Pricing\Price\FinalPrice
-                tier_price : Magento\Catalog\Pricing\Price\TierPrice
-                special_price : Magento\Catalog\Pricing\Price\SpecialPrice
-                base_price : Magento\Catalog\Pricing\Price\BasePrice
-                custom_option_price : Magento\Catalog\Pricing\Price\CustomOptionPrice
-                configured_price : Magento\Catalog\Pricing\Price\ConfiguredPrice
-                configured_regular_price : Magento\Catalog\Pricing\Price\ConfiguredRegularPrice
+
+```xml
+<virtualType name="Magento\ConfigurableProduct\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool">
+    <arguments>
+        <argument name="prices" xsi:type="array">
+            <item name="regular_price" xsi:type="string">Magento\ConfigurableProduct\Pricing\Price\ConfigurableRegularPrice</item>
+            <item name="final_price" xsi:type="string">Magento\ConfigurableProduct\Pricing\Price\FinalPrice</item>
+        </argument>
+        <argument name="target" xsi:type="object">Magento\Catalog\Pricing\Price\Pool</argument>
+    </arguments>
+</virtualType>
+```
+
+`Magento_Wishlist::etc/di.xml`
+
+```xml
+<virtualType name="Magento\ConfigurableProduct\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool">
+    <arguments>
+        <argument name="prices" xsi:type="array">
+            <item name="wishlist_configured_price" xsi:type="string">Magento\Wishlist\Pricing\ConfiguredPrice\ConfigurableProduct</item>
+        </argument>
+    </arguments>
+</virtualType>
 ```
 
 Configurable 产品获取每种价格的执行过程当中都会用到 `Magento\ConfigurableProduct\Pricing\Price\LowestPriceOptionsProvider` 这个类，其作用是分别获取各类价格中最低价的那个子产品的 ID。
@@ -228,16 +265,10 @@ Magento_ConfigurableProduct::product/price/final_price.phtml
 ```
 
 
-### `tier_price`
-
-
-### `wishlist_configured_price`
-
-
 
 ## 捆绑产品
 
-
+`Magento_Bundle::etc/di.xml`
 
 ```xml
 <type name="Magento\Framework\Pricing\PriceInfo\Factory">
@@ -252,12 +283,62 @@ Magento_ConfigurableProduct::product/price/final_price.phtml
 </type>
 ```
 
-`Magento_Bundle::product/price/final_price.phtml`
+```xml
+<virtualType name="Magento\Bundle\Pricing\Price\Collection" type="Magento\Framework\Pricing\Price\Collection">
+    <arguments>
+        <argument name="pool" xsi:type="object">Magento\Bundle\Pricing\Price\Pool</argument>
+    </arguments>
+</virtualType>
+```
 
-`Magento\Bundle\Pricing\Render\FinalPriceBox`
+```xml
+<virtualType name="Magento\Bundle\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool">
+    <arguments>
+        <argument name="prices" xsi:type="array">
+            <item name="regular_price" xsi:type="string">Magento\Bundle\Pricing\Price\BundleRegularPrice</item>
+            <item name="final_price" xsi:type="string">Magento\Bundle\Pricing\Price\FinalPrice</item>
+            <item name="tier_price" xsi:type="string">Magento\Bundle\Pricing\Price\TierPrice</item>
+            <item name="special_price" xsi:type="string">Magento\Bundle\Pricing\Price\SpecialPrice</item>
+            <item name="custom_option_price" xsi:type="string">Magento\Catalog\Pricing\Price\CustomOptionPrice</item>
+            <item name="base_price" xsi:type="string">Magento\Catalog\Pricing\Price\BasePrice</item>
+            <item name="configured_price" xsi:type="string">Magento\Bundle\Pricing\Price\ConfiguredPrice</item>
+            <item name="configured_regular_price" xsi:type="string">Magento\Bundle\Pricing\Price\ConfiguredRegularPrice</item>
+            <item name="bundle_option" xsi:type="string">Magento\Bundle\Pricing\Price\BundleOptionPrice</item>
+            <item name="bundle_option_regular_price" xsi:type="string">Magento\Bundle\Pricing\Price\BundleOptionRegularPrice</item>
+            <item name="catalog_rule_price" xsi:type="string">Magento\CatalogRule\Pricing\Price\CatalogRulePrice</item>
+        </argument>
+    </arguments>
+</virtualType>
+```
+
+`Magento_Msrp::etc/di.xml`
+
+```xml
+<virtualType name="Magento\Bundle\Pricing\Price\Pool">
+    <arguments>
+        <argument name="prices" xsi:type="array">
+            <item name="msrp_price" xsi:type="string">Magento\Msrp\Pricing\Price\MsrpPrice</item>
+        </argument>
+    </arguments>
+</virtualType>
+```
+
+`Magento_Wishlist::etc/di.xml`
+
+```xml
+<virtualType name="Magento\Bundle\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool">
+    <arguments>
+        <argument name="prices" xsi:type="array">
+            <item name="wishlist_configured_price" xsi:type="string">Magento\Bundle\Pricing\Price\ConfiguredPrice</item>
+        </argument>
+    </arguments>
+</virtualType>
+```
 
 
 ## 组合产品
+
+`Magento_GroupedProduct::etc/di.xml`
 
 ```xml
 <type name="Magento\Framework\Pricing\PriceInfo\Factory">
@@ -272,14 +353,43 @@ Magento_ConfigurableProduct::product/price/final_price.phtml
 </type>
 ```
 
-`Magento_GroupedProduct::product/price/final_price.phtml`
+```xml
+<virtualType name="Magento\GroupedProduct\Pricing\Price\Collection" type="Magento\Framework\Pricing\Price\Collection">
+    <arguments>
+        <argument name="pool" xsi:type="object">Magento\GroupedProduct\Pricing\Price\Pool</argument>
+    </arguments>
+</virtualType>
+```
 
-`Magento\Catalog\Pricing\Render\FinalPriceBox`
+```xml
+<virtualType name="Magento\GroupedProduct\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool">
+    <arguments>
+        <argument name="prices" xsi:type="array">
+            <item name="final_price" xsi:type="string">Magento\GroupedProduct\Pricing\Price\FinalPrice</item>
+            <item name="configured_price" xsi:type="string">Magento\GroupedProduct\Pricing\Price\ConfiguredPrice</item>
+            <item name="configured_regular_price" xsi:type="string">Magento\GroupedProduct\Pricing\Price\ConfiguredRegularPrice</item>
+        </argument>
+        <argument name="target" xsi:type="object">Magento\Catalog\Pricing\Price\Pool</argument>
+    </arguments>
+</virtualType>
+```
+
+`Magento_Wishlist::etc/di.xml`
+
+```xml
+<virtualType name="Magento\GroupedProduct\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool">
+    <arguments>
+        <argument name="prices" xsi:type="array">
+            <item name="wishlist_configured_price" xsi:type="string">Magento\GroupedProduct\Pricing\Price\ConfiguredPrice</item>
+        </argument>
+    </arguments>
+</virtualType>
+```
 
 
 ## 可下载产品
 
-
+`Magento_Downloadable::etc/di.xml`
 
 ```xml
 <type name="Magento\Framework\Pricing\PriceInfo\Factory">
@@ -294,11 +404,41 @@ Magento_ConfigurableProduct::product/price/final_price.phtml
 </type>
 ```
 
+```xml
+<virtualType name="Magento\Downloadable\Pricing\Price\Collection" type="Magento\Framework\Pricing\Price\Collection">
+    <arguments>
+        <argument name="pool" xsi:type="object">Magento\Downloadable\Pricing\Price\Pool</argument>
+    </arguments>
+</virtualType>
+```
+
+```xml
+<virtualType name="Magento\Downloadable\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool">
+    <arguments>
+        <argument name="prices" xsi:type="array">
+            <item name="link_price" xsi:type="string">Magento\Downloadable\Pricing\Price\LinkPrice</item>
+        </argument>
+        <argument name="target" xsi:type="object">Magento\Catalog\Pricing\Price\Pool</argument>
+    </arguments>
+</virtualType>
+```
+
+`Magento_Wishlist::etc/di.xml`
+
+```xml
+<virtualType name="Magento\Downloadable\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool">
+    <arguments>
+        <argument name="prices" xsi:type="array">
+            <item name="wishlist_configured_price" xsi:type="string">Magento\Wishlist\Pricing\ConfiguredPrice\Downloadable</item>
+        </argument>
+    </arguments>
+</virtualType>
+```
 
 
 ## 礼金券
 
-
+`Magento_GiftCard::etc/di.xml`
 
 ```xml
 <type name="Magento\Framework\Pricing\PriceInfo\Factory">
@@ -313,6 +453,31 @@ Magento_ConfigurableProduct::product/price/final_price.phtml
 </type>
 ```
 
-`Magento_GiftCard::product/price/final_price.phtml`
+```xml
+<virtualType name="Magento\GiftCard\Pricing\Price\Collection" type="Magento\Framework\Pricing\Price\Collection">
+    <arguments>
+        <argument name="pool" xsi:type="object">Magento\GiftCard\Pricing\Price\Pool</argument>
+    </arguments>
+</virtualType>
+```
 
-`Magento\GiftCard\Pricing\Render\FinalPriceBox`
+```xml
+<virtualType name="Magento\GiftCard\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool">
+    <arguments>
+        <argument name="prices" xsi:type="array">
+            <item name="regular_price" xsi:type="string">Magento\Catalog\Pricing\Price\RegularPrice</item>
+            <item name="final_price" xsi:type="string">Magento\GiftCard\Pricing\Price\FinalPrice</item>
+            <item name="tier_price" xsi:type="string">Magento\Catalog\Pricing\Price\TierPrice</item>
+            <item name="special_price" xsi:type="string">Magento\Catalog\Pricing\Price\SpecialPrice</item>
+            <item name="msrp_price" xsi:type="string">Magento\Msrp\Pricing\Price\MsrpPrice</item>
+            <item name="custom_option_price" xsi:type="string">Magento\Catalog\Pricing\Price\CustomOptionPrice</item>
+            <item name="base_price" xsi:type="string">Magento\Catalog\Pricing\Price\BasePrice</item>
+            <item name="configured_price" xsi:type="string">Magento\GiftCard\Pricing\Price\ConfiguredPrice</item>
+            <item name="configured_regular_price" xsi:type="string">Magento\Bundle\Pricing\Price\ConfiguredRegularPrice</item>
+            <item name="bundle_option" xsi:type="string">Magento\Bundle\Pricing\Price\BundleOptionPrice</item>
+            <item name="bundle_option_regular_price" xsi:type="string">Magento\Bundle\Pricing\Price\BundleOptionRegularPrice</item>
+            <item name="wishlist_configured_price" xsi:type="string">Magento\GiftCard\Pricing\Price\ConfiguredPrice</item>
+        </argument>
+    </arguments>
+</virtualType>
+```
