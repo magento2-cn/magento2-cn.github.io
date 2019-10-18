@@ -46,7 +46,7 @@ $_SERVER['MAGE_PROFILER'] = 'html';
 \Magento\Framework\Profiler::reset();
 $portionProfileDriver = ( new \Magento\Framework\Profiler\Driver\Factory )
     ->create( [ 'output' => 'csvfile', 'baseDir' => BP ] );
-\Magento\Framework\Profiler::add( $profileDriver );
+\Magento\Framework\Profiler::add( $portionProfileDriver );
 ```
 
 在需要追踪的代码结束后加入：
