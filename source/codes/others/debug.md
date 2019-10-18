@@ -20,6 +20,45 @@ catch ( \Exception $ex ) {
 ```
 
 
+## 追踪执行时间和内存使用状况
+
+### 全局追踪
+
+在索引文件（index.php 或 pub/index.php）的 `try {` 前添加如下代码：
+
+```php
+$_SERVER['MAGE_PROFILER'] = 'html';
+```
+
+有如下可选值：
+
+- ***html*** - 直接将结果输出到页面底部
+- ***csvfile*** - 将结果输出到 var/log/profiler.csv
+- ***firebug*** - 将结果输出到 Firebug
+
+### 局部追踪
+
+使用以下方法可以将部分代码的执行时间和内存使用状况记录到 var/log/profiler.csv，并不影响整个程序的运行。
+
+在需要追踪的代码开始前加入：
+
+```php
+\Magento\Framework\Profiler::reset();
+$portionProfileDriver = ( new \Magento\Framework\Profiler\Driver\Factory )
+    ->create( [ 'output' => 'csvfile', 'baseDir' => BP ] );
+\Magento\Framework\Profiler::add( $profileDriver );
+```
+
+在需要追踪的代码结束后加入：
+
+```php
+$portionProfileDriver->display();
+\Magento\Framework\Profiler::disable();
+```
+
+*p.s. 一旦使用局部追踪，全局追踪就会失效。*
+
+
 ## 通过定制 Helper 记录任意类型变量
 
 类似于 Model 的 `debug` 方法
@@ -147,21 +186,6 @@ class Debug {
 ```
 
 `$print` 为 true 时直接打印结果，否则将内容记录到 system.log 文件中。
-
-
-## 追踪执行时间和内存使用状况
-
-在索引文件（index.php 或 pub/index.php）的 `try {` 前添加如下代码：
-
-```php
-$_SERVER['MAGE_PROFILER'] = 'html';
-```
-
-有如下可选值：
-
-- ***html*** - 直接将结果输出到页面底部
-- ***csvfile*** - 将结果输出到 var/log/profiler.csv
-- ***firebug*** - 将结果输出到 Firebug
 
 
 ## 在正式站 Debug
