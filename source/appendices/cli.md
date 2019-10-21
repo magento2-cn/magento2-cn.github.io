@@ -161,5 +161,5 @@ source database_source_file.sql;
 ### 导出数据
 
 ```sh
-mysqldump -h host -u root -p database > database_source_file.sql
+mysqldump -h localhost -u root -p magento > database_source_file.sql
 ```
