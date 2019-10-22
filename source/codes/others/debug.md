@@ -7,7 +7,7 @@
 ```
 
 
-## 追踪当前代码的位置
+## 追踪当前代码的路径
 
 ```php
 try {
@@ -38,25 +38,32 @@ $_SERVER['MAGE_PROFILER'] = 'html';
 
 ### 局部追踪
 
-使用以下方法可以将部分代码的执行时间和内存使用状况记录到 var/log/profiler.csv，并不影响整个程序的运行。
-
-在需要追踪的代码开始前加入：
+使用以下方法可以将部分代码的执行时间和内存使用状况记录到 var/log/profiler.csv，并不影响整个程序的运行：
 
 ```php
 \Magento\Framework\Profiler::reset();
 $portionProfileDriver = ( new \Magento\Framework\Profiler\Driver\Factory )
     ->create( [ 'output' => 'csvfile', 'baseDir' => BP ] );
 \Magento\Framework\Profiler::add( $portionProfileDriver );
-```
 
-在需要追踪的代码结束后加入：
+// 需要追踪的代码
 
-```php
 $portionProfileDriver->display();
 \Magento\Framework\Profiler::disable();
 ```
 
 *p.s. 一旦使用局部追踪，全局追踪就会失效。*
+
+
+如果安装了 Xdebug，还可以使用 [`xdebug_start_trace`] (https://xdebug.org/docs/execution_trace) 方法以获得更详尽的代码追踪信息：
+
+```php
+xdebug_start_trace( BP . '/var/log/xdebug-trace', XDEBUG_TRACE_APPEND );
+
+// 需要追踪的代码
+
+xdebug_stop_trace();
+```
 
 
 ## 通过定制 Helper 记录任意类型变量
