@@ -38,6 +38,11 @@
                 "name": "resources",
                 "title": "文件路径和 URL",
                 "href": "codes/others/resources.html"
+            },
+            {
+                "name": "custom-index",
+                "title": "自定义入口文件",
+                "href": "codes/others/custom-index.html"
             }
         ]
     }
