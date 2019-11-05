@@ -200,7 +200,7 @@ class A
 }
 ```
 
-我们需要插件 APlugin 中用到私有方法 internal，可以这样写：
+当我们需要在插件 APlugin 中用到私有方法 internal，可以这样写：
 
 ```php
 class APlugin
