@@ -177,3 +177,42 @@ public function aroundSave(
 3. 按 `sortOrder` 值从小到大顺序执行插件的其他 before 侦听方法
 4. 按 `sortOrder` 值从小到大顺序执行插件的其他 around 侦听方法
 5. 按 `sortOrder` 值从大到小顺序执行插件的 after 侦听方法
+
+
+### 通过插件重写私有方法
+
+Magento 原生插件仅支持对公共方法的修改，但我们可以利用 php 的闭包特性变相达到修改私有方法的目的。
+
+比如，有一原生类 A 的公共方法 external 中用到私有方法 internal ：
+
+```php
+class A {
+
+    private function internal( $paramI1, $paramI2, ... ) {
+        ...
+    }
+
+    public function external( $paramE1, $paramE2, ... ) {
+        $this->inernal();
+    }
+}
+```
+
+我们需要通过插件 APlugin 修改私有方法的内容，可以这样写：
+
+```php
+class APlugin {
+
+    static public function internal( A $subject, $paramI1, $paramI2, ... ) {
+        return ( function () use ( $paramI1, $paramI2, ... ) {
+            ...
+        } )->call( $subject );
+    }
+
+    public aroundExternal( A $subject, \Closure $processed, $paramE1, $paramE2, ... ) {
+        return ( function () use ( $paramE1, $paramE2, ... ) {
+            APlugin::internal( $subject, $paramI1, $paramI2, ... );
+        } )->call( $subject );
+    }
+}
+```
