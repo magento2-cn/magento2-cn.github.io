@@ -179,39 +179,38 @@ public function aroundSave(
 5. 按 `sortOrder` 值从大到小顺序执行插件的 after 侦听方法
 
 
-### 通过插件重写私有方法
+## 插件的一些应用技巧
 
-Magento 原生插件仅支持对公共方法的修改，但我们可以利用 php 的闭包特性变相达到修改私有方法的目的。
+### 使用原生类的私有方法
 
-比如，有一原生类 A 的公共方法 external 中用到私有方法 internal ：
+Magento 原生插件仅支持对公共方法的修改，且传参的形式让我们无法直接使用其实例的私有方法。但通过利用 php 的闭包特性，我们可以达到使用私有方法的目的。比如，有一原生类 A 的公共方法 external 中用到私有方法 internal ：
 
 ```php
-class A {
-
-    private function internal( $paramI1, $paramI2, ... ) {
+class A
+{
+    private function internal( $paramI1, $paramI2, ... )
+    {
         ...
     }
 
-    public function external( $paramE1, $paramE2, ... ) {
-        $this->inernal();
+    public function external( $paramE1, $paramE2, ... )
+    {
+        ...
+        $this->inernal( $paramI1, $paramI2, ... );
     }
 }
 ```
 
-我们需要通过插件 APlugin 修改私有方法的内容，可以这样写：
+我们需要插件 APlugin 中用到私有方法 internal，可以这样写：
 
 ```php
-class APlugin {
-
-    static public function internal( A $subject, $paramI1, $paramI2, ... ) {
-        return ( function () use ( $paramI1, $paramI2, ... ) {
-            ...
-        } )->call( $subject );
-    }
-
-    public aroundExternal( A $subject, \Closure $processed, $paramE1, $paramE2, ... ) {
+class APlugin
+{
+    public aroundExternal( A $subject, \Closure $processed, $paramE1, $paramE2, ... )
+    {
         return ( function () use ( $paramE1, $paramE2, ... ) {
-            APlugin::internal( $subject, $paramI1, $paramI2, ... );
+            ...
+            $this->inernal( $paramI1, $paramI2, ... );
         } )->call( $subject );
     }
 }
