@@ -195,7 +195,6 @@ class A
 
     public function external( $paramE1, $paramE2, ... )
     {
-        ...
         $this->inernal( $paramI1, $paramI2, ... );
     }
 }
@@ -209,8 +208,30 @@ class APlugin
     public aroundExternal( A $subject, \Closure $processed, $paramE1, $paramE2, ... )
     {
         return ( function () use ( $paramE1, $paramE2, ... ) {
-            ...
             $this->inernal( $paramI1, $paramI2, ... );
+        } )->call( $subject );
+    }
+}
+```
+
+或者
+
+```php
+class APlugin
+{
+    static public internal( A $subject, $paramI1, $paramI2, ... )
+    {
+        return ( function () use ( $paramI1, $paramI2, ... ) {
+            // sth. to do before running inernal
+            $this->inernal( $paramI1, $paramI2, ... );
+            // sth. to do after running inernal
+        } )->call( $subject );
+    }
+
+    public aroundExternal( A $subject, \Closure $processed, $paramE1, $paramE2, ... )
+    {
+        return ( function () use ( $paramE1, $paramE2, ... ) {
+            APlugin::internal( $subject, $paramI1, $paramI2, ... );
         } )->call( $subject );
     }
 }
