@@ -29,7 +29,7 @@
 body { background:#f6f6f9; background-size:cover; color:#333; font:15px/24px Arial, Helvetica, sans-serif; }
 
 input.input-text,
-textarea.input-text { border:1px solid #ddd; border-radius:3px; box-sizing:border-box; color:#333; font:14px/20px Consolas, Helvetica, Arial, sans-serif; padding:10px 15px; white-space:nowrap; width:100%; }
+textarea.input-text { background:#f6f6f9; border:1px solid #ddd; border-radius:3px; box-sizing:border-box; color:#333; font:14px/20px Consolas, Helvetica, Arial, sans-serif; padding:10px 15px; white-space:nowrap; width:100%; }
 textarea.input-text { padding:15px; }
 button span { display:block; font:14px/20px Consolas, Helvetica, Arial, sans-serif; padding:5px 20px; text-transform:uppercase; }
 
