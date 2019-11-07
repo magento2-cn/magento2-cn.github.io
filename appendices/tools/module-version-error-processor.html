@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>组件版本错误处理器 - Magento 2 笔记</title>
+    <base href="/" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+    <meta name="keywords" content="Magento,Magento 2,windows,常用工具,tool" />
+    <meta name="description" content="记录一切与 Magento 2 使用和开发相关的内容，包括使用指南、常用代码、异常处理、运维优化等等。" />
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico" />
+    <link rel="stylesheet" type="text/css" media="all" href="web/css/style.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="web/css/jquery.mCustomScrollbar.min.css" />
+</head>
+<body class="tools">
+<header></header>
+<style>
+</style>
+<main>
+    <aside></aside>
+    <article>
+        <h1>组件版本错误处理器</h1>
+        <div class="source-wrapper wrapper">
+        <textarea name="source" class="input-text"
+                  placeholder="复制组件版本错误信息到这里，自动转换成 MySQL 更新语句"></textarea>
+        </div>
+        <div class="dist-wrapper wrapper">
+            <textarea name="dist" class="input-text" placeholder="结果在这里显示"></textarea>
+        </div>
+    </article>
+</main>
+<footer></footer>
+<script type="text/javascript">
+
+    let compareVersion = function( currentVersion, requiredVersion ) {
+        let cvParts = currentVersion.split( '.' ), rvParts = requiredVersion.split( '.' );
+        let minLength = Math.min( cvParts.length, rvParts.length ), position = 0, diff;
+        while ( position < minLength
+        && ((diff = parseInt( cvParts[position] ) - parseInt( rvParts[position] )) === 0) ) {
+            position++;
+        }
+        diff = (diff !== 0) ? diff : (cvParts.length - rvParts.length);
+        return diff > 0 ? 1 : (diff === 0 ? 0 : -1);
+    };
+
+    let arrayUnique = function( array ) {
+        let newArray = [];
+        for ( let i = 0; i < array.length; i++ ) {
+            if ( newArray.indexOf( array[i] ) === -1 ) {
+                newArray.push( array[i] );
+            }
+        }
+        return newArray;
+    };
+
+    document.getElementsByName( 'source' )[0].oninput = function() {
+        let arrSource = this.value.split( '\n' );
+        let arrDist = [];
+        for ( let r = 0; r < arrSource.length; r++ ) {
+            let match = arrSource[r].match( /^(.+) db (.+) version: defined in codebase \- ([\d\.]+), currently installed \- ([\d\.]+)/ );
+            if ( !match ) {
+                continue;
+            }
+            let moduleName = match[1];
+            let type = match[2];
+            let requiredVersion = match[3];
+            let currentVersion = match[4];
+            if ( compareVersion( currentVersion, requiredVersion ) === 1 ) {
+                arrDist.push( 'UPDATE `setup_module` SET `' + type + '_version` = \'' + requiredVersion + '\' WHERE `module` = \'' + moduleName + '\';' );
+            }
+        }
+        document.getElementsByName( 'dist' )[0].value = arrayUnique( arrDist ).join( '\n' );
+    };
+
+</script>
+<script type="text/javascript" src="web/js/require.js"></script>
+<script type="text/javascript" src="web/js/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+[
+    {
+        "name": "tools",
+        "title": "常用工具",
+        "href": "appendices/tools",
+        "children": [
+            {
+                "name": "module-version-error-processor",
+                "title": "组件版本错误处理器",
+                "href": "appendices/tools/module-version-error-processor.html"
+            },
+            {
+                "name": "trace-filter",
+                "title": "追踪信息过滤器",
+                "href": "appendices/tools/trace-filter.html"
+            },
+            {
+                "name": "json-formatter",
+                "title": "JSON 处理",
+                "href": "appendices/tools/json-processor.html"
+            }
+        ]
+    }
+]

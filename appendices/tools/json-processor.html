@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JSON 处理 - Magento 2 笔记</title>
+    <base href="/" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+    <meta name="keywords" content="Magento,Magento 2,windows,常用工具,tool" />
+    <meta name="description" content="记录一切与 Magento 2 使用和开发相关的内容，包括使用指南、常用代码、异常处理、运维优化等等。" />
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico" />
+    <link rel="stylesheet" type="text/css" media="all" href="web/css/style.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="web/css/jquery.mCustomScrollbar.min.css" />
+</head>
+<body class="tools">
+<header></header>
+<style>
+    .section.decode .wrapper { height:200px; }
+    .section.format .wrapper { height:400px; }
+    .section:after { clear:both; content:''; display:table; height:0; }
+    .source-wrapper { float:left; padding:0 10px 0 0; width:50%; }
+    .dist-wrapper { float:left; width:50%; }
+</style>
+<main>
+    <aside></aside>
+    <article>
+        <h1>JSON 处理</h1>
+        <div class="section decode">
+            <div class="source-wrapper wrapper">
+                <textarea id="source1" class="input-text" placeholder="解码源"></textarea>
+            </div>
+            <div class="dist-wrapper wrapper">
+                <textarea id="result1" class="input-text" placeholder="解码结果" readonly="readonly"></textarea>
+            </div>
+        </div>
+        <div class="section format">
+            <div class="source-wrapper wrapper">
+                <textarea id="source2" class="input-text" placeholder="格式化源"></textarea>
+            </div>
+            <div class="dist-wrapper wrapper">
+                <textarea id="result2" class="input-text" placeholder="格式化结果" readonly="readonly"></textarea>
+            </div>
+        </div>
+    </article>
+</main>
+<footer></footer>
+
+<script>
+    let updateResult1 = function() {
+        let source = document.getElementById( 'source1' ).value;
+        try {
+            document.getElementById( 'result1' ).innerHTML = JSON.parse( source );
+        }
+        catch ( ex ) {
+            document.getElementById( 'result1' ).innerHTML = '';
+        }
+    };
+
+    let updateResult2 = function() {
+        let source = document.getElementById( 'source2' ).value;
+        try {
+            document.getElementById( 'result2' ).innerHTML = JSON.stringify( JSON.parse( source ), null, 4 );
+        }
+        catch ( ex ) {
+            document.getElementById( 'result2' ).innerHTML = '';
+        }
+    };
+
+    document.getElementById( 'source1' ).oninput = updateResult1;
+    document.getElementById( 'source2' ).oninput = updateResult2;
+    document.getElementById( 'year' ).innerText = (new Date).getFullYear();
+</script>
+<script type="text/javascript" src="web/js/require.js"></script>
+<script type="text/javascript" src="web/js/site.js"></script>
+</body>
+</html>

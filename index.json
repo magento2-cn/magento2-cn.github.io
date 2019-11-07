@@ -91,6 +91,11 @@
                     "name": "cli",
                     "title": "常用命令及参数",
                     "href": "appendices/cli.html"
+                },
+                {
+                    "name": "tools",
+                    "title": "常用工具",
+                    "href": "appendices/tools"
                 }
             ]
         }
