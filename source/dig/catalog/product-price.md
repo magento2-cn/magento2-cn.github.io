@@ -265,7 +265,7 @@ Magento\CatalogInventory\Model\ResourceModel\Product\StockStatusBaseSelectProces
 Configurable 产品获取每种价格的执行过程当中都会用到 `Magento\ConfigurableProduct\Pricing\Price\LowestPriceOptionsProvider` 这个类，其作用是分别获取各类价格中最低价的那个子产品的 ID。
 
 
-### 最低价 `final_price`
+### 最终价格 `final_price`
 
 ```
 Magento_ConfigurableProduct::product/price/final_price.phtml
