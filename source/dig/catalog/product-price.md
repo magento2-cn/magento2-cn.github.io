@@ -190,6 +190,28 @@ Magento 通过以下两个 layout 定义了价格渲染器：
 </virtualType>
 ```
 
+### 关联产品的价格构建
+
+在 Magento 中，高级产品（可配置产品、捆绑产品等）都是由若干个相关联的基础产品（简单产品、虚拟产品等）组成。Catalog 组件为获取这些高级产品的价格，提供了基础的数据库语句构建方法：
+
+通过 Select Builder 创建 Select
+
+```php
+Magento\Catalog\Model\ResourceModel\Product\LinkedProductSelectBuilderByBasePrice
+Magento\Catalog\Model\ResourceModel\Product\LinkedProductSelectBuilderBySpecialPrice
+Magento\Catalog\Model\ResourceModel\Product\LinkedProductSelectBuilderByTierPrice
+Magento\Catalog\Model\ResourceModel\Product\Indexer\LinkedProductSelectBuilderByIndexPrice
+Magento\CatalogRule\Model\ResourceModel\Product\LinkedProductSelectBuilderByCatalogRulePrice
+```
+
+通过 Select Processor 加入过滤条件
+
+```php
+Magento\Catalog\Model\ResourceModel\Product\StatusBaseSelectProcessor
+Magento\Catalog\Model\ResourceModel\Product\Website\SelectProcessor
+Magento\CatalogInventory\Model\ResourceModel\Product\StockStatusBaseSelectProcessor
+```
+
 
 ## 可配置产品
 
