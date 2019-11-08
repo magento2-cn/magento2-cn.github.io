@@ -19,12 +19,9 @@
     <aside></aside>
     <article>
         <h1>组件版本错误处理器</h1>
-        <div class="source-wrapper wrapper">
-        <textarea name="source" class="input-text"
-                  placeholder="复制组件版本错误信息到这里，自动转换成 MySQL 更新语句"></textarea>
-        </div>
         <div class="dist-wrapper wrapper">
-            <textarea name="dist" class="input-text" placeholder="结果在这里显示"></textarea>
+            <textarea name="source" class="input-text"
+                      placeholder="复制组件版本错误信息到这里，自动转换成 MySQL 语句或 CLI 命令"></textarea>
         </div>
     </article>
 </main>
@@ -55,20 +52,44 @@
     document.getElementsByName( 'source' )[0].oninput = function() {
         let arrSource = this.value.split( '\n' );
         let arrDist = [];
+        let needUpgrade = false;
         for ( let r = 0; r < arrSource.length; r++ ) {
+            let moduleName, type, requiredVersion, currentVersion;
             let match = arrSource[r].match( /^(.+) db (.+) version: defined in codebase \- ([\d\.]+), currently installed \- ([\d\.]+)/ );
-            if ( !match ) {
-                continue;
+            if ( match ) {
+                moduleName = match[1];
+                type = match[2];
+                requiredVersion = match[3];
+                currentVersion = match[4];
             }
-            let moduleName = match[1];
-            let type = match[2];
-            let requiredVersion = match[3];
-            let currentVersion = match[4];
-            if ( compareVersion( currentVersion, requiredVersion ) === 1 ) {
-                arrDist.push( 'UPDATE `setup_module` SET `' + type + '_version` = \'' + requiredVersion + '\' WHERE `module` = \'' + moduleName + '\';' );
+            else {
+                match = arrSource[r].match( /^(.+) (.+): current version \- ([\d\.]+), required version \- ([\d\.]+)/ );
+                if ( !match ) {
+                    continue;
+                }
+                moduleName = match[1];
+                type = match[2];
+                requiredVersion = match[4];
+                currentVersion = match[3];
+            }
+            switch ( compareVersion( currentVersion, requiredVersion ) ) {
+                case 1 :
+                    arrDist.push( 'UPDATE `setup_module` SET `' + type + '_version` = \'' + requiredVersion + '\' WHERE `module` = \'' + moduleName + '\';' );
+                    break;
+                case -1 :
+                    needUpgrade = true;
+                    break;
             }
         }
-        document.getElementsByName( 'dist' )[0].value = arrayUnique( arrDist ).join( '\n' );
+        if ( needUpgrade ) {
+            if ( arrDist.length > 0 ) {
+                arrDist.unshift( 'MySQL:' )
+                arrDist.push( '' );
+            }
+            arrDist.push( 'CLI:' );
+            arrDist.push( 'php bin/magento setup:upgrade' );
+        }
+        document.getElementsByName( 'source' )[0].value = arrayUnique( arrDist ).join( '\n' );
     };
 
 </script>
