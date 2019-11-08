@@ -1,27 +1,23 @@
 @import 'jquery.mCustomScrollbar.min.css';
 
 @font-face {
-    font-family:'Awesome Solid';
-    font-style:normal;
-    font-weight:900;
-    src:url(../fonts/fa-solid-900.eot);
-    src:url(../fonts/fa-solid-900.eot?#iefix) format('embedded-opentype'),
-        url(../fonts/fa-solid-900.woff2) format('woff2'),
-        url(../fonts/fa-solid-900.woff) format('woff'),
-        url(../fonts/fa-solid-900.ttf) format('truetype'),
-        url(../fonts/fa-solid-900.svg#fontawesome) format('svg');
+    font-family:'Awesome Solid'; font-style:normal; font-weight:900;
+    src: url(../fonts/fa-solid-900.eot);
+    src: url(../fonts/fa-solid-900.eot?#iefix) format('embedded-opentype'),
+         url(../fonts/fa-solid-900.woff2) format('woff2'),
+         url(../fonts/fa-solid-900.woff) format('woff'),
+         url(../fonts/fa-solid-900.ttf) format('truetype'),
+         url(../fonts/fa-solid-900.svg#fontawesome) format('svg');
 }
 
 @font-face {
-    font-family:'Consolas';
-    font-style:normal;
-    font-weight:900;
-    src:url(../fonts/consolas.eot);
-    src:url(../fonts/consolas.eot?#iefix) format('embedded-opentype'),
-        url(../fonts/consolas.woff2) format('woff2'),
-        url(../fonts/consolas.woff) format('woff'),
-        url(../fonts/consolas.ttf) format('truetype'),
-        url(../fonts/consolas.svg#fontawesome) format('svg');
+    font-family:'Consolas'; font-style:normal; font-weight:900;
+    src: url(../fonts/consolas.eot);
+    src: url(../fonts/consolas.eot?#iefix) format('embedded-opentype'),
+         url(../fonts/consolas.woff2) format('woff2'),
+         url(../fonts/consolas.woff) format('woff'),
+         url(../fonts/consolas.ttf) format('truetype'),
+         url(../fonts/consolas.svg#fontawesome) format('svg');
 }
 
 * { box-sizing:border-box; margin:0; outline:none; padding:0; touch-action:pan-y; }
@@ -101,12 +97,12 @@ main > aside.top nav { max-height:100%; }
  * Atricle contents
  */
 article { background:#fff; box-shadow:0 0 5px #999; color:#333; margin-left:260px; min-height:800px; padding:70px 20px 80px; position:relative; z-index:2; }
-article h1 { color:#666699; font-size:30px; font-weight:normal; line-height:32px; margin:28px 0 30px; }
+article h1 { color:#666699; font-size:30px; font-weight:normal; line-height:32px; margin-bottom:20px; padding:28px 0 10px; }
 article.has-content h1,
 article.has-content .content { width:calc( 100% - 320px ); }
-article .content h2 { color:#666699; font-size:26px; font-weight:normal; line-height:28px; margin:24px 0 20px; }
-article .content h3 { color:#666699; font-size:22px; font-weight:normal; line-height:24px; margin:24px 0 16px; }
-article .content h4 { color:#666699; font-size:18px; font-weight:normal; line-height:22px; margin:20px 0 16px; }
+article .content h2 { color:#666699; font-size:26px; font-weight:normal; line-height:28px; padding:24px 0 20px; }
+article .content h3 { color:#666699; font-size:22px; font-weight:normal; line-height:24px; padding:24px 0 16px; }
+article .content h4 { color:#666699; font-size:18px; font-weight:normal; line-height:22px; padding:20px 0 16px; }
 article .content a { color:#222; border-bottom:1px solid #545454; text-decoration:none; }
 article .content a:hover { border:0; }
 article .content p { margin:0 0 16px; }
