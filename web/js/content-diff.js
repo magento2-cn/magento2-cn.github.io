@@ -33,6 +33,7 @@ define( [
                 elemId: null,
                 comparerWidth: 80,
                 height: 600,
+                lineHeight: 20,
                 theme: 'ace/theme/chrome',
                 mode: 'ace/mode/javascript'
             }, options );
@@ -148,10 +149,14 @@ define( [
 
         highlight( action, startLine, startCol, endLine, endCol ) {
 
-            startLine = startLine - 1;
+            /*startLine = startLine - 1;
             startCol = (startCol === undefined) ? 0 : (startCol - 1);
             endLine = (endLine === undefined) ? startLine : (endLine - 1);
-            endCol = (endCol === undefined) ? Infinity : (endCol - 1);
+            endCol = (endCol === undefined) ? Infinity : (endCol - 1);*/
+            startLine--;
+            startCol--;
+            endLine--;
+            endCol--;
 
             let editor, clazz,
                 type = (endCol === Infinity) ? 'fullLine' : 'line';
@@ -162,10 +167,6 @@ define( [
             else {
                 editor = this.editorOrg;
                 clazz = 'diff_remove';
-            }
-
-            if ( endCol !== Infinity ) {
-                console.log( startLine + ':' + startCol + ', ' + endLine + ':' + endCol );
             }
 
             let range = new Range( startLine, startCol, endLine, endCol );
@@ -179,6 +180,36 @@ define( [
             for ( let i = 0; i < this.markerIds[CONTENT_DIFF.ACTION_ADD].length; i++ ) {
                 this.editorNew.getSession().removeMarker( this.markerIds[CONTENT_DIFF.ACTION_ADD][i] );
             }
+        }
+
+        /**
+         * Create the curve position it at the initial x,y coords
+         * This is of the form 'C M,N O,P Q,R' where
+         * - C is a directive for SVG ('curveto')
+         * - M,N are the first curve control point
+         * - O,P the second control point
+         * - Q,R are the final coords
+         */
+        getCurve( startX, startY, endX, endY ) {
+            let w = endX - startX;
+            let halfWidth = startX + (w / 2);
+            return `M ${startX} ${startY} C ${halfWidth},${startY} ${halfWidth},${endY} ${endX},${endY}`;
+        }
+
+        updateComparer( data ) {
+
+            this.elComparer.empty();
+
+            let lineHeight = this.editorOrg.renderer.lineHeight;
+            let lines = Math.max( this.editorOrg.getSession().getLength(), this.editorNew.getSession().getLength() );
+
+            let svg = $( '<svg></svg>' )
+                .appendTo( this.elComparer )
+                .css( {
+                    display: 'block',
+                    height: (lineHeight * lines) + 'px',
+                    width: '100%'
+                } );
         }
 
         doCompare() {
@@ -196,7 +227,8 @@ define( [
             };
 
             let currentOrgCol = 1, currentOrgLine = 1,
-                currentNewCol = 1, currentNewLine = 1;
+                currentNewCol = 1, currentNewLine = 1,
+                comparerInfo = [];
             for ( let d = 0; d < result.length; d++ ) {
 
                 if ( result[d][0] === CONTENT_DIFF.DIFF_EQUAL ) {
@@ -209,39 +241,31 @@ define( [
                 }
 
                 else if ( result[d][0] === CONTENT_DIFF.DIFF_DELETE ) {
-                    let startCol = currentOrgCol, hasLineBreak = false;
+                    let startCol = currentOrgCol, startLine = currentOrgLine;
                     for ( let i = 0; i < result[d][1].length; i++ ) {
                         currentOrgCol++;
                         if ( result[d][1][i] === '\n' ) {
-                            this.highlight( CONTENT_DIFF.ACTION_REMOVE, currentOrgLine, startCol, currentOrgLine, currentOrgCol );
                             currentOrgLine++;
-                            this.highlight( CONTENT_DIFF.ACTION_REMOVE, currentOrgLine );
                             currentOrgCol = 0;
-                            hasLineBreak = true;
                         }
                     }
-                    if ( !hasLineBreak && currentOrgCol > startCol ) {
-                        this.highlight( CONTENT_DIFF.ACTION_REMOVE, currentOrgLine, startCol, currentOrgLine, currentOrgCol );
-                    }
+                    this.highlight( CONTENT_DIFF.ACTION_ADD, startLine, startCol, currentOrgLine, currentOrgCol );
                 }
 
                 else if ( result[d][0] === CONTENT_DIFF.DIFF_INSERT ) {
-                    let startCol = currentNewCol, hasLineBreak = false;
+                    let startCol = currentNewCol, startLine = currentNewLine;
                     for ( let i = 0; i < result[d][1].length; i++ ) {
                         currentNewCol++;
                         if ( result[d][1][i] === '\n' ) {
-                            this.highlight( CONTENT_DIFF.ACTION_ADD, currentNewLine, startCol, currentNewLine, currentNewCol );
                             currentNewLine++;
-                            this.highlight( CONTENT_DIFF.ACTION_ADD, currentNewLine );
                             currentNewCol = 0;
-                            hasLineBreak = true;
                         }
                     }
-                    if ( !hasLineBreak && currentNewCol > startCol ) {
-                        this.highlight( CONTENT_DIFF.ACTION_ADD, currentNewLine, startCol, currentNewLine, currentNewCol );
-                    }
+                    this.highlight( CONTENT_DIFF.ACTION_ADD, startLine, startCol, currentNewLine, currentNewCol + 1 );
                 }
             }
+
+            this.updateComparer( comparerInfo );
         }
 
     }
