@@ -15,6 +15,11 @@
                 "href": "appendices/tools/trace-filter.html"
             },
             {
+                "name": "content-diff",
+                "title": "文本差异比较",
+                "href": "appendices/tools/content-diff.html"
+            },
+            {
                 "name": "json-formatter",
                 "title": "JSON 处理",
                 "href": "appendices/tools/json-processor.html"

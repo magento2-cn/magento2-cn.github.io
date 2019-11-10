@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>常用工具 - Magento 2 笔记</title>
+        <title>文本差异比较 - Magento 2 笔记</title>
         <base href="/" />
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
@@ -11,22 +11,22 @@
         <link rel="stylesheet" type="text/css" media="all" href="web/css/style.css" />
         <link rel="stylesheet" type="text/css" media="all" href="web/css/jquery.mCustomScrollbar.min.css" />
     </head>
-    <body>
+    <body class="tools content-diff">
         <header></header>
         <main>
             <aside></aside>
             <article>
-                <h1>常用工具</h1>
-                <pre id="article-source">
-- [组件版本错误处理器](appendices/tools/module-version-error-processor.html)
-- [追踪信息过滤器](appendices/tools/trace-filter.html)
-- [文本差异比较](appendices/tools/content-diff.html)
-- [JSON 处理](appendices/tools/json-processor.html)
-                </pre>
+                <h1>文本差异比较</h1>
+                <div id="content-diff" class="content-diff-wrapper"></div>
             </article>
         </main>
         <footer></footer>
         <script type="text/javascript" src="web/js/require.js"></script>
         <script type="text/javascript" src="web/js/site.js"></script>
+        <script type="text/javascript">
+            require( [ 'web/js/content-diff' ], function( contentDiff ) {
+                contentDiff( { elemId: 'content-diff' } );
+            } );
+        </script>
     </body>
 </html>
