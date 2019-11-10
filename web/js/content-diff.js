@@ -85,6 +85,8 @@ define( [
                         $( 'body' ).css( { overflow: 'hidden' } );
                         $( this ).addClass( 'is_full' );
                     }
+                    self.editorOrg.resize();
+                    self.editorNew.resize();
                 } );
 
             $( '<a href="javascript:;" class="button btn-compare"><span>Compare</span></a>' )
