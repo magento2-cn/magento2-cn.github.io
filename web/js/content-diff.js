@@ -141,25 +141,22 @@ define( [
             this.editorOrg = ace.edit( this.elEditorOrg.attr( 'id' ) );
             this.editorOrg.setTheme( this.opts.theme );
             this.editorOrg.getSession().setMode( this.opts.mode );
+            this.editorOrg.getSession().on( 'changeScrollTop', this.updateComparer.bind( this ) );
 
             this.editorNew = ace.edit( this.elEditorNew.attr( 'id' ) );
             this.editorNew.setTheme( this.opts.theme );
             this.editorNew.getSession().setMode( this.opts.mode );
+            this.editorNew.getSession().on( 'changeScrollTop', this.updateComparer.bind( this ) );
         }
 
         highlight( action, startLine, startCol, endLine, endCol ) {
 
-            /*startLine = startLine - 1;
-            startCol = (startCol === undefined) ? 0 : (startCol - 1);
-            endLine = (endLine === undefined) ? startLine : (endLine - 1);
-            endCol = (endCol === undefined) ? Infinity : (endCol - 1);*/
             startLine--;
             startCol--;
             endLine--;
             endCol--;
 
-            let editor, clazz,
-                type = (endCol === Infinity) ? 'fullLine' : 'line';
+            let editor, clazz;
             if ( action === CONTENT_DIFF.ACTION_ADD ) {
                 editor = this.editorNew;
                 clazz = 'diff_add';
@@ -170,7 +167,7 @@ define( [
             }
 
             let range = new Range( startLine, startCol, endLine, endCol );
-            this.markerIds[action].push( editor.getSession().addMarker( range, clazz, type ) );
+            this.markerIds[action].push( editor.getSession().addMarker( range, clazz ) );
         }
 
         cleanStage() {
@@ -191,81 +188,141 @@ define( [
          * - Q,R are the final coords
          */
         getCurve( startX, startY, endX, endY ) {
-            let w = endX - startX;
-            let halfWidth = startX + (w / 2);
-            return `M ${startX} ${startY} C ${halfWidth},${startY} ${halfWidth},${endY} ${endX},${endY}`;
+            let middleX = startX + (endX - startX) / 2;
+            return `M ${startX} ${startY} C ${middleX},${startY} ${middleX},${endY} ${endX},${endY}`;
         }
 
-        updateComparer( data ) {
+        /**
+         * pointOrgStart --- pointNewStart
+         *
+         * pointOrgEnd --- pointNewEnd
+         */
+        updateComparer() {
 
+            if ( !this.elComparer ) {
+                return;
+            }
             this.elComparer.empty();
 
+            let data = this.comparerInfo || [];
             let lineHeight = this.editorOrg.renderer.lineHeight;
             let lines = Math.max( this.editorOrg.getSession().getLength(), this.editorNew.getSession().getLength() );
+            let orgScrollTop = this.editorOrg.getSession().getScrollTop();
+            let newScrollTop = this.editorNew.getSession().getScrollTop();
 
-            let svg = $( '<svg></svg>' )
+            let svg = $( '<svg width="' + this.opts.comparerWidth + '" height="' + (lineHeight * lines) + '"></svg>' )
                 .appendTo( this.elComparer )
-                .css( {
-                    display: 'block',
-                    height: (lineHeight * lines) + 'px',
-                    width: '100%'
-                } );
+                .css( { display: 'block' } );
+
+            // act, start, org, new
+            for ( let i = 0; i < data.length; i++ ) {
+
+                let orgStartLine = (data[i][0] === CONTENT_DIFF.ACTION_REMOVE) ? data[i][1] : data[i][2];
+                let orgEndLine = data[i][2];
+                let newStartLine = (data[i][0] === CONTENT_DIFF.ACTION_Add) ? data[i][1] : data[i][3];
+                let newEndLine = data[i][3];
+
+                let pointOrgStartX = 0;
+                let pointOrgStartY = orgStartLine * lineHeight - orgScrollTop;
+
+                let pointOrgEndX = 0;
+                let pointOrgEndY = orgEndLine * lineHeight - orgScrollTop;
+
+                let pointNewStartX = this.opts.comparerWidth;
+                let pointNewStartY = newStartLine * lineHeight - newScrollTop;
+
+                let pointNewEndX = this.opts.comparerWidth;
+                let pointNewEndY = newEndLine * lineHeight - newScrollTop;
+
+                let curve1 = this.getCurve( pointOrgStartX, pointOrgStartY, pointNewStartX, pointNewStartY );
+                let curve2 = this.getCurve( pointNewEndX, pointNewEndY, pointOrgEndX, pointOrgEndY );
+
+                let verticalLine1 = `L${pointNewStartX},${pointNewStartY} ${pointNewEndX},${pointNewEndY}`;
+                let verticalLine2 = `L${pointOrgEndX},${pointOrgEndY} ${pointOrgStartX},${pointOrgStartY}`;
+
+                const el = document.createElementNS( 'http://www.w3.org/2000/svg', 'path' );
+                el.setAttribute( 'd', `${curve1} ${verticalLine1} ${curve2} ${verticalLine2}` );
+                el.setAttribute( 'class', data[i][0] );
+                svg.get( 0 ).appendChild( el );
+            }
+        }
+
+        getDiffs( contentOrg, contentNew ) {
+            return diff.diff_main( contentOrg, contentNew );
+        }
+
+        /**
+         * @see https://github.com/google/diff-match-patch/wiki/Line-or-Word-Diffs
+         */
+        getLineModeDiffs( contentOrg, contentNew ) {
+            let tmp = diff.diff_linesToChars_( contentOrg, contentNew );
+            let diffs = diff.diff_main( tmp.chars1, tmp.chars2, false );
+            diff.diff_charsToLines_( diffs, tmp.lineArray );
+            return diffs;
         }
 
         doCompare() {
             this.cleanStage();
+            this.comparerInfo = [];
 
-            let result = diff.diff_main( this.editorOrg.getSession().getValue(), this.editorNew.getSession().getValue() );
-
-            console.log( this.editorNew );
-            console.log( this.editorNew.getSession() );
-            console.log( result );
+            let contentOrg = this.editorOrg.getSession().getValue(),
+                contentNew = this.editorNew.getSession().getValue();
+            let resultLineMode = this.getLineModeDiffs( contentOrg, contentNew );
+            let result = this.getDiffs( contentOrg, contentNew );
 
             let countLines = function( str ) {
                 let result = str.match( /\n/g );
                 return !result ? 0 : result.length;
             };
 
-            let currentOrgCol = 1, currentOrgLine = 1,
-                currentNewCol = 1, currentNewLine = 1,
-                comparerInfo = [];
-            for ( let d = 0; d < result.length; d++ ) {
+            let currentOrgCol, currentOrgLine = 1,
+                currentNewCol, currentNewLine = 1;
+            for ( let d = 0; d < resultLineMode.length; d++ ) {
+                let lines = countLines( resultLineMode[d][1] );
+                if ( resultLineMode[d][0] === CONTENT_DIFF.DIFF_EQUAL ) {
+                    currentOrgLine += lines;
+                    currentNewLine += lines;
+                }
+                else if ( resultLineMode[d][0] === CONTENT_DIFF.DIFF_DELETE ) {
+                    let startLine = currentOrgLine;
+                    currentOrgLine += lines;
+                    this.comparerInfo.push( [ CONTENT_DIFF.ACTION_REMOVE, startLine, currentOrgLine, currentNewLine ] );
+                }
+                else if ( resultLineMode[d][0] === CONTENT_DIFF.DIFF_INSERT ) {
+                    let startLine = currentNewLine;
+                    currentNewLine += lines;
+                    this.comparerInfo.push( [ CONTENT_DIFF.ACTION_ADD, startLine, currentOrgLine, currentNewLine ] );
+                }
+            }
 
+            currentOrgCol = 1, currentOrgLine = 1,
+                currentNewCol = 1, currentNewLine = 1;
+            for ( let d = 0; d < result.length; d++ ) {
+                let lines = countLines( result[d][1] ),
+                    chars = lines > 0 ? (result[d][1].length - result[d][1].lastIndexOf( '\n' )) : result[d][1].length;
                 if ( result[d][0] === CONTENT_DIFF.DIFF_EQUAL ) {
-                    let lines = countLines( result[d][1] ),
-                        chars = lines > 0 ? (result[d][1].length - result[d][1].lastIndexOf( '\n' )) : result[d][1].length;
                     currentOrgLine += lines;
                     currentOrgCol = lines > 0 ? chars : (currentOrgLine + chars);
                     currentNewLine += lines;
                     currentNewCol = lines > 0 ? chars : (currentOrgLine + chars);
                 }
-
                 else if ( result[d][0] === CONTENT_DIFF.DIFF_DELETE ) {
-                    let startCol = currentOrgCol, startLine = currentOrgLine;
-                    for ( let i = 0; i < result[d][1].length; i++ ) {
-                        currentOrgCol++;
-                        if ( result[d][1][i] === '\n' ) {
-                            currentOrgLine++;
-                            currentOrgCol = 0;
-                        }
-                    }
-                    this.highlight( CONTENT_DIFF.ACTION_ADD, startLine, startCol, currentOrgLine, currentOrgCol );
+                    let startLine = currentOrgLine,
+                        startCol = currentOrgCol;
+                    currentOrgLine += lines;
+                    currentOrgCol = lines > 0 ? chars : (currentOrgLine + chars);
+                    this.highlight( CONTENT_DIFF.ACTION_REMOVE, startLine, startCol, currentOrgLine, currentOrgCol );
                 }
-
                 else if ( result[d][0] === CONTENT_DIFF.DIFF_INSERT ) {
-                    let startCol = currentNewCol, startLine = currentNewLine;
-                    for ( let i = 0; i < result[d][1].length; i++ ) {
-                        currentNewCol++;
-                        if ( result[d][1][i] === '\n' ) {
-                            currentNewLine++;
-                            currentNewCol = 0;
-                        }
-                    }
-                    this.highlight( CONTENT_DIFF.ACTION_ADD, startLine, startCol, currentNewLine, currentNewCol + 1 );
+                    let startLine = currentNewLine,
+                        startCol = currentNewCol;
+                    currentNewLine += lines;
+                    currentNewCol = lines > 0 ? chars : (currentOrgLine + chars);
+                    this.highlight( CONTENT_DIFF.ACTION_ADD, startLine, startCol, currentNewLine, currentNewCol );
                 }
             }
 
-            this.updateComparer( comparerInfo );
+            this.updateComparer();
         }
 
     }
