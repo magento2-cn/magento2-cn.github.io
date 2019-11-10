@@ -217,31 +217,23 @@ define( [
 
             // act, start, org, new
             for ( let i = 0; i < data.length; i++ ) {
-
                 let orgStartLine = (data[i][0] === CONTENT_DIFF.ACTION_REMOVE) ? data[i][1] : data[i][2];
                 let orgEndLine = data[i][2];
-                let newStartLine = (data[i][0] === CONTENT_DIFF.ACTION_Add) ? data[i][1] : data[i][3];
+                let newStartLine = (data[i][0] === CONTENT_DIFF.ACTION_ADD) ? data[i][1] : data[i][3];
                 let newEndLine = data[i][3];
-
                 let pointOrgStartX = 0;
                 let pointOrgStartY = orgStartLine * lineHeight - orgScrollTop;
-
                 let pointOrgEndX = 0;
                 let pointOrgEndY = orgEndLine * lineHeight - orgScrollTop;
-
                 let pointNewStartX = this.opts.comparerWidth;
                 let pointNewStartY = newStartLine * lineHeight - newScrollTop;
-
                 let pointNewEndX = this.opts.comparerWidth;
                 let pointNewEndY = newEndLine * lineHeight - newScrollTop;
-
                 let curve1 = this.getCurve( pointOrgStartX, pointOrgStartY, pointNewStartX, pointNewStartY );
                 let curve2 = this.getCurve( pointNewEndX, pointNewEndY, pointOrgEndX, pointOrgEndY );
-
                 let verticalLine1 = `L${pointNewStartX},${pointNewStartY} ${pointNewEndX},${pointNewEndY}`;
                 let verticalLine2 = `L${pointOrgEndX},${pointOrgEndY} ${pointOrgStartX},${pointOrgStartY}`;
-
-                const el = document.createElementNS( 'http://www.w3.org/2000/svg', 'path' );
+                let el = document.createElementNS( 'http://www.w3.org/2000/svg', 'path' );
                 el.setAttribute( 'd', `${curve1} ${verticalLine1} ${curve2} ${verticalLine2}` );
                 el.setAttribute( 'class', data[i][0] );
                 svg.get( 0 ).appendChild( el );
@@ -269,7 +261,8 @@ define( [
             let contentOrg = this.editorOrg.getSession().getValue(),
                 contentNew = this.editorNew.getSession().getValue();
             let resultLineMode = this.getLineModeDiffs( contentOrg, contentNew );
-            let result = this.getDiffs( contentOrg, contentNew );
+            //let result = this.getDiffs( contentOrg, contentNew );
+            let result = this.getLineModeDiffs( contentOrg, contentNew );
 
             let countLines = function( str ) {
                 let result = str.match( /\n/g );
@@ -291,7 +284,7 @@ define( [
                 else if ( resultLineMode[d][0] === CONTENT_DIFF.DIFF_INSERT ) {
                     let startLine = currentNewLine;
                     currentNewLine += lines;
-                    this.comparerInfo.push( [ CONTENT_DIFF.ACTION_ADD, startLine, currentOrgLine, currentNewLine ] );
+                    this.comparerInfo.push( [ CONTENT_DIFF.ACTION_ADD, startLine - 1, currentOrgLine, currentNewLine - 1 ] );
                 }
             }
 
