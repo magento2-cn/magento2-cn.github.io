@@ -8,13 +8,22 @@ define( [
      * @see https://github.com/ajaxorg/ace/wiki/Configuring-Ace
      * @see https://github.com/ajaxorg/ace/wiki/Embedding-API
      */
-    let ace = window.ace;
+    const ace = window.ace;
+    const { Range } = ace.require( 'ace/range' );
 
     /**
      * @see https://github.com/google/diff-match-patch/wiki
      * @see https://github.com/google/diff-match-patch/wiki/Language:-JavaScript
      */
-    let diff = new diff_match_patch();
+    const diff = new diff_match_patch();
+
+    const CONTENT_DIFF = {
+        DIFF_EQUAL: 0,
+        DIFF_DELETE: -1,
+        DIFF_INSERT: 1,
+        ACTION_ADD: 'add',
+        ACTION_REMOVE: 'remove'
+    }
 
     class ContentDiff {
 
@@ -34,6 +43,10 @@ define( [
             this.element = $( '<div class="content-diff"></div>' )
                 .appendTo( this.elWrapper )
                 .css( { height: '100%' } );
+
+            this.markerIds = {};
+            this.markerIds[CONTENT_DIFF.ACTION_ADD] = [];
+            this.markerIds[CONTENT_DIFF.ACTION_REMOVE] = [];
 
             this.buildToolbar();
             this.buildContainer();
@@ -76,7 +89,7 @@ define( [
 
             $( '<a href="javascript:;" class="button btn-compare"><span>Compare</span></a>' )
                 .appendTo( this.elToolbar )
-                .on( 'click', this.doCompare );
+                .on( 'click', this.doCompare.bind( self ) );
         }
 
         buildContainer() {
@@ -124,15 +137,90 @@ define( [
 
             this.editorOrg = ace.edit( this.elEditorOrg.attr( 'id' ) );
             this.editorOrg.setTheme( this.opts.theme );
-            this.editorOrg.session.setMode( this.opts.mode );
+            this.editorOrg.getSession().setMode( this.opts.mode );
 
             this.editorNew = ace.edit( this.elEditorNew.attr( 'id' ) );
             this.editorNew.setTheme( this.opts.theme );
-            this.editorNew.session.setMode( this.opts.mode );
+            this.editorNew.getSession().setMode( this.opts.mode );
+        }
+
+        highlight( action, startLine, startCol, endLine, endCol ) {
+            startCol = startCol || 0;
+            endLine = endLine || startLine;
+            endCol = endCol || Infinity;
+
+            let editor, clazz,
+                type = endCol === Infinity ? 'fullLine' : 'line';
+            if ( action === CONTENT_DIFF.ACTION_ADD ) {
+                editor = this.editorNew;
+                clazz = 'diff_add';
+            }
+            else {
+                editor = this.editorOrg;
+                clazz = 'diff_remove';
+            }
+
+            let range = new Range( startLine, startCol, endLine, endCol );
+            this.markerIds[action].push( editor.getSession().addMarker( range, clazz, type ) );
+        }
+
+        cleanStage() {
+            for ( let i = 0; i < this.markerIds[CONTENT_DIFF.ACTION_REMOVE].length; i++ ) {
+                this.editorOrg.getSession().removeMarker( this.markerIds[CONTENT_DIFF.ACTION_REMOVE][i] );
+            }
+            for ( let i = 0; i < this.markerIds[CONTENT_DIFF.ACTION_ADD].length; i++ ) {
+                this.editorNew.getSession().removeMarker( this.markerIds[CONTENT_DIFF.ACTION_ADD][i] );
+            }
         }
 
         doCompare() {
+            this.cleanStage();
 
+            let result = diff.diff_main( this.editorOrg.getSession().getValue(), this.editorNew.getSession().getValue() );
+
+            console.log( this.editorNew );
+            console.log( this.editorNew.getSession() );
+            console.log( result );
+
+            let countLines = function( str ) {
+                let result = str.match( /\n/g );
+                return !result ? 0 : result.length;
+            };
+
+            let currentOrgCol = 1, currentOrgLine = 1,
+                currentNewCol = 1, currentNewLine = 1;
+            for ( let d = 0; d < result.length; d++ ) {
+                if ( result[d][0] === CONTENT_DIFF.DIFF_EQUAL ) {
+                    let lines = countLines( result[d][1] ),
+                        chars = lines > 0 ? (result[d][1].length - result[d][1].lastIndexOf( '\n' )) : result[d][1].length;
+                    currentOrgLine += lines;
+                    currentOrgCol = lines > 0 ? chars : (currentOrgLine + chars);
+                    currentNewLine += lines;
+                    currentNewCol = lines > 0 ? chars : (currentOrgLine + chars);
+                }
+                else if ( result[d][0] === CONTENT_DIFF.DIFF_DELETE ) {
+                    let startCol = currentOrgCol;
+                    for ( let i = 0; i < result[d][1].length; i++ ) {
+                        currentOrgCol++;
+                        if ( result[d][1][i] === '\n' ) {
+                            this.highlight( CONTENT_DIFF.ACTION_REMOVE, currentOrgLine );
+                            currentOrgLine++;
+                            currentOrgCol = 0;
+                        }
+                    }
+                }
+                else if ( result[d][0] === CONTENT_DIFF.DIFF_INSERT ) {
+                    let startCol = currentNewCol;
+                    for ( let i = 0; i < result[d][1].length; i++ ) {
+                        currentNewCol++;
+                        if ( result[d][1][i] === '\n' ) {
+                            this.highlight( CONTENT_DIFF.ACTION_ADD, currentNewLine );
+                            currentNewLine++;
+                            currentNewCol = 0;
+                        }
+                    }
+                }
+            }
         }
 
     }
