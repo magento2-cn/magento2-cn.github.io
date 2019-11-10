@@ -145,12 +145,14 @@ define( [
         }
 
         highlight( action, startLine, startCol, endLine, endCol ) {
-            startCol = startCol || 0;
-            endLine = endLine || startLine;
-            endCol = endCol || Infinity;
+
+            startLine = startLine - 1;
+            startCol = (startCol === undefined) ? 0 : (startCol - 1);
+            endLine = (endLine === undefined) ? startLine : (endLine - 1);
+            endCol = (endCol === undefined) ? Infinity : (endCol - 1);
 
             let editor, clazz,
-                type = endCol === Infinity ? 'fullLine' : 'line';
+                type = (endCol === Infinity) ? 'fullLine' : 'line';
             if ( action === CONTENT_DIFF.ACTION_ADD ) {
                 editor = this.editorNew;
                 clazz = 'diff_add';
@@ -158,6 +160,10 @@ define( [
             else {
                 editor = this.editorOrg;
                 clazz = 'diff_remove';
+            }
+
+            if ( endCol !== Infinity ) {
+                console.log( startLine + ':' + startCol + ', ' + endLine + ':' + endCol );
             }
 
             let range = new Range( startLine, startCol, endLine, endCol );
@@ -190,6 +196,7 @@ define( [
             let currentOrgCol = 1, currentOrgLine = 1,
                 currentNewCol = 1, currentNewLine = 1;
             for ( let d = 0; d < result.length; d++ ) {
+
                 if ( result[d][0] === CONTENT_DIFF.DIFF_EQUAL ) {
                     let lines = countLines( result[d][1] ),
                         chars = lines > 0 ? (result[d][1].length - result[d][1].lastIndexOf( '\n' )) : result[d][1].length;
@@ -198,26 +205,38 @@ define( [
                     currentNewLine += lines;
                     currentNewCol = lines > 0 ? chars : (currentOrgLine + chars);
                 }
+
                 else if ( result[d][0] === CONTENT_DIFF.DIFF_DELETE ) {
-                    let startCol = currentOrgCol;
+                    let startCol = currentOrgCol, hasLineBreak = false;
                     for ( let i = 0; i < result[d][1].length; i++ ) {
                         currentOrgCol++;
                         if ( result[d][1][i] === '\n' ) {
-                            this.highlight( CONTENT_DIFF.ACTION_REMOVE, currentOrgLine );
+                            this.highlight( CONTENT_DIFF.ACTION_REMOVE, currentOrgLine, startCol, currentOrgLine, currentOrgCol );
                             currentOrgLine++;
+                            this.highlight( CONTENT_DIFF.ACTION_REMOVE, currentOrgLine );
                             currentOrgCol = 0;
+                            hasLineBreak = true;
                         }
                     }
+                    if ( !hasLineBreak && currentOrgCol > startCol ) {
+                        this.highlight( CONTENT_DIFF.ACTION_REMOVE, currentOrgLine, startCol, currentOrgLine, currentOrgCol );
+                    }
                 }
+
                 else if ( result[d][0] === CONTENT_DIFF.DIFF_INSERT ) {
-                    let startCol = currentNewCol;
+                    let startCol = currentNewCol, hasLineBreak = false;
                     for ( let i = 0; i < result[d][1].length; i++ ) {
                         currentNewCol++;
                         if ( result[d][1][i] === '\n' ) {
-                            this.highlight( CONTENT_DIFF.ACTION_ADD, currentNewLine );
+                            this.highlight( CONTENT_DIFF.ACTION_ADD, currentNewLine, startCol, currentNewLine, currentNewCol );
                             currentNewLine++;
+                            this.highlight( CONTENT_DIFF.ACTION_ADD, currentNewLine );
                             currentNewCol = 0;
+                            hasLineBreak = true;
                         }
+                    }
+                    if ( !hasLineBreak && currentNewCol > startCol ) {
+                        this.highlight( CONTENT_DIFF.ACTION_ADD, currentNewLine, startCol, currentNewLine, currentNewCol );
                     }
                 }
             }
