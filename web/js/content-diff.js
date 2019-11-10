@@ -130,7 +130,8 @@ define( [
                 .css( {
                     height: '100%',
                     width: this.opts.comparerWidth,
-                    order: 2
+                    order: 2,
+                    overflow: 'hidden'
                 } );
 
             this.initEditor();
@@ -275,8 +276,7 @@ define( [
                 return !result ? 0 : result.length;
             };
 
-            let currentOrgCol, currentOrgLine = 1,
-                currentNewCol, currentNewLine = 1;
+            let currentOrgLine = 1, currentNewLine = 1;
             for ( let d = 0; d < resultLineMode.length; d++ ) {
                 let lines = countLines( resultLineMode[d][1] );
                 if ( resultLineMode[d][0] === CONTENT_DIFF.DIFF_EQUAL ) {
@@ -286,7 +286,7 @@ define( [
                 else if ( resultLineMode[d][0] === CONTENT_DIFF.DIFF_DELETE ) {
                     let startLine = currentOrgLine;
                     currentOrgLine += lines;
-                    this.comparerInfo.push( [ CONTENT_DIFF.ACTION_REMOVE, startLine, currentOrgLine, currentNewLine ] );
+                    this.comparerInfo.push( [ CONTENT_DIFF.ACTION_REMOVE, startLine - 1, currentOrgLine - 1, currentNewLine ] );
                 }
                 else if ( resultLineMode[d][0] === CONTENT_DIFF.DIFF_INSERT ) {
                     let startLine = currentNewLine;
@@ -295,8 +295,8 @@ define( [
                 }
             }
 
-            currentOrgCol = 1, currentOrgLine = 1,
-                currentNewCol = 1, currentNewLine = 1;
+            let currentOrgCol = 1, currentNewCol = 1;
+            currentOrgLine = 1, currentNewLine = 1;
             for ( let d = 0; d < result.length; d++ ) {
                 let lines = countLines( result[d][1] ),
                     chars = lines > 0 ? (result[d][1].length - result[d][1].lastIndexOf( '\n' )) : result[d][1].length;
