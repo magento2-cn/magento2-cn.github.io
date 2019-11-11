@@ -260,15 +260,14 @@ define( [
 
         doCompare() {
             this.cleanStage();
-            this.comparerInfo = [];
 
             let contentOrg = this.editorOrg.getSession().getValue(),
                 contentNew = this.editorNew.getSession().getValue();
-            let resultLineMode = this.getLineModeDiffs( contentOrg, contentNew );
-            //let result = this.getDiffs( contentOrg, contentNew );
-            let result = this.getLineModeDiffs( contentOrg, contentNew );
 
-            let countLines = function( str ) {
+            let result = this.getLineModeDiffs( contentOrg, contentNew ),
+                resultLineMode = result;
+
+            const countLines = function( str ) {
                 let result = str.match( /\n/g );
                 return !result ? 0 : result.length;
             };
@@ -276,6 +275,7 @@ define( [
             /**
              * Collect comparer info
              */
+            this.comparerInfo = [];
             let currentOrgLine = 1, currentNewLine = 1;
             for ( let d = 0; d < resultLineMode.length; d++ ) {
                 let lines = countLines( resultLineMode[d][1] );
