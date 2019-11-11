@@ -36,7 +36,7 @@ define( [
                 height: 600,
                 lineHeight: 20,
                 theme: 'ace/theme/chrome',
-                mode: 'ace/mode/javascript'
+                mode: 'ace/mode/php'
             }, options );
 
             this.elWrapper = $( '#' + this.opts.elemId )
@@ -141,26 +141,21 @@ define( [
         initEditor() {
 
             this.editorOrg = ace.edit( this.elEditorOrg.attr( 'id' ) );
-            this.editorOrg.setTheme( this.opts.theme );
-            this.editorOrg.getSession().setMode( this.opts.mode );
-            this.editorOrg.getSession().on( 'changeScrollTop', this.updateComparer.bind( this ) );
-            this.editorOrg.on( 'paste', function( context, editor ) {
-                let language = highlight.highlightAuto( context.text ).language;
-                if ( language ) {
-                    editor.getSession().setMode( 'ace/mode/' + language );
-                }
-            } );
-
             this.editorNew = ace.edit( this.elEditorNew.attr( 'id' ) );
-            this.editorNew.setTheme( this.opts.theme );
-            this.editorNew.getSession().setMode( this.opts.mode );
-            this.editorNew.getSession().on( 'changeScrollTop', this.updateComparer.bind( this ) );
-            this.editorOrg.on( 'paste', function( context, editor ) {
-                let language = highlight.highlightAuto( context.text ).language;
-                if ( language ) {
-                    editor.getSession().setMode( 'ace/mode/' + language );
-                }
-            } );
+
+            let editors = { org: this.editorOrg, new: this.editorNew };
+            for ( let key in editors ) {
+                editors[key].getSession().setMode( this.opts.mode );
+                editors[key].getSession().on( 'changeScrollTop', this.updateComparer.bind( this ) );
+                editors[key].setTheme( this.opts.theme );
+                editors[key].on( 'paste', function( context, editor ) {
+                    let language = highlight.highlightAuto( context.text ).language;
+                    if ( language ) {
+                        console.log( language );
+                        editor.getSession().setMode( 'ace/mode/' + language );
+                    }
+                } );
+            }
         }
 
         highlight( action, startLine, startCol, endLine, endCol ) {
@@ -208,8 +203,11 @@ define( [
 
         /**
          * pointOrgStart --- pointNewStart
-         *
          * pointOrgEnd --- pointNewEnd
+         *
+         * Thanks to ace-diff
+         *
+         * @see https://github.com/ace-diff/ace-diff
          */
         updateComparer() {
 
