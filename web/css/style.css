@@ -191,6 +191,10 @@ body.content-diff .content-diff .container .ace_marker-layer .diff_remove { back
 body.content-diff .content-diff .container .comparer { border-left:1px solid #ddd; border-right:1px solid #ddd; }
 body.content-diff .content-diff .container .comparer .add { fill:#bef0be; }
 body.content-diff .content-diff .container .comparer .remove { fill:#ffc8c8; }
+body.content-diff .content-diff .container .indexer .pointer { padding:1px 3px 1px 0; }
+body.content-diff .content-diff .container .indexer .pointer:before { border:1px solid #aaa; border-radius:2px; content:''; display:block; height:100%; width:100% }
+body.content-diff .content-diff .container .indexer .box .add { background:#00ff00; }
+body.content-diff .content-diff .container .indexer .box .remove { background:#ff0000; }
 
 
 @media only screen and (max-width:768px) {

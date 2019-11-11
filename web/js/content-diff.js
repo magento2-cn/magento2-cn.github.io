@@ -33,6 +33,7 @@ define( [
             this.opts = $.extend( true, {
                 elemId: null,
                 comparerWidth: 80,
+                indexerWidth: 10,
                 height: 600,
                 lineHeight: 20,
                 theme: 'ace/theme/chrome',
@@ -101,7 +102,8 @@ define( [
             let editorOrgId = this.opts.elemId + '-editor-org',
                 editorNewId = this.opts.elemId + '-editor-new',
                 comparerId = this.opts.elemId + '-comparer',
-                containerId = this.opts.elemId + '-container';
+                containerId = this.opts.elemId + '-container',
+                indexerId = this.opts.elemId + '-indexer';
 
             this.elContainer = $( '<div id="' + containerId + '" class="container"></div>' )
                 .appendTo( this.element )
@@ -114,7 +116,7 @@ define( [
                 .appendTo( this.elContainer )
                 .css( {
                     height: '100%',
-                    width: 'calc( ( 100% - ' + this.opts.comparerWidth + 'px ) / 2 )',
+                    width: 'calc( ( 100% - ' + (this.opts.comparerWidth + this.opts.indexerWidth) + 'px ) / 2 )',
                     order: 1
                 } );
 
@@ -122,7 +124,7 @@ define( [
                 .appendTo( this.elContainer )
                 .css( {
                     height: '100%',
-                    width: 'calc( ( 100% - ' + this.opts.comparerWidth + 'px ) / 2 )',
+                    width: 'calc( ( 100% - ' + (this.opts.comparerWidth + this.opts.indexerWidth) + 'px ) / 2 )',
                     order: 3
                 } );
 
@@ -135,18 +137,50 @@ define( [
                     overflow: 'hidden'
                 } );
 
+            let elIndexerPointer = $( '<div class="pointer"></div>' )
+                .css( {
+                    width: '100%',
+                    position: 'absolute',
+                    zIndex: 2
+                } );
+
+            let elIndexerBox = $( '<div class="box"></div>' )
+                .css( {
+                    height: '100%',
+                    width: '100%',
+                    position: 'relative',
+                    zIndex: 1
+                } );
+
+            this.elIndexer = $( '<div id="' + indexerId + '" class="indexer"></div>' )
+                .appendTo( this.elContainer )
+                .append( elIndexerPointer ).append( elIndexerBox )
+                .data( 'pointer', elIndexerPointer ).data( 'box', elIndexerBox )
+                .css( {
+                    height: '100%',
+                    width: this.opts.indexerWidth,
+                    position: 'relative',
+                    order: 4
+                } );
+
             this.initEditor();
         }
 
         initEditor() {
 
+            const self = this;
+
             this.editorOrg = ace.edit( this.elEditorOrg.attr( 'id' ) );
             this.editorNew = ace.edit( this.elEditorNew.attr( 'id' ) );
+            this.editorNew.renderer.on( 'resize', function() {
+                self.updateIndexer();
+                self.updateScrollTop();
+            } );
 
             let editors = { org: this.editorOrg, new: this.editorNew };
             for ( let key in editors ) {
                 editors[key].getSession().setMode( this.opts.mode );
-                editors[key].getSession().on( 'changeScrollTop', this.updateComparer.bind( this ) );
+                editors[key].getSession().on( 'changeScrollTop', this.updateScrollTop.bind( this ) );
                 editors[key].setTheme( this.opts.theme );
                 editors[key].on( 'paste', function( context, editor ) {
                     let language = highlight.highlightAuto( context.text ).language;
@@ -160,11 +194,10 @@ define( [
                             language = 'html';
                         }
                         if ( !/^\s*</.test( context.text )
-                            && /^\n*#{1,4} ?.*/.test( context.text )
+                            && /(\n+)#{1,4} ?.\n*/.test( context.text )
                         ) {
                             language = 'markdown';
                         }
-                        console.log( language );
                         editor.getSession().setMode( 'ace/mode/' + language );
                     }
                 } );
@@ -229,7 +262,7 @@ define( [
             }
             this.elComparer.empty();
 
-            let data = this.comparerInfo || [];
+            let data = this.diffLineBlocks || [];
             let lineHeight = this.editorOrg.renderer.lineHeight;
             let lines = Math.max( this.editorOrg.getSession().getLength(), this.editorNew.getSession().getLength() );
             let orgScrollTop = this.editorOrg.getSession().getScrollTop();
@@ -240,7 +273,7 @@ define( [
                 .css( { display: 'block' } );
 
             /**
-             * @var data [ [ action, startLine, currentOrgLine, currentNewLine ] ]
+             * @var diffData [ [ action, startLine, currentOrgLine, currentNewLine ] ]
              */
             for ( let i = 0; i < data.length; i++ ) {
                 let orgStartLine = (data[i][0] === CONTENT_DIFF.ACTION_REMOVE) ? data[i][1] : data[i][2];
@@ -266,6 +299,59 @@ define( [
                 el.setAttribute( 'class', data[i][0] );
                 svg.get( 0 ).appendChild( el );
             }
+        }
+
+        updateIndexer() {
+
+            if ( !this.diffLineBlocks ) {
+                return;
+            }
+
+            let lineHeight = this.editorOrg.renderer.lineHeight;
+            let linesOrg = this.editorOrg.getSession().getLength();
+            let linesNew = this.editorNew.getSession().getLength();
+            let linesIndexer = Math.max( linesOrg, linesNew );
+            let indexerHeight = Math.min( lineHeight * linesIndexer, this.elIndexer.innerHeight() );
+            let unitHeight = indexerHeight / linesIndexer;
+            let mainEditor = (linesOrg > linesNew) ? this.editorOrg : this.editorNew;
+            let visibleLines = mainEditor.renderer.getLastFullyVisibleRow() - mainEditor.renderer.getFirstVisibleRow();
+
+            this.elIndexer.data( 'pointer' ).css( { height: unitHeight * visibleLines } );
+            this.elIndexer.data( 'unit_height', unitHeight );
+            this.elIndexer.data( 'main_editor', mainEditor );
+
+            /**
+             * @var diffData [ [ action, startLine, currentOrgLine, currentNewLine ] ]
+             */
+            this.elIndexer.data( 'box' ).empty();
+            for ( let i = 0; i < this.diffLineBlocks.length; i++ ) {
+                let startLine = this.diffLineBlocks[i][1] - 1;
+                let endLine = (this.diffLineBlocks[i][0] === CONTENT_DIFF.ACTION_REMOVE
+                    ? this.diffLineBlocks[i][2] : this.diffLineBlocks[i][3]) - 1;
+                $( '<div></div>' ).appendTo( this.elIndexer.data( 'box' ) )
+                    .addClass( this.diffLineBlocks[i][0] )
+                    .css( {
+                        opacity: .3,
+                        position: 'absolute',
+                        height: unitHeight * (endLine - startLine) + 'px',
+                        width: 'calc( 100% - 2px )',
+                        left: '1px',
+                        top: unitHeight * startLine + 'px'
+                    } );
+            }
+        }
+
+        updateIndexerPointer() {
+            if ( !this.elIndexer.data( 'main_editor' ) ) {
+                return;
+            }
+            let top = this.elIndexer.data( 'unit_height' ) * this.elIndexer.data( 'main_editor' ).renderer.getFirstVisibleRow();
+            this.elIndexer.data( 'pointer' ).css( { top: top } );
+        }
+
+        updateScrollTop() {
+            this.updateComparer();
+            this.updateIndexerPointer();
         }
 
         getDiffs( contentOrg, contentNew ) {
@@ -299,7 +385,7 @@ define( [
             /**
              * Collect comparer info
              */
-            this.comparerInfo = [];
+            this.diffLineBlocks = [];
             let currentOrgLine = 1, currentNewLine = 1;
             for ( let d = 0; d < resultLineMode.length; d++ ) {
                 let lines = countLines( resultLineMode[d][1] );
@@ -310,12 +396,12 @@ define( [
                 else if ( resultLineMode[d][0] === CONTENT_DIFF.DIFF_DELETE ) {
                     let startLine = currentOrgLine;
                     currentOrgLine += lines;
-                    this.comparerInfo.push( [ CONTENT_DIFF.ACTION_REMOVE, startLine, currentOrgLine, currentNewLine ] );
+                    this.diffLineBlocks.push( [ CONTENT_DIFF.ACTION_REMOVE, startLine, currentOrgLine, currentNewLine ] );
                 }
                 else if ( resultLineMode[d][0] === CONTENT_DIFF.DIFF_INSERT ) {
                     let startLine = currentNewLine;
                     currentNewLine += lines;
-                    this.comparerInfo.push( [ CONTENT_DIFF.ACTION_ADD, startLine, currentOrgLine, currentNewLine ] );
+                    this.diffLineBlocks.push( [ CONTENT_DIFF.ACTION_ADD, startLine, currentOrgLine, currentNewLine ] );
                 }
             }
 
@@ -355,10 +441,11 @@ define( [
                 }
             }
 
-            this.updateComparer();
-
             this.editorOrg.gotoLine( firstDiffLineOrg );
             this.editorNew.gotoLine( firstDiffLineNew );
+
+            this.updateIndexer();
+            this.updateScrollTop();
         }
 
     }
