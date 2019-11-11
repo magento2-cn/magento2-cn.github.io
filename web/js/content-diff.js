@@ -1,8 +1,9 @@
 define( [
     'jquery',
+    'web/js/highlight.pack',
     'web/js/ace/ace',
     'web/js/diff_match_patch_uncompressed'
-], function( $ ) {
+], function( $, highlight ) {
 
     /**
      * @see https://github.com/ajaxorg/ace/wiki/Configuring-Ace
@@ -143,11 +144,23 @@ define( [
             this.editorOrg.setTheme( this.opts.theme );
             this.editorOrg.getSession().setMode( this.opts.mode );
             this.editorOrg.getSession().on( 'changeScrollTop', this.updateComparer.bind( this ) );
+            this.editorOrg.on( 'paste', function( context, editor ) {
+                let language = highlight.highlightAuto( context.text ).language;
+                if ( language ) {
+                    editor.getSession().setMode( 'ace/mode/' + language );
+                }
+            } );
 
             this.editorNew = ace.edit( this.elEditorNew.attr( 'id' ) );
             this.editorNew.setTheme( this.opts.theme );
             this.editorNew.getSession().setMode( this.opts.mode );
             this.editorNew.getSession().on( 'changeScrollTop', this.updateComparer.bind( this ) );
+            this.editorOrg.on( 'paste', function( context, editor ) {
+                let language = highlight.highlightAuto( context.text ).language;
+                if ( language ) {
+                    editor.getSession().setMode( 'ace/mode/' + language );
+                }
+            } );
         }
 
         highlight( action, startLine, startCol, endLine, endCol ) {
