@@ -151,6 +151,19 @@ define( [
                 editors[key].on( 'paste', function( context, editor ) {
                     let language = highlight.highlightAuto( context.text ).language;
                     if ( language ) {
+                        /**
+                         * Not accurate enough for the language detecting, needs further checking
+                         */
+                        if ( language === 'xml'
+                            && /(<\/?(html|head|body|link|script))|<\!DOCTYPE/.test( context.text )
+                        ) {
+                            language = 'html';
+                        }
+                        if ( !/^\s*</.test( context.text )
+                            && /\n*#{1,4} ?.*/.test( context.text )
+                        ) {
+                            language = 'markdown';
+                        }
                         console.log( language );
                         editor.getSession().setMode( 'ace/mode/' + language );
                     }
