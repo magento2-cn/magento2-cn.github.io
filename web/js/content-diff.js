@@ -215,24 +215,28 @@ define( [
                 .appendTo( this.elComparer )
                 .css( { display: 'block' } );
 
-            // act, start, org, new
+            /**
+             * @var data [ [ action, startLine, currentOrgLine, currentNewLine ] ]
+             */
             for ( let i = 0; i < data.length; i++ ) {
                 let orgStartLine = (data[i][0] === CONTENT_DIFF.ACTION_REMOVE) ? data[i][1] : data[i][2];
                 let orgEndLine = data[i][2];
                 let newStartLine = (data[i][0] === CONTENT_DIFF.ACTION_ADD) ? data[i][1] : data[i][3];
                 let newEndLine = data[i][3];
+
                 let pointOrgStartX = 0;
-                let pointOrgStartY = orgStartLine * lineHeight - orgScrollTop;
+                let pointOrgStartY = (orgStartLine - 1) * lineHeight - orgScrollTop;
                 let pointOrgEndX = 0;
-                let pointOrgEndY = orgEndLine * lineHeight - orgScrollTop;
+                let pointOrgEndY = (orgEndLine - 1) * lineHeight - orgScrollTop;
                 let pointNewStartX = this.opts.comparerWidth;
-                let pointNewStartY = newStartLine * lineHeight - newScrollTop;
+                let pointNewStartY = (newStartLine - 1) * lineHeight - newScrollTop;
                 let pointNewEndX = this.opts.comparerWidth;
-                let pointNewEndY = newEndLine * lineHeight - newScrollTop;
+                let pointNewEndY = (newEndLine - 1) * lineHeight - newScrollTop;
                 let curve1 = this.getCurve( pointOrgStartX, pointOrgStartY, pointNewStartX, pointNewStartY );
                 let curve2 = this.getCurve( pointNewEndX, pointNewEndY, pointOrgEndX, pointOrgEndY );
                 let verticalLine1 = `L${pointNewStartX},${pointNewStartY} ${pointNewEndX},${pointNewEndY}`;
                 let verticalLine2 = `L${pointOrgEndX},${pointOrgEndY} ${pointOrgStartX},${pointOrgStartY}`;
+
                 let el = document.createElementNS( 'http://www.w3.org/2000/svg', 'path' );
                 el.setAttribute( 'd', `${curve1} ${verticalLine1} ${curve2} ${verticalLine2}` );
                 el.setAttribute( 'class', data[i][0] );
@@ -269,6 +273,9 @@ define( [
                 return !result ? 0 : result.length;
             };
 
+            /**
+             * Collect comparer info
+             */
             let currentOrgLine = 1, currentNewLine = 1;
             for ( let d = 0; d < resultLineMode.length; d++ ) {
                 let lines = countLines( resultLineMode[d][1] );
@@ -279,16 +286,19 @@ define( [
                 else if ( resultLineMode[d][0] === CONTENT_DIFF.DIFF_DELETE ) {
                     let startLine = currentOrgLine;
                     currentOrgLine += lines;
-                    this.comparerInfo.push( [ CONTENT_DIFF.ACTION_REMOVE, startLine - 1, currentOrgLine - 1, currentNewLine ] );
+                    this.comparerInfo.push( [ CONTENT_DIFF.ACTION_REMOVE, startLine, currentOrgLine, currentNewLine ] );
                 }
                 else if ( resultLineMode[d][0] === CONTENT_DIFF.DIFF_INSERT ) {
                     let startLine = currentNewLine;
                     currentNewLine += lines;
-                    this.comparerInfo.push( [ CONTENT_DIFF.ACTION_ADD, startLine - 1, currentOrgLine, currentNewLine - 1 ] );
+                    this.comparerInfo.push( [ CONTENT_DIFF.ACTION_ADD, startLine, currentOrgLine, currentNewLine ] );
                 }
             }
 
-            let currentOrgCol = 1, currentNewCol = 1;
+            /**
+             * Add highlights
+             */
+            let currentOrgCol = 1, currentNewCol = 1, firstDiffLineOrg, firstDiffLineNew;
             currentOrgLine = 1, currentNewLine = 1;
             for ( let d = 0; d < result.length; d++ ) {
                 let lines = countLines( result[d][1] ),
@@ -300,22 +310,31 @@ define( [
                     currentNewCol = lines > 0 ? chars : (currentOrgLine + chars);
                 }
                 else if ( result[d][0] === CONTENT_DIFF.DIFF_DELETE ) {
-                    let startLine = currentOrgLine,
-                        startCol = currentOrgCol;
+                    let startLine = currentOrgLine, startCol = currentOrgCol;
                     currentOrgLine += lines;
                     currentOrgCol = lines > 0 ? chars : (currentOrgLine + chars);
                     this.highlight( CONTENT_DIFF.ACTION_REMOVE, startLine, startCol, currentOrgLine, currentOrgCol );
+                    if ( !firstDiffLineOrg ) {
+                        firstDiffLineOrg = startLine;
+                        firstDiffLineNew = currentNewLine;
+                    }
                 }
                 else if ( result[d][0] === CONTENT_DIFF.DIFF_INSERT ) {
-                    let startLine = currentNewLine,
-                        startCol = currentNewCol;
+                    let startLine = currentNewLine, startCol = currentNewCol;
                     currentNewLine += lines;
                     currentNewCol = lines > 0 ? chars : (currentOrgLine + chars);
                     this.highlight( CONTENT_DIFF.ACTION_ADD, startLine, startCol, currentNewLine, currentNewCol );
+                    if ( !firstDiffLineNew ) {
+                        firstDiffLineOrg = currentOrgLine;
+                        firstDiffLineNew = startLine;
+                    }
                 }
             }
 
             this.updateComparer();
+
+            this.editorOrg.gotoLine( firstDiffLineOrg );
+            this.editorNew.gotoLine( firstDiffLineNew );
         }
 
     }
@@ -324,4 +343,5 @@ define( [
         return new ContentDiff( options );
     };
 
-} );
+} )
+;
