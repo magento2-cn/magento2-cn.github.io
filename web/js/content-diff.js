@@ -160,7 +160,7 @@ define( [
                             language = 'html';
                         }
                         if ( !/^\s*</.test( context.text )
-                            && /\n*#{1,4} ?.*/.test( context.text )
+                            && /^\n*#{1,4} ?.*/.test( context.text )
                         ) {
                             language = 'markdown';
                         }
