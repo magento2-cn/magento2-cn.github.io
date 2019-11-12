@@ -186,8 +186,8 @@ body.content-diff .content-diff .toolbar a.btn-fullscreen span:before { content:
 body.content-diff .content-diff .toolbar a.btn-fullscreen.is_full span:before { content:'\f066'; }
 body.content-diff .content-diff .toolbar a.btn-compare span:before { content:'\f362'; }
 body.content-diff .content-diff .container .ace_scroller { background:#f6f6f9; }
-body.content-diff .content-diff .container .ace_marker-layer .diff_add { background:#bef0be; position:absolute; z-index:3; }
-body.content-diff .content-diff .container .ace_marker-layer .diff_remove { background:#ffc8c8; position:absolute; z-index:3; }
+body.content-diff .content-diff .container .ace_marker-layer .diff_add { background:#bef0be; position:absolute; z-index:1; }
+body.content-diff .content-diff .container .ace_marker-layer .diff_remove { background:#ffc8c8; position:absolute; z-index:1; }
 body.content-diff .content-diff .container .comparer { border-left:1px solid #ddd; border-right:1px solid #ddd; }
 body.content-diff .content-diff .container .comparer .add { fill:#bef0be; }
 body.content-diff .content-diff .container .comparer .remove { fill:#ffc8c8; }
