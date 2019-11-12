@@ -328,7 +328,12 @@ define( [
             this.elIndexer.data( 'scaleHeightOrg', (orgHeight - screenHeight) / (indexerHeight - pointerHeight) );
             this.elIndexer.data( 'scaleHeightNew', (newHeight - screenHeight) / (indexerHeight - pointerHeight) );
             this.elIndexer.data( 'scaleWidthOrg', (orgWidth - screenWidth) / (newWidth - screenWidth) );
-            this.elIndexer.data( 'main_editor', mainEditor );
+            this.elIndexer.data( 'orgHeight', orgHeight );
+            this.elIndexer.data( 'screenHeight', screenHeight );
+            this.elIndexer.data( 'orgWidth', orgWidth );
+            this.elIndexer.data( 'screenWidth', screenWidth );
+            this.elIndexer.data( 'mainEditor', mainEditor );
+            this.elIndexer.data( 'mainEditor', mainEditor );
 
             this.elIndexer.data( 'pointer' ).css( {
                 height: pointerHeight,
@@ -357,19 +362,23 @@ define( [
         }
 
         updateIndexerPointer() {
-            if ( !this.elIndexer.data( 'main_editor' ) ) {
+            if ( !this.elIndexer.data( 'mainEditor' ) ) {
                 return;
             }
-            let top = this.elIndexer.data( 'main_editor' ).getSession().getScrollTop() / Math.max( this.elIndexer.data( 'scaleHeightOrg' ), this.elIndexer.data( 'scaleHeightNew' ) );
+            let top = this.elIndexer.data( 'mainEditor' ).getSession().getScrollTop() / Math.max( this.elIndexer.data( 'scaleHeightOrg' ), this.elIndexer.data( 'scaleHeightNew' ) );
             this.elIndexer.data( 'pointer' ).css( { top: top } );
-            this.editorOrg.getSession().setScrollTop( top * this.elIndexer.data( 'scaleHeightOrg' ) );
+            if ( this.elIndexer.data( 'orgHeight' ) > this.elIndexer.data( 'screenHeight' ) ) {
+                this.editorOrg.getSession().setScrollTop( top * this.elIndexer.data( 'scaleHeightOrg' ) );
+            }
         }
 
         updateScrollLeft() {
-            if ( !this.elIndexer.data( 'main_editor' ) ) {
+            if ( !this.elIndexer.data( 'mainEditor' ) ) {
                 return;
             }
-            this.editorOrg.getSession().setScrollLeft( this.editorNew.getSession().getScrollLeft() * this.elIndexer.data( 'scaleWidthOrg' ) );
+            if ( this.elIndexer.data( 'orgWidth' ) > this.elIndexer.data( 'screenWidth' ) ) {
+                this.editorOrg.getSession().setScrollLeft( this.editorNew.getSession().getScrollLeft() * this.elIndexer.data( 'scaleWidthOrg' ) );
+            }
         }
 
         updateScrollTop() {
