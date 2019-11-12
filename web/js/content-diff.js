@@ -53,6 +53,8 @@ define( [
 
             this.buildToolbar();
             this.buildContainer();
+
+            $( window ).on( 'resize', this.updateStage.bind( this ) );
         }
 
         buildToolbar() {
@@ -139,6 +141,7 @@ define( [
 
             let elIndexerPointer = $( '<div class="pointer"></div>' )
                 .css( {
+                    display: 'none',
                     width: '100%',
                     position: 'absolute',
                     zIndex: 2
@@ -172,14 +175,11 @@ define( [
 
             this.editorOrg = ace.edit( this.elEditorOrg.attr( 'id' ) );
             this.editorNew = ace.edit( this.elEditorNew.attr( 'id' ) );
-            this.editorNew.renderer.on( 'resize', function() {
-                self.updateIndexer();
-                self.updateScrollTop();
-            } );
 
             let editors = { org: this.editorOrg, new: this.editorNew };
             for ( let key in editors ) {
                 editors[key].getSession().setMode( this.opts.mode );
+                editors[key].getSession().on( 'changeScrollLeft', this.updateScrollLeft.bind( this ) );
                 editors[key].getSession().on( 'changeScrollTop', this.updateScrollTop.bind( this ) );
                 editors[key].setTheme( this.opts.theme );
                 editors[key].on( 'paste', function( context, editor ) {
@@ -201,6 +201,7 @@ define( [
                         editor.getSession().setMode( 'ace/mode/' + language );
                     }
                 } );
+                editors[key].renderer.on( 'resize', this.updateStage.bind( this ) );
             }
         }
 
@@ -308,17 +309,31 @@ define( [
             }
 
             let lineHeight = this.editorOrg.renderer.lineHeight;
-            let linesOrg = this.editorOrg.getSession().getLength();
-            let linesNew = this.editorNew.getSession().getLength();
-            let linesIndexer = Math.max( linesOrg, linesNew );
-            let indexerHeight = Math.min( lineHeight * linesIndexer, this.elIndexer.innerHeight() );
-            let unitHeight = indexerHeight / linesIndexer;
-            let mainEditor = (linesOrg > linesNew) ? this.editorOrg : this.editorNew;
-            let visibleLines = mainEditor.renderer.getLastFullyVisibleRow() - mainEditor.renderer.getFirstVisibleRow();
+            let orgLines = this.editorOrg.getSession().getLength();
+            let newLines = this.editorNew.getSession().getLength();
 
-            this.elIndexer.data( 'pointer' ).css( { height: unitHeight * visibleLines } );
-            this.elIndexer.data( 'unit_height', unitHeight );
+            let mainEditor = (orgLines > newLines) ? this.editorOrg : this.editorNew;
+
+            let orgHeight = orgLines * lineHeight;
+            let newHeight = newLines * lineHeight;
+            let screenHeight = this.elIndexer.innerHeight() - (mainEditor.renderer.scrollBarH.isVisible ? mainEditor.renderer.scrollBarH.height : 0);
+            let indexerHeight = Math.min( Math.max( orgHeight, newHeight ), screenHeight );
+            let unitHeight = indexerHeight / Math.max( orgLines, newLines );
+            let pointerHeight = screenHeight > indexerHeight ? 0 : Math.floor( Math.pow( screenHeight, 2 ) / Math.max( orgHeight, newHeight ) );
+
+            let orgWidth = $( this.editorOrg.renderer.content ).innerWidth();
+            let newWidth = $( this.editorNew.renderer.content ).innerWidth();
+            let screenWidth = $( this.editorOrg.renderer.scroller ).innerWidth();
+
+            this.elIndexer.data( 'scaleHeightOrg', (orgHeight - screenHeight) / (indexerHeight - pointerHeight) );
+            this.elIndexer.data( 'scaleHeightNew', (newHeight - screenHeight) / (indexerHeight - pointerHeight) );
+            this.elIndexer.data( 'scaleWidthOrg', (orgWidth - screenWidth) / (newWidth - screenWidth) );
             this.elIndexer.data( 'main_editor', mainEditor );
+
+            this.elIndexer.data( 'pointer' ).css( {
+                height: pointerHeight,
+                display: pointerHeight > 0 ? 'block' : 'none'
+            } );
 
             /**
              * @var diffData [ [ action, startLine, currentOrgLine, currentNewLine ] ]
@@ -345,13 +360,26 @@ define( [
             if ( !this.elIndexer.data( 'main_editor' ) ) {
                 return;
             }
-            let top = this.elIndexer.data( 'unit_height' ) * this.elIndexer.data( 'main_editor' ).renderer.getFirstVisibleRow();
+            let top = this.elIndexer.data( 'main_editor' ).getSession().getScrollTop() / Math.max( this.elIndexer.data( 'scaleHeightOrg' ), this.elIndexer.data( 'scaleHeightNew' ) );
             this.elIndexer.data( 'pointer' ).css( { top: top } );
+            this.editorOrg.getSession().setScrollTop( top * this.elIndexer.data( 'scaleHeightOrg' ) );
+        }
+
+        updateScrollLeft() {
+            if ( !this.elIndexer.data( 'main_editor' ) ) {
+                return;
+            }
+            this.editorOrg.getSession().setScrollLeft( this.editorNew.getSession().getScrollLeft() * this.elIndexer.data( 'scaleWidthOrg' ) );
         }
 
         updateScrollTop() {
             this.updateComparer();
             this.updateIndexerPointer();
+        }
+
+        updateStage() {
+            this.updateIndexer();
+            this.updateScrollTop();
         }
 
         getDiffs( contentOrg, contentNew ) {
