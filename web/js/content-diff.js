@@ -37,7 +37,11 @@ define( [
                 height: 600,
                 lineHeight: 20,
                 theme: 'ace/theme/chrome',
-                mode: 'ace/mode/php'
+                mode: 'ace/mode/php',
+                labels: {
+                    screenMode: 'Screen Mode',
+                    compare: 'Compare'
+                }
             }, options );
 
             this.elWrapper = $( '#' + this.opts.elemId )
@@ -65,7 +69,7 @@ define( [
             this.elToolbar = $( '<div id="' + toolbarId + '"></div>' );
             this.elToolbar.appendTo( this.element ).addClass( 'toolbar' );
 
-            $( '<a href="javascript:;" class="button btn-fullscreen"><span>Fullscreen</span></a>' )
+            $( '<a href="javascript:;" class="button btn-fullscreen"><span>' + this.opts.labels.screenMode + '</span></a>' )
                 .appendTo( this.elToolbar )
                 .on( 'click', function() {
                     if ( !self.elFullscreenWrapper ) {
@@ -94,7 +98,7 @@ define( [
                     self.editorNew.resize();
                 } );
 
-            $( '<a href="javascript:;" class="button btn-compare"><span>Compare</span></a>' )
+            $( '<a href="javascript:;" class="button btn-compare"><span>' + this.opts.labels.compare + '</span></a>' )
                 .appendTo( this.elToolbar )
                 .on( 'click', this.doCompare.bind( self ) );
         }
