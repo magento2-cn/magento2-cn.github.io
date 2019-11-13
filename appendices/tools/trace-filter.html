@@ -39,8 +39,12 @@
                 match = arrSource[r].match( /#\d+ (.+) called at \[(.+):\d+\]/ );
             }
             if ( !match || (match[1] && (
-                match[1].indexOf( 'vendor\\magento\\framework\\Interception' ) > -1 ||
-                match[1].indexOf( 'vendor/magento/framework/Interception' ) > -1)) ) {
+                match[1].indexOf( 'vendor\\magento\\framework\\Interception' ) > -1
+                || match[1].indexOf( 'vendor/magento/framework/Interception' ) > -1
+                || match[1].indexOf( 'vendor/magento/framework/Code/Reader/ClassReader' ) > -1
+                || match[1].indexOf( 'vendor/magento/framework/ObjectManager/Factory/Dynamic/Developer' ) > -1
+                || match[1].indexOf( 'vendor/magento/framework/ObjectManager/Definition/Runtime' ) > -1
+            )) ) {
                 continue;
             }
             arrDist.push( match[0] );
