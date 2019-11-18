@@ -18,7 +18,7 @@ define( [ 'jquery' ], function( $ ) {
         };
 
         elFile;
-        loading = false;
+        fileContent;
         reader;
         sourceData;
         filteredData;
@@ -30,25 +30,13 @@ define( [ 'jquery' ], function( $ ) {
 
             this.reader = new FileReader();
             this.reader.onload = function( evt ) {
-                this.sourceData = evt.target['result'].match( /\[\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}\] report\..+: .+\n/g );
+                this.fileContent = evt.target['result'];
+                this.sourceData = this.fileContent.match( /\[\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}\] report\..+: .+\n/g );
                 if ( typeof this.opts['onContentUpdate'] === 'function' ) {
                     this.opts['onContentUpdate'].call( null, this.sourceData );
                 }
-                this.loading = false;
             }.bind( this );
 
-        }
-
-        filterRow( date, time, level, content, filters ) {
-            if ( (new RegExp( '(?:' + filters.join( '|' ) + ')' )).test( content ) ) {
-                return false;
-            }
-            return {
-                date: date,
-                time: time,
-                level: level,
-                content: content.replace( ' [] []', '' )
-            }
         }
 
         updateFilter( filters ) {
@@ -56,17 +44,21 @@ define( [ 'jquery' ], function( $ ) {
                 return;
             }
 
+            let regDate = '(\\d{4}\\-\\d{2}\\-\\d{2})';
+            let regTime = '(\\d{2}:\\d{2}:\\d{2})';
+            let regLevel = '(CRITICAL|DEBUG|ERROR|INFO)';
+            let regFilters = '((?!' + (filters || this.defaultFilters).join( '|' ) + ').+)';
+            let reg = '\\[' + regDate + ' ' + regTime + '\\] report\\.' + regLevel + ': ' + regFilters + '\\n';
+
             this.filteredData = [];
-            filters = filters || this.defaultFilters;
-            for ( let i = 0; i < this.sourceData.length; i++ ) {
-                let matchRow = this.sourceData[i].match( /\[(\d{4}\-\d{2}\-\d{2}) (\d{2}:\d{2}:\d{2})\] report\.(CRITICAL|DEBUG|ERROR|INFO): (.+)/ );
-                if ( !matchRow ) {
-                    continue;
-                }
-                let rowData = this.filterRow( matchRow[1], matchRow[2], matchRow[3], matchRow[4], filters );
-                if ( rowData ) {
-                    this.filteredData.push( rowData );
-                }
+            let matches = this.fileContent.matchAll( new RegExp( reg, 'g' ) );
+            for ( let match of matches ) {
+                this.filteredData.push( {
+                    date: match[1],
+                    time: match[2],
+                    level: match[3],
+                    content: match[4]
+                } );
             }
 
             if ( typeof this.opts['onFilterUpdate'] === 'function' ) {
@@ -79,10 +71,6 @@ define( [ 'jquery' ], function( $ ) {
                 return;
             }
             this.reader.readAsText( this.elFile['files'][0], 'UTF-8' );
-        }
-
-        getSourceData() {
-            return this.sourceData;
         }
 
     }

@@ -51,12 +51,13 @@
         let logFilter = LogFilter( {
             elemId: 'log-file',
             onContentUpdate: function( sourceData ) {
-                console.log( sourceData );
+                //console.log( sourceData );
             },
             onFilterUpdate: function( filteredData ) {
+                //console.log( filteredData );
                 let str = '';
-                for ( let i = 0; i < filteredData.length; i++ ) {
-                    str += '[' + filteredData[i]['date'] + ' ' + filteredData[i]['time'] + '] ' + filteredData[i]['level'] + ': ' + filteredData[i]['content'] + '\n';
+                for ( let row of filteredData ) {
+                    str += '[' + row['date'] + ' ' + row['time'] + '] report.' + row['level'] + ': ' + row['content'] + '\n';
                 }
                 $( '#content' ).val( str );
             }
