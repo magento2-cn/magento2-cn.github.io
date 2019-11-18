@@ -104,11 +104,11 @@
             } );
         };
 
+        buildFilters();
+
         $( '[data-role="calendar"]' ).pignoseCalendar( {
             format: 'YYYY-MM-DD'
         } );
-
-        buildFilters();
 
         $( '#log-file' ).on( 'input', logFilter.updateFileContent.bind( logFilter ) );
 
