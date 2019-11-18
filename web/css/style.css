@@ -196,6 +196,18 @@ body.content-diff .content-diff .container .indexer .pointer:before { border:1px
 body.content-diff .content-diff .container .indexer .box .add { background:#00ff00; }
 body.content-diff .content-diff .container .indexer .box .remove { background:#ff0000; }
 
+/**
+ * Log Filter
+ */
+body.log-filter > main .wrapper { margin:0 0 15px; }
+body.log-filter > main .date-wrapper { display:flex; flex-direction:row; flex-wrap:nowrap; justify-content:flex-start; align-items:flex-start; }
+body.log-filter > main .date-wrapper .filter { padding:0 10px 0 0; }
+body.log-filter > main .filters-wrapper .filter a { display:inline-block; text-decoration:none; }
+body.log-filter > main .filters-wrapper .filter a span { color:#545454; display:block; }
+body.log-filter > main .filters-wrapper .filter a span:before { color:#9999aa; content:'\f0c8'; font-family:'Awesome Solid'; margin:0 8px 0 0; }
+body.log-filter > main .filters-wrapper .filter a.active span:before { content:'\f14a'; }
+body.log-filter > main .content-wrapper textarea { height:400px; }
+
 
 @media only screen and (max-width:768px) {
 

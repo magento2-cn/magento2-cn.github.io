@@ -10,6 +10,11 @@
                 "href": "appendices/tools/module-version-error-processor.html"
             },
             {
+                "name": "log-filter",
+                "title": "日志信息过滤器",
+                "href": "appendices/tools/log-filter.html"
+            },
+            {
                 "name": "trace-filter",
                 "title": "追踪信息过滤器",
                 "href": "appendices/tools/trace-filter.html"

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>日志信息过滤器 - Magento 2 笔记</title>
+    <base href="/" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+    <meta name="keywords" content="Magento,Magento 2,windows,常用工具,tool" />
+    <meta name="description" content="记录一切与 Magento 2 使用和开发相关的内容，包括使用指南、常用代码、异常处理、运维优化等等。" />
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico" />
+    <link rel="stylesheet" type="text/css" media="all" href="web/css/style.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="web/css/jquery.mCustomScrollbar.min.css" />
+</head>
+<body class="tools log-filter">
+<header></header>
+<style>
+</style>
+<main>
+    <aside></aside>
+    <article>
+        <h1>日志信息过滤器</h1>
+        <div class="log-filter-wrapper">
+            <div class="file-wrapper wrapper">
+                <input type="file" id="log-file" />
+                <button id="btn-filter"><span>過濾</span></button>
+            </div>
+            <div class="date-wrapper wrapper">
+                <div class="filter input-box">
+                    <input type="text" class="input-text" id="from-date" placeholder="开始时间" />
+                </div>
+                <div class="filter input-box">
+                    <input type="text" class="input-text" id="to-date" placeholder="结束时间" />
+                </div>
+            </div>
+            <div class="filters-wrapper wrapper" data-role="default-filters">
+            </div>
+            <div class="content-wrapper wrapper">
+                <textarea class="input-text" id="content" placeholder="日志内容"></textarea>
+            </div>
+        </div>
+    </article>
+</main>
+<footer></footer>
+<script type="text/javascript" src="web/js/require.js"></script>
+<script type="text/javascript" src="web/js/site.js"></script>
+<script type="text/javascript">
+    require( [ 'jquery', 'web/js/log-filter' ], function( $, LogFilter ) {
+
+        let $filters = $( '[data-role="default-filters"]' );
+
+        let logFilter = LogFilter( {
+            elemId: 'log-file',
+            onContentUpdate: function( sourceData ) {
+                console.log( sourceData );
+            },
+            onFilterUpdate: function( filteredData ) {
+                let str = '';
+                for ( let i = 0; i < filteredData.length; i++ ) {
+                    str += '[' + filteredData[i]['date'] + ' ' + filteredData[i]['time'] + '] ' + filteredData[i]['level'] + ': ' + filteredData[i]['content'] + '\n';
+                }
+                $( '#content' ).val( str );
+            }
+        } );
+
+        let buildFilters = function() {
+            for ( let i = 0; i < logFilter.defaultFilters.length; i++ ) {
+                let $filter = $( '<div class="filter"></div>' )
+                    .appendTo( $filters );
+                $( '<a class="active" href="javascript:;"><span>' + logFilter.defaultFilters[i] + '</span></a>' )
+                    .data( 'filter', logFilter.defaultFilters[i] )
+                    .appendTo( $filter );
+            }
+            $filters.on( 'click', '.filter a', function() {
+                $( this ).toggleClass( 'active' );
+            } );
+        };
+
+        buildFilters();
+
+        $( '#log-file' ).on( 'input', logFilter.updateFileContent.bind( logFilter ) );
+
+        $( '#btn-filter' ).on( 'click', function() {
+            let filters = [];
+            $filters.find( '.filter .active' ).each( function() {
+                filters.push( $( this ).data( 'filter' ) );
+            } );
+            logFilter.updateFilter.apply( logFilter, [ filters ] );
+        } );
+
+    } );
+</script>
+</body>
+</html>
