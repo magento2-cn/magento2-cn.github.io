@@ -10,6 +10,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico" />
     <link rel="stylesheet" type="text/css" media="all" href="web/css/style.css" />
     <link rel="stylesheet" type="text/css" media="all" href="web/css/jquery.mCustomScrollbar.min.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="web/css/pignose.calendar.css" />
 </head>
 <body class="tools log-filter">
 <header></header>
@@ -26,10 +27,10 @@
             </div>
             <div class="date-wrapper wrapper">
                 <div class="filter input-box">
-                    <input type="text" class="input-text" id="from-date" placeholder="开始日期" />
+                    <input type="text" class="input-text" data-role="calendar" id="from-date" placeholder="开始日期" />
                 </div>
                 <div class="filter input-box">
-                    <input type="text" class="input-text" id="to-date" placeholder="结束日期" />
+                    <input type="text" class="input-text" data-role="calendar" id="to-date" placeholder="结束日期" />
                 </div>
             </div>
             <div class="filters-wrapper wrapper" data-role="default-filters">
@@ -44,7 +45,7 @@
 <script type="text/javascript" src="web/js/require.js"></script>
 <script type="text/javascript" src="web/js/site.js"></script>
 <script type="text/javascript">
-    require( [ 'jquery', 'web/js/log-filter' ], function( $, LogFilter ) {
+    require( [ 'jquery', 'web/js/log-filter', 'web/js/pignose.calendar.full.min' ], function( $, LogFilter ) {
 
         let $filters = $( '[data-role="default-filters"]' );
 
@@ -102,6 +103,10 @@
                 $( this ).toggleClass( 'active' );
             } );
         };
+
+        $( '[data-role="calendar"]' ).pignoseCalendar( {
+            format: 'YYYY-MM-DD'
+        } );
 
         buildFilters();
 
