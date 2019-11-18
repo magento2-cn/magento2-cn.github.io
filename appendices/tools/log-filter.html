@@ -48,16 +48,32 @@
 
         let $filters = $( '[data-role="default-filters"]' );
 
+        let strPad = function( str, length, paddingStr, paddingPos ) {
+            if ( str.length >= length ) {
+                return str;
+            }
+            let paddingStrs = '';
+            for ( let i = 0; i < length - str.length; i++ ) {
+                paddingStrs += paddingStr;
+            }
+            paddingPos = paddingPos || 'left';
+            switch ( paddingPos ) {
+                case 'left' :
+                    return paddingStrs + str;
+                case 'right' :
+                    return str + paddingStrs;
+            }
+        };
+
         let logFilter = LogFilter( {
             elemId: 'log-file',
             onContentUpdate: function( sourceData ) {
-                //console.log( sourceData );
+                console.log( sourceData );
             },
             onFilterUpdate: function( filteredData ) {
-                //console.log( filteredData );
                 let str = '';
                 for ( let row of filteredData ) {
-                    str += '[' + row['date'] + ' ' + row['time'] + '] report.' + row['level'] + ': ' + row['content'] + '\n';
+                    str += '[' + row['date'] + ' ' + row['time'] + '] report.' + strPad( row['level'], 8, ' ', 'right' ) + ': ' + row['content'] + '\n';
                 }
                 $( '#content' ).val( str );
             }

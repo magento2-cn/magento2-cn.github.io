@@ -206,7 +206,7 @@ body.log-filter > main .filters-wrapper .filter a { display:inline-block; text-d
 body.log-filter > main .filters-wrapper .filter a span { color:#545454; display:block; }
 body.log-filter > main .filters-wrapper .filter a span:before { color:#9999aa; content:'\f0c8'; font-family:'Awesome Solid'; margin:0 8px 0 0; }
 body.log-filter > main .filters-wrapper .filter a.active span:before { content:'\f14a'; }
-body.log-filter > main .content-wrapper textarea { height:400px; }
+body.log-filter > main .content-wrapper textarea { height:600px; }
 
 
 @media only screen and (max-width:768px) {
