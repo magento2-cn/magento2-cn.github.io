@@ -26,10 +26,10 @@
             </div>
             <div class="date-wrapper wrapper">
                 <div class="filter input-box">
-                    <input type="text" class="input-text" id="from-date" placeholder="开始时间" />
+                    <input type="text" class="input-text" id="from-date" placeholder="开始日期" />
                 </div>
                 <div class="filter input-box">
-                    <input type="text" class="input-text" id="to-date" placeholder="结束时间" />
+                    <input type="text" class="input-text" id="to-date" placeholder="结束日期" />
                 </div>
             </div>
             <div class="filters-wrapper wrapper" data-role="default-filters">
@@ -68,11 +68,22 @@
         let logFilter = LogFilter( {
             elemId: 'log-file',
             onContentUpdate: function( sourceData ) {
-                console.log( sourceData );
+                //console.log( sourceData );
             },
             onFilterUpdate: function( filteredData ) {
+
+                let fromDate = $( '#from-date' ).val();
+                fromDate = (fromDate ? (new Date( fromDate )) : (new Date( '1970-01-01' ))).getTime();
+
+                let toDate = $( '#to-date' ).val();
+                toDate = (toDate ? (new Date( toDate )) : (new Date())).getTime();
+
                 let str = '';
                 for ( let row of filteredData ) {
+                    let date = (new Date( row['date'] )).getTime();
+                    if ( fromDate > date || toDate < date ) {
+                        continue;
+                    }
                     str += '[' + row['date'] + ' ' + row['time'] + '] report.' + strPad( row['level'], 8, ' ', 'right' ) + ': ' + row['content'] + '\n';
                 }
                 $( '#content' ).val( str );
