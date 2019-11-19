@@ -209,7 +209,7 @@ body.log-filter > main .toolbar .file-box { height:42px; width:200px; }
 body.log-filter > main .toolbar .file-box .cover { background:#f6f6f9; border:1px solid #ddd; border-radius:3px; color:#545454; overflow:hidden; padding:8px 15px; text-decoration:none; }
 body.log-filter > main .toolbar .input-box { width:200px; }
 body.log-filter > main .toolbar:after { clear:both; content:''; display:block; height:0; }
-body.log-filter > main .filters-box { background:#fff; border:1px solid #ddd; border-radius:0 0 3px 3px; display:none; padding:10px 20px 10px 10px; position:absolute; }
+body.log-filter > main .filters-box { background:#fff; border:1px solid #ddd; border-radius:0 0 3px 3px; box-shadow:2px 4px 5px #999; display:none; padding:10px 20px 10px 10px; position:absolute; }
 body.log-filter > main .filters-box.show { display:block; }
 body.log-filter > main .filters-box .filter a { display:inline-block; text-decoration:none; }
 body.log-filter > main .filters-box .filter a span { color:#545454; display:block; }
