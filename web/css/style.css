@@ -29,6 +29,10 @@ textarea.input-text { background:#f6f6f9; border:1px solid #ddd; border-radius:3
 textarea.input-text { padding:15px; }
 button span { display:block; font:14px/20px Consolas, Helvetica, Arial, sans-serif; padding:5px 20px; text-transform:uppercase; }
 
+a.button { background-image:linear-gradient( to bottom, #fff, #ddd ); border:1px solid #ddd; border-radius:3px; color:#545454; display:inline-block; text-decoration:none; }
+a.button span { display:block; padding:8px 25px; }
+a.button:active { background-image:linear-gradient( to bottom, #ddd, #fff ); color:#999; }
+
 .clr:after { clear:both; content:''; display:table; }
 
 /**
@@ -94,7 +98,7 @@ main > aside.top { top:0; }
 main > aside.top nav { max-height:100%; }
 
 /**
- * Atricle contents
+ * Article contents
  */
 article { background:#fff; box-shadow:0 0 5px #999; color:#333; margin-left:260px; min-height:800px; padding:70px 20px 80px; position:relative; z-index:2; }
 article h1 { color:#666699; font-size:30px; font-weight:normal; line-height:32px; margin-bottom:20px; padding:28px 0 10px; }
@@ -199,14 +203,19 @@ body.content-diff .content-diff .container .indexer .box .remove { background:#f
 /**
  * Log Filter
  */
-body.log-filter > main .wrapper { margin:0 0 15px; }
-body.log-filter > main .date-wrapper { display:flex; flex-direction:row; flex-wrap:nowrap; justify-content:flex-start; align-items:flex-start; }
-body.log-filter > main .date-wrapper .filter { padding:0 10px 0 0; }
-body.log-filter > main .filters-wrapper .filter a { display:inline-block; text-decoration:none; }
-body.log-filter > main .filters-wrapper .filter a span { color:#545454; display:block; }
-body.log-filter > main .filters-wrapper .filter a span:before { color:#9999aa; content:'\f0c8'; font-family:'Awesome Solid'; margin:0 8px 0 0; }
-body.log-filter > main .filters-wrapper .filter a.active span:before { content:'\f14a'; }
-body.log-filter > main .content-wrapper textarea { height:600px; }
+body.log-filter > main .toolbar { margin:0 0 15px; }
+body.log-filter > main .toolbar .wrapper { float:left; margin:0 10px 0 0; }
+body.log-filter > main .toolbar .file-box { height:42px; width:200px; }
+body.log-filter > main .toolbar .file-box .cover { background:#f6f6f9; border:1px solid #ddd; border-radius:3px; color:#545454; overflow:hidden; padding:8px 15px; text-decoration:none; }
+body.log-filter > main .toolbar .input-box { width:200px; }
+body.log-filter > main .toolbar:after { clear:both; content:''; display:block; height:0; }
+body.log-filter > main .filters-box { background:#fff; border:1px solid #ddd; border-radius:0 0 3px 3px; display:none; padding:10px 20px 10px 10px; position:absolute; }
+body.log-filter > main .filters-box.show { display:block; }
+body.log-filter > main .filters-box .filter a { display:inline-block; text-decoration:none; }
+body.log-filter > main .filters-box .filter a span { color:#545454; display:block; }
+body.log-filter > main .filters-box .filter a span:before { color:#9999aa; content:'\f0c8'; font-family:'Awesome Solid'; margin:0 8px 0 0; }
+body.log-filter > main .filters-box .filter a.active span:before { content:'\f14a'; }
+body.log-filter > main .content textarea { height:600px; }
 
 
 @media only screen and (max-width:768px) {

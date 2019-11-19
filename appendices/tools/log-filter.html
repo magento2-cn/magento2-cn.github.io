@@ -21,21 +21,27 @@
     <article>
         <h1>日志信息过滤器</h1>
         <div class="log-filter-wrapper">
-            <div class="file-wrapper wrapper">
-                <input type="file" id="log-file" />
-                <button id="btn-filter"><span>过滤</span></button>
-            </div>
-            <div class="date-wrapper wrapper">
-                <div class="filter input-box">
+            <div class="toolbar">
+                <div class="wrapper file-box" data-role="file-box">
+                    <input type="file" class="input-file" id="log-file" />
+                </div>
+                <div class="wrapper input-box">
                     <input type="text" class="input-text" data-role="calendar" id="from-date" placeholder="开始日期" />
                 </div>
-                <div class="filter input-box">
+                <div class="wrapper input-box">
                     <input type="text" class="input-text" data-role="calendar" id="to-date" placeholder="结束日期" />
                 </div>
+                <div class="wrapper filters-wrapper">
+                    <a class="button" href="javascript:;" id="btn-filters"><span>过滤规则</span></a>
+                    <div class="filters-box">
+                        <div data-role="default-filters"></div>
+                    </div>
+                </div>
+                <div class="wrapper filter">
+                    <a class="button" href="javascript:;" id="btn-start-filter"><span>显示结果</span></a>
+                </div>
             </div>
-            <div class="filters-wrapper wrapper" data-role="default-filters">
-            </div>
-            <div class="content-wrapper wrapper">
+            <div class="content">
                 <textarea class="input-text" id="content" placeholder="日志内容"></textarea>
             </div>
         </div>
@@ -91,6 +97,27 @@
             }
         } );
 
+        let builtFileBox = function() {
+            let $fileBox = $( '[data-role="file-box"]' );
+            let $fileInput = $fileBox.find( '[type=file]' );
+            let $fileCover = $( '<a href="javascript:;"></a>' )
+                .appendTo( $fileBox )
+                .addClass( 'cover' )
+                .css( { position: 'absolute', left: 0, top: 0, height: '100%', width: '100%' } )
+                .text( '选择文件' );
+
+            $fileBox.css( { overflow: 'hidden', position: 'relative' } );
+            $fileInput.css( { position: 'relative' } );
+
+            $fileInput.on( 'input', function() {
+                $fileCover.text( this.files[0].name );
+            } );
+
+            $fileCover.on( 'click', function() {
+                $fileInput.trigger( 'click' );
+            } );
+        };
+
         let buildFilters = function() {
             for ( let i = 0; i < logFilter.defaultFilters.length; i++ ) {
                 let $filter = $( '<div class="filter"></div>' )
@@ -104,15 +131,20 @@
             } );
         };
 
+        builtFileBox();
         buildFilters();
 
         $( '[data-role="calendar"]' ).pignoseCalendar( {
             format: 'YYYY-MM-DD'
         } );
 
+        $( '#btn-filters' ).on( 'click', function() {
+            $( '.filters-box' ).toggleClass( 'show' );
+        } );
+
         $( '#log-file' ).on( 'input', logFilter.updateFileContent.bind( logFilter ) );
 
-        $( '#btn-filter' ).on( 'click', function() {
+        $( '#btn-start-filter' ).on( 'click', function() {
             let filters = [];
             $filters.find( '.filter .active' ).each( function() {
                 filters.push( $( this ).data( 'filter' ) );
