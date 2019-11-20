@@ -42,7 +42,7 @@
                 </div>
             </div>
             <div class="content">
-                <textarea class="input-text" id="content" placeholder="日志内容"></textarea>
+                <div class="input-text" id="content" contenteditable="true" placeholder="日志内容"></div>
             </div>
         </div>
     </article>
@@ -74,9 +74,6 @@
 
         let logFilter = LogFilter( {
             elemId: 'log-file',
-            onContentUpdate: function( sourceData ) {
-                //console.log( sourceData );
-            },
             onFilterUpdate: function( filteredData ) {
 
                 let fromDate = $( '#from-date' ).val();
@@ -93,7 +90,7 @@
                     }
                     str += '[' + row['date'] + ' ' + row['time'] + '] report.' + strPad( row['level'], 8, ' ', 'right' ) + ': ' + row['content'] + '\n';
                 }
-                $( '#content' ).val( str );
+                document.getElementById( 'content' ).innerText = str;
             }
         } );
 
