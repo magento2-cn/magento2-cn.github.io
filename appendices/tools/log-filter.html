@@ -68,27 +68,75 @@
         'jquery',
         'web/js/log-filter',
         'web/js/jquery.fancybox.min',
+        'web/js/diff_match_patch_uncompressed',
         'web/js/pignose.calendar.full.min'
     ], function( $, LogFilter ) {
+
+        const diff = new diff_match_patch();
 
         let $filtersBox = $( '[data-role="filters-box"]' );
         let $defaultFilters = $( '[data-role="default-filters"]' );
 
-        let strPad = function( str, length, paddingStr, paddingPos ) {
-            if ( str.length >= length ) {
-                return str;
+        let processLogRecords = function( records ) {
+            let contents = [], latestRecords = [];
+            let threshold = 10;
+            for ( let row of records ) {
+                let i = contents.indexOf( row['content'] );
+                if ( i === -1 ) {
+                    contents.push( row['content'] );
+                    latestRecords.push( { count: 1, date: row['date'], time: row['time'] } );
+                }
+                else {
+                    latestRecords[i]['count'] += 1;
+                    latestRecords[i]['date'] = row['date'];
+                    latestRecords[i]['time'] = row['time'];
+                }
             }
-            let paddingStrs = '';
-            for ( let i = 0; i < length - str.length; i++ ) {
-                paddingStrs += paddingStr;
+
+            let similarNums = {};
+            let skipNums = [];
+            for ( let n = 0; n < contents.length; n++ ) {
+                /**
+                 * Content recognized as similar does not need to check again
+                 */
+                if ( skipNums.indexOf( n ) !== -1 ) {
+                    continue;
+                }
+                for ( let m = n + 1; m < contents.length; m++ ) {
+                    if ( diff.diff_main( contents[n], contents[m] ).length > threshold ) {
+                        continue;
+                    }
+                    if ( !similarNums[n] ) {
+                        similarNums[n] = [];
+                    }
+                    similarNums[n].push( m );
+                    skipNums.push( m );
+                }
             }
-            paddingPos = paddingPos || 'left';
-            switch ( paddingPos ) {
-                case 'left' :
-                    return paddingStrs + str;
-                case 'right' :
-                    return str + paddingStrs;
+
+            let result = [];
+            for ( let i = 0; i < contents.length; i++ ) {
+                if ( skipNums.indexOf( i ) !== -1 ) {
+                    continue;
+                }
+                let rowResult = {
+                    content: contents[i],
+                    date: latestRecords[i]['date'],
+                    time: latestRecords[i]['time'],
+                    count: latestRecords[i]['count']
+                };
+                if ( similarNums[i] ) {
+                    rowResult['content'] = [ rowResult['content'] ];
+                    for ( let similarNum of similarNums[i] ) {
+                        rowResult['content'].push( contents[similarNum] );
+                        rowResult['date'] = latestRecords[similarNum]['date'];
+                        rowResult['time'] = latestRecords[similarNum]['time'];
+                        rowResult['count'] += latestRecords[similarNum]['count'];
+                    }
+                }
+                result.push( rowResult );
             }
+            console.log( result );
         };
 
         let logFilter = LogFilter( {
@@ -107,9 +155,11 @@
                     if ( fromDate > date || toDate < date ) {
                         continue;
                     }
-                    str += '[' + row['date'] + ' ' + row['time'] + '] report.' + strPad( row['level'], 8, ' ', 'right' ) + ': ' + row['content'] + '\n';
+                    str += '[' + row['date'] + ' ' + row['time'] + '] report.' + row['level'] + ': ' + row['content'] + '\n';
                 }
                 document.getElementById( 'content' ).innerText = str;
+
+                processLogRecords( filteredData );
             }
         } );
 
