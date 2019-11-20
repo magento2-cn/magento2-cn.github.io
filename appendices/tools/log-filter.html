@@ -102,12 +102,12 @@
             let $fileInput = $fileBox.find( '[type=file]' );
             let $fileCover = $( '<a href="javascript:;"></a>' )
                 .appendTo( $fileBox )
-                .addClass( 'cover' )
                 .css( { position: 'absolute', left: 0, top: 0, height: '100%', width: '100%' } )
+                .addClass( 'cover' )
                 .text( '选择文件' );
 
             $fileBox.css( { overflow: 'hidden', position: 'relative' } );
-            $fileInput.css( { position: 'relative' } );
+            $fileInput.css( { height: '1px', marginTop: '1px', position: 'relative', width: '1px' } );
 
             $fileInput.on( 'input', function() {
                 $fileCover.text( this.files[0].name );
