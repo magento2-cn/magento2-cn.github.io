@@ -186,9 +186,9 @@ body.tools > main .dist-wrapper { height:450px; margin:0 0 10px; }
  */
 body.content-diff .content-diff-wrapper { border:1px solid #ddd; border-radius:3px; }
 body.content-diff .content-diff { background:#fff; }
-body.content-diff .content-diff .toolbar { border-bottom:1px solid #ddd; padding:5px 30px; text-align:right; }
-body.content-diff .content-diff .toolbar a { color:#666; display:inline-block; line-height:28px; margin:0 0 0 15px; text-decoration:none; }
-body.content-diff .content-diff .toolbar a span { display:block; padding:0 5px; }
+body.content-diff .content-diff .toolbar { border-bottom:1px solid #ddd; padding:5px 0; text-align:right; }
+body.content-diff .content-diff .toolbar a { color:#666; display:inline-block; line-height:28px; margin:0 10px 0 0; text-decoration:none; }
+body.content-diff .content-diff .toolbar a span { display:block; padding:2px 15px; }
 body.content-diff .content-diff .toolbar a span:before { color:#666; font-family:'Awesome Solid'; margin:0 5px 0 0; }
 body.content-diff .content-diff .toolbar a.btn-fullscreen span:before { content:'\f0b2'; }
 body.content-diff .content-diff .toolbar a.btn-fullscreen.is_full span:before { content:'\f066'; }
