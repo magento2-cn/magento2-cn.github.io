@@ -32,12 +32,18 @@
                 <div class="wrapper input-box">
                     <input type="text" class="input-text" data-role="calendar" id="to-date" placeholder="结束日期" />
                 </div>
+                <div class="wrapper filter">
+                    <select data-role="filter-unique">
+                        <option value="0">正常</option>
+                        <option value="1">分组</option>
+                    </select>
+                </div>
                 <div class="wrapper filters-wrapper">
                     <a class="button" href="javascript:;" id="btn-filters"
-                       data-fancybox data-src="#filters-box"><span>过滤规则</span></a>
+                       data-fancybox data-src="#filters-box"><span>规则</span></a>
                 </div>
                 <div class="wrapper filter">
-                    <a class="button" href="javascript:;" id="btn-start-filter"><span>显示结果</span></a>
+                    <a class="button" href="javascript:;" id="btn-start-filter"><span>过滤</span></a>
                 </div>
             </div>
             <div class="content">
@@ -52,7 +58,7 @@
         <div class="filters-box" data-role="filters-box">
             <div data-role="custom-filter-box" class="custom-filter-box">
                 <div class="input-box clr">
-                    <input type="text" class="input-text" />
+                    <input type="text" class="input-text" placeholder="添加正则规则，以忽略无须显示的记录" />
                     <a class="button" data-role="custom-filter-add" href="javascript:;"><span>+</span></a>
                 </div>
                 <div data-role="custom-filters"></div>
@@ -80,7 +86,8 @@
         let processLogRecords = function( records ) {
             let contents = [], latestRecords = [];
             let threshold = 10;
-            for ( let row of records ) {
+            for ( let j = 0; j < records.length; j++ ) {
+                let row = records[j];
                 let i = contents.indexOf( row['content'] );
                 if ( i === -1 ) {
                     contents.push( row['content'] );
@@ -127,16 +134,20 @@
                 };
                 if ( similarNums[i] ) {
                     rowResult['content'] = [ rowResult['content'] ];
-                    for ( let similarNum of similarNums[i] ) {
+                    let orgDate = (new Date( rowResult['date'] + ' ' + rowResult['time'] )).getTime();
+                    for ( let j = 0; j < similarNums[i].length; j++ ) {
+                        let similarNum = similarNums[i][j];
                         rowResult['content'].push( contents[similarNum] );
-                        rowResult['date'] = latestRecords[similarNum]['date'];
-                        rowResult['time'] = latestRecords[similarNum]['time'];
+                        if ( orgDate < (new Date( latestRecords[similarNum]['date'] + ' ' + latestRecords[similarNum]['time'] )).getTime() ) {
+                            rowResult['date'] = latestRecords[similarNum]['date'];
+                            rowResult['time'] = latestRecords[similarNum]['time'];
+                        }
                         rowResult['count'] += latestRecords[similarNum]['count'];
                     }
                 }
                 result.push( rowResult );
             }
-            console.log( result );
+            return result;
         };
 
         let logFilter = LogFilter( {
@@ -150,16 +161,30 @@
                 toDate = (toDate ? (new Date( toDate )) : (new Date())).getTime();
 
                 let str = '';
-                for ( let row of filteredData ) {
-                    let date = (new Date( row['date'] )).getTime();
-                    if ( fromDate > date || toDate < date ) {
-                        continue;
+                if ( $( '[data-role="filter-unique"]' ).val() === '1' ) {
+                    let result = processLogRecords( filteredData );
+                    for ( let j = 0; j < result.length; j++ ) {
+                        let row = result[j];
+                        let date = (new Date( row['date'] )).getTime();
+                        if ( fromDate > date || toDate < date ) {
+                            continue;
+                        }
+                        str += (typeof row['content'] === 'string' ? row['content'] : row['content'].join( '\n' )) + '\n' +
+                            '[' + row['date'] + ' ' + row['time'] + '] [' + row['count'] + '] \n' +
+                            '--------------------------------------------------\n';
                     }
-                    str += '[' + row['date'] + ' ' + row['time'] + '] report.' + row['level'] + ': ' + row['content'] + '\n';
+                }
+                else {
+                    for ( let j = 0; j < filteredData.length; j++ ) {
+                        let row = filteredData[j];
+                        let date = (new Date( row['date'] )).getTime();
+                        if ( fromDate > date || toDate < date ) {
+                            continue;
+                        }
+                        str += '[' + row['date'] + ' ' + row['time'] + '] report.' + row['level'] + ': ' + row['content'] + '\n';
+                    }
                 }
                 document.getElementById( 'content' ).innerText = str;
-
-                processLogRecords( filteredData );
             }
         } );
 
