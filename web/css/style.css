@@ -33,7 +33,11 @@ a.button { background-image:linear-gradient( to bottom, #fff, #ddd ); border:1px
 a.button span { display:block; padding:8px 15px; text-align:center; }
 a.button:active { background-image:linear-gradient( to bottom, #ddd, #fff ); color:#999; }
 
+.hide { display:none; }
 .clr:after { clear:both; content:''; display:table; }
+
+.fancybox-can-pan .fancybox-stage .fancybox-content,
+.fancybox-can-swipe .fancybox-stage .fancybox-content { cursor:auto; }
 
 /**
  * Header
@@ -208,13 +212,17 @@ body.log-filter > main .toolbar .file-box { height:42px; width:210px; }
 body.log-filter > main .toolbar .file-box .cover { background:#f6f6f9; border:1px solid #ddd; border-radius:3px; color:#545454; overflow:hidden; padding:8px 15px; text-decoration:none; }
 body.log-filter > main .toolbar .input-box { width:210px; }
 body.log-filter > main .toolbar:after { clear:both; content:''; display:block; height:0; }
-body.log-filter > main .filters-box { background:#fff; border:1px solid #ddd; border-radius:0 0 3px 3px; box-shadow:2px 4px 5px #999; display:none; padding:10px 20px 10px 10px; position:absolute; }
-body.log-filter > main .filters-box.show { display:block; }
-body.log-filter > main .filters-box .filter a { display:inline-block; text-decoration:none; }
-body.log-filter > main .filters-box .filter a span { color:#545454; display:block; }
-body.log-filter > main .filters-box .filter a span:before { color:#9999aa; content:'\f0c8'; font-family:'Awesome Solid'; margin:0 8px 0 0; }
-body.log-filter > main .filters-box .filter a.active span:before { content:'\f14a'; }
 body.log-filter > main .content .input-text { background:#f6f6f9; border:1px solid #ddd; border-radius:3px; font:14px/20px Consolas, Helvetica, Arial, sans-serif; height:500px; overflow:auto; padding:15px; white-space:nowrap; }
+body.log-filter .filters-box .filter a { display:inline-block; text-decoration:none; }
+body.log-filter .filters-box .filter a span { color:#545454; display:block; }
+body.log-filter .filters-box .filter a span:before { color:#9999aa; content:'\f0c8'; font-family:'Awesome Solid'; margin:0 8px 0 0; }
+body.log-filter .filters-box .filter a.active span:before { content:'\f14a'; }
+body.log-filter .filters-box .custom-filter-box .input-box { margin:0 0 15px; }
+body.log-filter .filters-box .custom-filter-box .input-box .input-text { border-radius:3px 0 0 3px; border-right:0; float:left; width:calc( 100% - 40px ); }
+body.log-filter .filters-box .custom-filter-box .input-box .button { border-radius:0 3px 3px 0; float:left; width:40px; }
+body.log-filter .filters-box .custom-filter-box .filter a { display:inline-block; float:left; }
+body.log-filter .filters-box .custom-filter-box .filter a:before { color:#9999aa; content:'\f146'; font-family:'Awesome Solid'; margin:0 8px 0 0; }
+body.log-filter .filters-box .custom-filter-box .filter span { display:inline-block; float:left; }
 
 
 @media only screen and (max-width:768px) {
