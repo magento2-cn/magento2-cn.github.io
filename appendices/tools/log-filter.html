@@ -162,6 +162,12 @@
                 if ( filter === '' ) {
                     return;
                 }
+
+                let filters = getFilters();
+                if ( filters.indexOf( filter ) > -1 ) {
+                    return;
+                }
+
                 let $filter = $( '<div class="filter clr"></div>' )
                     .appendTo( $customFilters );
                 $( '<div class="active"><a class="btn-remove" href="javascript:;"></a> <span>' + filter + '</span></div>' )
@@ -175,6 +181,14 @@
 
         };
 
+        let getFilters = function() {
+            let filters = [];
+            $filtersBox.find( '.filter .active' ).each( function() {
+                filters.push( $( this ).data( 'filter' ) );
+            } );
+            return filters;
+        };
+
         builtFileBox();
         buildFilters();
 
@@ -185,11 +199,7 @@
         $( '#log-file' ).on( 'input', logFilter.updateFileContent.bind( logFilter ) );
 
         $( '#btn-start-filter' ).on( 'click', function() {
-            let filters = [];
-            $filtersBox.find( '.filter .active' ).each( function() {
-                filters.push( $( this ).data( 'filter' ) );
-            } );
-            logFilter.updateFilter.apply( logFilter, [ filters ] );
+            logFilter.updateFilter.apply( logFilter, [ getFilters() ] );
         } );
 
     } );
