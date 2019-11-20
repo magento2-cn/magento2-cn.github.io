@@ -214,7 +214,7 @@ body.log-filter > main .filters-box .filter a { display:inline-block; text-decor
 body.log-filter > main .filters-box .filter a span { color:#545454; display:block; }
 body.log-filter > main .filters-box .filter a span:before { color:#9999aa; content:'\f0c8'; font-family:'Awesome Solid'; margin:0 8px 0 0; }
 body.log-filter > main .filters-box .filter a.active span:before { content:'\f14a'; }
-body.log-filter > main .content .input-text { background:#f6f6f9; border:1px solid #ddd; border-radius:3px; height:500px; overflow:auto; padding:15px; white-space:nowrap; }
+body.log-filter > main .content .input-text { background:#f6f6f9; border:1px solid #ddd; border-radius:3px; font:14px/20px Consolas, Helvetica, Arial, sans-serif; height:500px; overflow:auto; padding:15px; white-space:nowrap; }
 
 
 @media only screen and (max-width:768px) {
