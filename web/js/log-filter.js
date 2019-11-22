@@ -6,6 +6,7 @@ define( [ 'jquery' ], function( $ ) {
             '(?:Add of|Remove on) item with id .+ was processed',
             'Broken reference: .+',
             'cache_invalidate:  \\{.+\\}',
+            'Cache file with merged layout: .+',
             'Cronjob .+ is .+',
             'Item .+ was removed',
             'No element found with ID .+'
