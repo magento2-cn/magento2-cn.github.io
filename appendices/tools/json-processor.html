@@ -14,11 +14,31 @@
 <body class="tools">
 <header></header>
 <style>
-    .section.decode .wrapper { height:200px; }
-    .section.format .wrapper { height:400px; }
-    .section:after { clear:both; content:''; display:table; height:0; }
-    .source-wrapper { float:left; padding:0 10px 0 0; width:50%; }
-    .dist-wrapper { float:left; width:50%; }
+    .section.decode .wrapper {
+        height: 200px;
+    }
+
+    .section.format .wrapper {
+        height: 400px;
+    }
+
+    .section:after {
+        clear: both;
+        content: '';
+        display: table;
+        height: 0;
+    }
+
+    .source-wrapper {
+        float: left;
+        padding: 0 10px 0 0;
+        width: 50%;
+    }
+
+    .dist-wrapper {
+        float: left;
+        width: 50%;
+    }
 </style>
 <main>
     <aside></aside>
@@ -29,7 +49,7 @@
                 <textarea id="source1" class="input-text" placeholder="解码源"></textarea>
             </div>
             <div class="dist-wrapper wrapper">
-                <textarea id="result1" class="input-text" placeholder="解码结果" readonly="readonly"></textarea>
+                <textarea id="result1" class="input-text" placeholder="解码结果"></textarea>
             </div>
         </div>
         <div class="section format">
@@ -37,7 +57,7 @@
                 <textarea id="source2" class="input-text" placeholder="格式化源"></textarea>
             </div>
             <div class="dist-wrapper wrapper">
-                <textarea id="result2" class="input-text" placeholder="格式化结果" readonly="readonly"></textarea>
+                <textarea id="result2" class="input-text" placeholder="格式化结果"></textarea>
             </div>
         </div>
     </article>
@@ -48,20 +68,20 @@
     let updateResult1 = function() {
         let source = document.getElementById( 'source1' ).value;
         try {
-            document.getElementById( 'result1' ).innerHTML = JSON.parse( source );
+            document.getElementById( 'result1' ).value = JSON.parse( source );
         }
         catch ( ex ) {
-            document.getElementById( 'result1' ).innerHTML = '';
+            document.getElementById( 'result1' ).value = '';
         }
     };
 
     let updateResult2 = function() {
         let source = document.getElementById( 'source2' ).value;
         try {
-            document.getElementById( 'result2' ).innerHTML = JSON.stringify( JSON.parse( source ), null, 4 );
+            document.getElementById( 'result2' ).value = JSON.stringify( JSON.parse( source ), null, 4 );
         }
         catch ( ex ) {
-            document.getElementById( 'result2' ).innerHTML = '';
+            document.getElementById( 'result2' ).value = '';
         }
     };
 
