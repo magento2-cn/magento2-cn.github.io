@@ -32,7 +32,8 @@ define( [ 'jquery' ], function( $ ) {
             this.reader = new FileReader();
             this.reader.onload = function( evt ) {
                 this.fileContent = evt.target['result'];
-                this.sourceData = this.fileContent.match( /\[\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}\] report\..+: .+\n/g );
+                this.sourceData = this.fileContent.match( /\[\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}\] report\..+: .+/g );
+
                 if ( typeof this.opts['onContentUpdate'] === 'function' ) {
                     this.opts['onContentUpdate'].call( null, this.sourceData );
                 }
@@ -49,7 +50,7 @@ define( [ 'jquery' ], function( $ ) {
             let regTime = '(\\d{2}:\\d{2}:\\d{2})';
             let regLevel = '(CRITICAL|DEBUG|ERROR|INFO)';
             let regFilters = '((?!(?:' + (filters || this.defaultFilters).join( ')|(?:' ) + ')).+)';
-            let reg = '\\[' + regDate + ' ' + regTime + '\\] report\\.' + regLevel + ': ' + regFilters + '\\n';
+            let reg = '\\[' + regDate + ' ' + regTime + '\\] report\\.' + regLevel + ': ' + regFilters;
 
             this.filteredData = [];
             let matches = this.fileContent.matchAll( new RegExp( reg, 'g' ) );
