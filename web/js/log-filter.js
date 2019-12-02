@@ -5,7 +5,7 @@ define( [ 'jquery' ], function( $ ) {
         defaultFilters = [
             '(?:Add of|Remove on) item with id .+ was processed',
             'Broken reference: .+',
-            'cache_invalidate:  \\{.+\\}',
+            'cache_invalidate: .+',
             'Cache file with merged layout: .+',
             'Cronjob .+ is .+',
             'Item .+ was removed',
@@ -48,7 +48,7 @@ define( [ 'jquery' ], function( $ ) {
             let regDate = '(\\d{4}\\-\\d{2}\\-\\d{2})';
             let regTime = '(\\d{2}:\\d{2}:\\d{2})';
             let regLevel = '(CRITICAL|DEBUG|ERROR|INFO)';
-            let regFilters = '((?!' + (filters || this.defaultFilters).join( '|' ) + ').+)';
+            let regFilters = '((?!(?:' + (filters || this.defaultFilters).join( ')|(?:' ) + ')).+)';
             let reg = '\\[' + regDate + ' ' + regTime + '\\] report\\.' + regLevel + ': ' + regFilters + '\\n';
 
             this.filteredData = [];
