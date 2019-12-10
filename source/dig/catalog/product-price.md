@@ -157,7 +157,7 @@ Magento_Catalog::product/list.phtml
         Magento\Framework\Pricing\Render::render( 'final_price', ... )
 ```
 
-可见列表页默认是采用名为 final_price 的渲染器来显示价格。 
+可见列表页默认是采用名为 `final_price` 的渲染器来显示价格。 
 
 
 ### 产品内页
@@ -185,7 +185,7 @@ Magento_Catalog::product/list.phtml
 </referenceBlock>
 ```
 
-产品内页默认同样是采用名为 final_price 的渲染器来显示价格，同时也会渲染 tier price。 
+产品内页默认同样是采用名为 `final_price` 的渲染器来显示价格，同时也会渲染 `tier_price`。 
 
 
 
