@@ -48,4 +48,22 @@
     <url>
         <loc>https://magento2cn.github.io/codes/sales/order.html</loc>
     </url>
+    <url>
+        <loc>https://magento2cn.github.io/appendices/cli.html</loc>
+    </url>
+    <url>
+        <loc>https://magento2cn.github.io/appendices/tools/module-version-error-processor.html</loc>
+    </url>
+    <url>
+        <loc>https://magento2cn.github.io/appendices/tools/log-filter.html</loc>
+    </url>
+    <url>
+        <loc>https://magento2cn.github.io/appendices/tools/trace-filter.html</loc>
+    </url>
+    <url>
+        <loc>https://magento2cn.github.io/appendices/tools/content-diff.html</loc>
+    </url>
+    <url>
+        <loc>https://magento2cn.github.io/appendices/tools/json-processor.html</loc>
+    </url>
 </urlset>
