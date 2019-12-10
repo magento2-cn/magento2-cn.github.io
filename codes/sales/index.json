@@ -8,6 +8,11 @@
                 "name": "order",
                 "title": "订单 Order",
                 "href": "codes/sales/order.html"
+            },
+            {
+                "name": "payment",
+                "title": "付款 Payment",
+                "href": "codes/sales/payment.html"
             }
         ]
     }
