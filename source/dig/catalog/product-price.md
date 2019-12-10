@@ -146,6 +146,44 @@ Magento 通过以下两个 layout 定义了价格渲染器：
 各类型产品（default、configurable、bundle、grouped、giftcard）的各种计价逻辑都是由这里指定的渲染类和模板输出。
 
 
+### 产品列表
+
+按如下步骤调用相关方法：
+
+```php
+Magento_Catalog::product/list.phtml
+    Magento\Catalog\Block\Product\ListProduct::getProductPrice
+        Magento\Catalog\Block\Product\ListProduct::getPriceRender
+        Magento\Framework\Pricing\Render::render( 'final_price', ... )
+```
+
+
+### 产品内页
+
+产品内页则是在 layout 中定义了两个价格相关的 block：
+
+```xml
+<referenceBlock name="product.info.options.wrapper.bottom">
+    <container name="product.info.price.configurable" label="Product info auxiliary container" htmlTag="div" htmlClass="product-info-price" before="product.info.addtocart.additional">
+        <block class="Magento\Catalog\Pricing\Render" name="product.price.final.configurable">
+            <arguments>
+                <argument name="price_render" xsi:type="string">product.price.render.default</argument>
+                <argument name="price_type_code" xsi:type="string">final_price</argument>
+                <argument name="zone" xsi:type="string">item_view</argument>
+            </arguments>
+        </block>
+    </container>
+    <block class="Magento\Catalog\Pricing\Render" name="product.price.tier.configurable" after="product.info.price.form">
+        <arguments>
+            <argument name="price_render" xsi:type="string">product.price.render.default</argument>
+            <argument name="price_type_code" xsi:type="string">tier_price</argument>
+            <argument name="zone" xsi:type="string">item_view</argument>
+        </arguments>
+    </block>
+</referenceBlock>
+```
+
+
 
 
 ## 默认计价逻辑
