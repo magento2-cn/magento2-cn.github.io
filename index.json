@@ -88,6 +88,11 @@
                     "href": "appendices/dev-windows"
                 },
                 {
+                    "name": "translates",
+                    "title": "文档翻译",
+                    "href": "appendices/translates"
+                },
+                {
                     "name": "cli",
                     "title": "常用命令及参数",
                     "href": "appendices/cli.html"

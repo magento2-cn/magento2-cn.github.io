@@ -1,0 +1,14 @@
+[
+    {
+        "name": "translates",
+        "title": "文档翻译",
+        "href": "appendices/translates",
+        "children": [
+            {
+                "name": "performance-scalability-optimizations",
+                "title": "站点性能及可扩展性优化",
+                "href": "appendices/translates/performance-scalability-optimizations.html"
+            }
+        ]
+    }
+]
