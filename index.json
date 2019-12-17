@@ -83,14 +83,14 @@
                     "href": "appendices/glossary.html"
                 },
                 {
-                    "name": "dev-windows",
-                    "title": "Windows 开发环境",
-                    "href": "appendices/dev-windows"
-                },
-                {
                     "name": "translates",
                     "title": "文档翻译",
                     "href": "appendices/translates"
+                },
+                {
+                    "name": "dev-windows",
+                    "title": "Windows 开发环境",
+                    "href": "appendices/dev-windows"
                 },
                 {
                     "name": "cli",

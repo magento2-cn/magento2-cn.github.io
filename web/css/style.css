@@ -118,6 +118,8 @@ article .content p { margin:0 0 16px; }
 article .content code { background:#f0f0f6; color:#666; display:inline-block; line-height:20px; font-family:Consolas, Arial, Helvetica, sans-serif; padding:1px 8px; }
 article .content pre { background:#f0f0f6; margin:0 0 1rem; padding:15px 20px; }
 article .content pre code { display:block; font:14px/21px Consolas, Arial, Helvetica, sans-serif; padding:0 0 5px; }
+article .content blockquote { background:#f0f0f6; margin:0 0 1rem; padding:15px 20px; }
+article .content blockquote p:last-child { margin-bottom: 0; }
 article .content ul { padding:0 0 15px 22px; }
 article .content ul li { padding:0 0 5px; }
 article .content ul li ul { padding:5px 0 5px 22px; }
