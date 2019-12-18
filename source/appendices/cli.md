@@ -52,7 +52,7 @@ rm -rf generated/*
 rm -rf pub/static/*
 rm -rf var/cache/*
 rm -rf var/di/*
-rm -rf var/generation/*
+rm -rf var/view_preprocessed/*
 
 php bin/magento setup:di:compile
 php bin/magento setup:static-content:deploy zh_Hant_HK en_US zh_Hans_CN
@@ -66,9 +66,7 @@ php bin/magento maintenance:disable
 ### 更新静态文件（无需开启维护模式）
 
 ```sh
-rm -rf var/view_preprocessed
-rm -rf var/cache
-rm -rf var/page_cache
+rm -rf var/view_preprocessed/*
 
 php bin/magento cache:flush
 php bin/magento setup:static-content:deploy zh_Hant_HK
