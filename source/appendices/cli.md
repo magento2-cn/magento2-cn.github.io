@@ -6,7 +6,7 @@
 
 ```sh
 rm -rf pub/static/*
-rm -rf var/view_preprocessed
+rm -rf var/view_preprocessed/*
 ```
 
 
