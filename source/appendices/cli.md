@@ -69,9 +69,7 @@ php bin/magento maintenance:disable
 rm -rf var/view_preprocessed/*
 
 php bin/magento cache:flush
-php bin/magento setup:static-content:deploy zh_Hant_HK
-php bin/magento setup:static-content:deploy en_US
-php bin/magento setup:static-content:deploy zh_Hans_CN
+php bin/magento setup:static-content:deploy zh_Hant_HK en_US zh_Hans_CN
 
 ```
 
