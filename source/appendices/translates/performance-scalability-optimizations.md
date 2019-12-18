@@ -159,16 +159,16 @@ Magento 2.0 针对 4 个层级来优化性能和可扩展性：客户端、页�
 下面根据这些分层讲述 Magento 2.0 如何提升性能和扩展性。
 
 
-## Performance and Scalability Improvements
+## Performance and Scalability Improvements - 性能和可扩展性的改进
 
 > Magento 2.0 improves how the application interacts with the browser as well as reduces the amount of data that must
   be returned from the server to render web pages. These changes significantly improve page response and load times, 
   giving you a much better starting point for developing a fast site.
 
-Magento 2.0 改善了应用程序与浏览器的交互方式，同时降低必须从服务器返回的数据量。这些修改显著提升页面的响应速度。
+Magento 2.0 改进了程序与浏览器的交互方式，降低了服务器返回的用于渲染页面所必须的数据量。这些修改显著提升页面的响应速度。
 
 
-### Client-side Improvements
+### Client-side Improvements - 客户端的改进
 
 > Page load time is a critical factor for creating a successful eCommerce site and has been shown to 
   directly impact consumer engagement and conversion rates. One key factor in providing a fast page load 
@@ -176,8 +176,38 @@ Magento 2.0 改善了应用程序与浏览器的交互方式，同时降低必�
   loaded to render the page. The amount of data required to render a web page is both a function of the 
   visual design of the page and the technologies and web development strategies used.
 
+页面加载时间是电子商务网站成功与否的关键因素，它直接影响消费者的参与度和转化率。改善页面加载速度和用户体验的一个关键因素，是降低页面
+的整体体积，或者说渲染页面所必须的数据量。而渲染页面所必须的数据量既取决于页面设计，也取决于所使用的技术和网页开发策略。
 
-### Page Caching
+> Magento 2.0 provides a number of optimizations to reduce page weight and improve response times:
+- **Magento 2.0 optimizes the assets required to render the page by using minification.**<br /> 
+  Minification is a process of removing whitespace, comments, and other unnecessary characters 
+  in order to reduce the size of files served to the browser. With Magento 2.0, all HTML, CSS, and 
+  JavaScript served by the application are minified to reduce their size. This minification is carried 
+  out in advance of requests and is cached so the minified files are available for all website requests. 
+  Magento uses industry-standard minification engines such as jShrink for Javascript and cssmin for 
+  CSS, as well as an internally-developed engine for HTML. These engines were selected to maximize 
+  compression, but merchants can choose to use others if they desire. To further reduce page 
+  weight, image files used by Magento websites are compressed using the PHP gd2 library to provide 
+  high quality images in the smallest file size. 
+- **Magento 2.0 maximizes the usage of the browser cache for storing assets.**<br />
+  All JavaScript and CSS are loaded to the browser and cached on the initial web page visited. This minimizes 
+  the amount of content that needs to be downloaded to render any subsequent page. To further 
+  improve the ability of the cache to service page requests and allow the browser to begin rendering 
+  the page, private data (such as consumers’ names) are no longer provided as HTML blocks. Now 
+  they are returned to the browser as JSON and are inserted into the rendered page when available. 
+- **Magento 2.0 improves response time by using asynchronous processing during checkout and cart operations.**<br />
+  Items are added to the cart asynchronously to improve response times for 
+  the browsing experience. Many checkout operations are also done asynchronously to improve 
+  response time, such as address validation and cart updates.
+
+Magento 2.0 通过以下几方面降低页面体积，加速响应时间：
+- **压缩静态文件**<br />
+  通过删除多余的空格、注释，以及其他字符来压缩文件，所有 HTML、CSS、JavaScript 都使用这种方式进行处理。这个压缩操作是在请求之前执行并
+  已生成缓存文件，它被应用于所有页面。
+
+
+### Page Caching - 页面缓存
 
 
 ### Application Enhancements

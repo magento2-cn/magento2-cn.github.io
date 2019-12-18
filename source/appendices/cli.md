@@ -35,11 +35,10 @@ chown -R www-data:www-data ./var
 ### 更新组件数据库，并开启产品模式（自动部署）
 
 ```
-php bin/magento setup:upgrade
+rm -rf pub/static/*
 
 php bin/magento deploy:mode:set production -vvv
-
-php bin/magento indexer:reindex
+php bin/magento setup:upgrade --keep-generated
 
 ```
 
@@ -47,12 +46,19 @@ php bin/magento indexer:reindex
 ### 开启产品模式（手动分步部署）
 
 ```
-php bin/magento deploy:mode:set production --skip-compilation
-php bin/magento setup:di:compile
+php bin/magento maintenance:enable
 
-php bin/magento setup:static-content:deploy zh_Hant_HK
-php bin/magento setup:static-content:deploy en_US
-php bin/magento setup:static-content:deploy zh_Hans_CN
+rm -rf generated/*
+rm -rf pub/static/*
+rm -rf var/cache/*
+rm -rf var/di/*
+rm -rf var/generation/*
+
+php bin/magento setup:di:compile
+php bin/magento setup:static-content:deploy zh_Hant_HK en_US zh_Hans_CN
+php bin/magento deploy:mode:set production --skip-compilation
+php bin/magento setup:upgrade --keep-generated
+php bin/magento maintenance:disable
 
 ```
 
