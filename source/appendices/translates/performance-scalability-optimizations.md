@@ -201,13 +201,57 @@ Magento 2.0 改进了程序与浏览器的交互方式，降低了服务器返�
   the browsing experience. Many checkout operations are also done asynchronously to improve 
   response time, such as address validation and cart updates.
 
-Magento 2.0 通过以下几方面降低页面体积，加速响应时间：
+Magento 2.0 通过以下几方面减小页面体积，加速响应时间：
 - **压缩静态文件**<br />
   通过删除多余的空格、注释，以及其他字符来压缩文件，所有 HTML、CSS、JavaScript 都使用这种方式进行处理。这个压缩操作是在请求之前执行并
   已生成缓存文件，它被应用于所有页面。
 
 
 ### Page Caching - 页面缓存
+
+> Another key to delivering fast page loads is improving the server response time. Magento 2.0 makes 
+extensive use of caching of page content and static assets on the server to accelerate response times. 
+With Magento 2.0, the application now directly integrates with Varnish page caching out-of-the-box. 
+Varnish is a reverse-HTTP proxy or web accelerator. The Varnish application stores HTML and other files or 
+fragments so that they can be returned extremely quickly. 
+
+实现快速页面加载的另一个关键是缩短服务器响应时间，Magento 2.0 为页面内容和静态资源大量采用缓存以加快响应速度。Varnish 是一个反向 HTTP 代理或者说网络加速器，它可为网站缓存并快速重新访问 HTML 和其他文件。Magento 2.0 可通过 Varnish 进行整页缓存。
+
+> Varnish provides a very fast and efficient mechanism for serving content that is highly scalable. The 
+requests that are served by the Varnish cache never need to reach the Magento application servers, 
+which reduces the load on the web nodes while dramatically improving the response time. One or more 
+Varnish servers can be used in front of the Magento server(s), an approach that provides a much faster 
+and more efficient system. 
+
+> Cached content can be composed of different elements with different lifespans or times-to-live using 
+Edge Side Includes (ESI). Edge Side Includes allow for different cached elements to be combined 
+dynamically before being served from the cache. Page elements that cannot be cached, such as cart 
+contents, customer name, or other private data, are provided separately. These page elements are passed 
+to the browser as JSON that can be rendered asynchronously in the browser rather than on the server. 
+This approach allows the page to begin rendering as quickly as possible with the other content added in 
+when it is available, creating a superior user experience. Magento 2.0 handles invalidation of content in 
+the page cache to ensure the right content is served to the website.
+
+> Magento 2.0 opens the benefits of Varnish caching to a much broader set of merchants by fully 
+supporting and providing configuration files (.vcl files) for Varnish 3.X and 4.X. These configurations must 
+be updated to reflect the deployment topology, but provide a starting point that makes it significantly 
+easier and less expensive to implement Varnish to improve performance and scalability.
+There can be a number of different ways to architect Varnish in the application. The simplest option is to 
+deploy Varnish on the same server that is running Magento. More sophisticated deployment architectures 
+can be used to scale out multiple Varnish servers using a load balancer to distribute traffic between 
+multiple Varnish instances on multiple servers. These deployments can improve scalability and provide 
+redundancy as part of a high availability system.
+
+> To use Varnish with secure pages or sites (i.e., served using HTTPS), another application (such as Nginx) 
+must be placed in front of the Varnish server(s) to handle SSL termination. 
+
+> Magento 2.0 does provide an alternative Page Cache in addition to Varnish. This cache is intended 
+for use in development or in single web node situations where Varnish cannot be used. However, the 
+Page Cache uses a PHP implementation that requires the Magento application to process the caching 
+requests, which causes it to be less efficient and to not yield the same performance benefits. Due to 
+the superior performance and scalability characteristics of Varnish, it is strongly recommended for 
+use in production deployments.
+
 
 
 ### Application Enhancements
