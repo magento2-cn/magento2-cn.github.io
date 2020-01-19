@@ -112,7 +112,7 @@ find ./ -type d -print|xargs chmod 775;
 .tar.gz 和 .tgz
 ```
 解压：tar zxvf FileName.tar.gz
-压缩：tar zcvf FileName.tar.gz DirName
+压缩：tar zcvf FileName.tar.gz --exclude=pub/media --exclude=pub/static --exclude=var .
 ```
 
 .zip
