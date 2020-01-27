@@ -315,7 +315,7 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
             elArticle.addClass( 'has-content' )
                 .append( '<div class="content">' + markdownConverter.makeHtml( articleContent ) + '</div><div class="index"></div>' );
             elArticle.find( 'pre' ).mCustomScrollbar( {
-                horizontalScroll: true,
+                axis: 'yx',
                 theme: 'minimal-dark'
             } );
             elArticleSource.remove();
