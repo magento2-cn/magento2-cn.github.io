@@ -1,5 +1,6 @@
 使用 docker-compose 为每个项目部署开发所需的容器，这基于[本地开发框架](appendices/dev-windows/dev.html)。
 
+
 ## Github 地址
 
 - [Magento 1.9](https://github.com/zengliwei/dev-magento/tree/1.9-dev)
@@ -15,7 +16,7 @@
 
 ### 简化版
 
-这个版本包含三个容器：
+该版本包含三个容器：
 
 - `mysql:5.7` 容器
 - `redis:latest` 容器
