@@ -265,7 +265,7 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
         }
         let winH = elWin.height();
         if ( elWin.height() > elBody.innerHeight() ) {
-            elArticle.css( { height: winH - elFooter.outerHeight() } );
+            elArticle.css( { minHeight: winH - elFooter.outerHeight() } );
         }
         updateOnScroll();
         elDoc.trigger( 'update_stage' );
