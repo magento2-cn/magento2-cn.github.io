@@ -13,6 +13,7 @@
 - `mailhog/mailhog` 容器，用于本地邮件测试
 - 基于 `nginx:latest` 的自定义容器，用于域名转发
 - 基于 `php:7.3-fpm` 的自定义容器，包含以下内容：
+    - Xdebug - 用于 PHP 开发中的调试、追踪和分析
     - MSMTP - 用于转发测试邮件到 `mailhog/mailhog` 容器
     - Nginx - 用于处理页面请求
     - SSH - 用于执行 CLI 指令，及通过 SFTP 进行文件传输 
