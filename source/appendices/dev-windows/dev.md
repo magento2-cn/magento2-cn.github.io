@@ -13,9 +13,9 @@
 - `mailhog/mailhog` 容器，用于本地邮件测试
 - 基于 `nginx:latest` 的自定义容器，用于域名转发
 - 基于 `php:7.3-fpm` 的自定义容器，包含以下内容：
-    - MSMTP 用于转发测试邮件到 `mailhog/mailhog` 容器
-    - Nginx 用于处理页面请求
-    - SSH 用于执行 CLI 指令，及通过 SFTP 进行文件传输 
+    - MSMTP - 用于转发测试邮件到 `mailhog/mailhog` 容器
+    - Nginx - 用于处理页面请求
+    - SSH - 用于执行 CLI 指令，及通过 SFTP 进行文件传输 
 - 名为 dev_net 的 network
 
 
@@ -38,6 +38,8 @@ server {
 }
 ```
 
+其中 test_web 为自定义 Web 容器的容器名。
+
 
 ### 数据库管理
 
@@ -49,4 +51,17 @@ $cfg['Servers'][2]['host'] = 'test_mysql';
 $cfg['Servers'][2]['user'] = 'magento';
 $cfg['Servers'][2]['password'] = 'magento';
 ```
+
+其中 test_mysql 为 MySQL 容器的容器名。
+
+
+## 部署步骤
+
+- 下载文件到本地目录
+- 保证 22 及 80 端口未被使用，否则须修改 **.env** 文件，指定要映射的端口
+- 修改 **C:\Windows\System32\drivers\etc\hosts** 文件，添加域名映射：
+    - 127.0.0.1  localhost
+    - 127.0.0.1  db.localhost
+    - 127.0.0.1  mail.localhost
+- 执行 **start.cmd** 文件以生成自启动文件，创建并开启相关容器
 
