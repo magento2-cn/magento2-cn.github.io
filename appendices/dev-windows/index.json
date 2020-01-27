@@ -5,14 +5,14 @@
         "href": "appendices/dev-windows",
         "children": [
             {
-                "name": "quick",
-                "title": "使用 docker-compose 快速部署",
-                "href": "appendices/dev-windows/quick.html"
+                "name": "dev",
+                "title": "本地开发框架",
+                "href": "appendices/dev-windows/dev.html"
             },
             {
-                "name": "step-by-step",
-                "title": "使用 Docker 分步部署",
-                "href": "appendices/dev-windows/step-by-step.html"
+                "name": "magento",
+                "title": "Magento 开发环境",
+                "href": "appendices/dev-windows/magento.html"
             }
         ]
     }
