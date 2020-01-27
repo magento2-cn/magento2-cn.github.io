@@ -19,7 +19,10 @@
 
 - `mysql:5.7` 容器
 - `redis:latest` 容器
-- 自定义 Web 容器
+- 基于 `php:x.x-fpm` 的自定义容器，包含以下内容：
+    - MSMTP 用于转发测试邮件到 `mailhog/mailhog` 容器
+    - Nginx 用于处理页面请求
+    - SSH 用于执行 CLI 指令，及通过 SFTP 进行文件传输
 
 
 ### 完整版
