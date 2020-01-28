@@ -129,11 +129,27 @@ find ./ -type d -print|xargs chmod 775;
 ```
 
 
-### 导出 GIT 最新更新
+### 导出 GIT 文件
 
-```sh
+最后一次提交修改的文件
+
+```bash
 git archive --output=latest.tar HEAD \
-$(git diff-tree -r --no-commit-id --name-only --diff-filter=ACMRT <CommitID1> <CommitID2>)
+  $(git diff-tree -r --no-commit-id --name-only --diff-filter=ACMRT HEAD^)
+```
+
+指定版本与最后一次提交相异的文件
+
+```bash
+git archive --output=latest.tar HEAD \
+  $(git diff-tree -r --no-commit-id --name-only --diff-filter=ACMRT OLD_COMMIT_ID HEAD)
+```
+
+指定的两个版本间相异的文件
+
+```bash
+git archive --output=latest.tar COMMIT_ID_2 \
+  $(git diff-tree -r --no-commit-id --name-only --diff-filter=ACMRT COMMIT_ID_1 COMMIT_ID_2)
 ```
 
 
