@@ -253,35 +253,247 @@ the superior performance and scalability characteristics of Varnish, it is stron
 use in production deployments.
 
 
-
 ### Application Enhancements
+
+> Magento 2.0 is architected to meet the scalability and stability needs of large and growing merchants
+  and enterprises. The following server-side improvements are implemented in Magento 2.0 to eliminate
+  blocking operations or gridlocks and to improve efficiency of backend business operations:
+
+**Asynchronous Order and Product Updates**
+
+> Large enterprises with lots of orders and product data tend to have multiple Admin users working
+concurrently on the backend. Magento 2.0 introduces optional asynchronous updates for order
+management and product data to make concurrent operations efficient and to eliminate gridlock or
+blocking operations during updates.
+
+> For example, when a server is operating at full capacity, an Admin making updates to product descriptions
+or pick, pack and ship orders is still able to quickly interact with Magento, as the actual processing is queued
+for later. This means backend Application performance is dramatically improved for situations where there
+are over 50+ Admin users simultaneously making order updates and over 25+ Admin users simultaneously
+making product updates.
+
+**Job Queue Mechanism**
+
+> To further advance scalability and responsiveness, additional enhancements were made in our commercial
+product, Magento Enterprise Edition 2.0. One such Enterprise Edition-only scalability improvement is a
+job queue based on Rabbit MQ, which allows for asynchronous processing of jobs. Queue workers pull
+jobs that are placed on the queue when they have capacity. Queue workers can operate using separate
+server resources from the Magento application servers. This allows the two environments to be optimized
+separately for their respective loads. 
+
+> The job queue is provided as a Magento Enterprise Edition 2.0 platform feature that can be customized
+and extended by the Magento ecosystem for tasks that require highly scalable processing. In subsequent
+releases, more native features will make use of the job queue for operations such as sending emails,
+indexing, and asynchronous order insertion.
+
+> An example of the job queue’s ability to improve efficiency and throughput in operations is deferred stock
+updates, an optional configuration in Magento Enterprise Edition 2.0. Deferred stock updates allow for
+inventory levels to update asynchronously as orders are placed to increases checkout throughput. It helps
+ensure that orders will be captured when checkout transactions are high. This functionality is best suited for
+high inventory items or products that can easily be backordered. Deferred stock updates can be enabled on
+either a per-product or per-website scope, giving merchants the flexibility to use where ideal.
+
+**PHP Interpreters**
+
+> Beyond the updates made in the Magento application, there are significant performance advancements
+that have come from the larger PHP community. One such improvement is PHP7, a radically enhanced PHP
+interpreter recently released by Zend that has been demonstrated to boost the performance of nearly all
+PHP applications. Magento recommends and supports the use of PHP7 to achieve optimal performance
+with the Magento 2.0 platform. Earlier versions of PHP may be used, but may not yield the same
+performance benefits and are not recommended.
 
 
 ### Database Improvements
 
+> To further improve scalability in our commercial product, Magento Enterprise Edition 2.0, we made a
+  number of improvements to the database tier of the application. These options allow for tuning and
+  optimization of the databases to better handle high traffic and transaction volumes. 
+
+**Multiple Database Masters**
+
+> One major enhancement is the ability to use different databases for different sub-systems or areas of
+  the application. This approach supports up to three different master databases for checkout, orders, and
+  product data that can be broken out in separate database instances. This separation of database instances
+  for different sub-systems effectively shards the Magento database by business entity. Each master database
+  can have multiple slave databases to further scale database read operations. 
+
+> The division helps ensure that the load from merchandising and order management activities can be
+  isolated from users browsing and purchasing on the website. This separation allows different functional
+  areas to be scaled independently depending on the system load and unique needs of the business, such
+  as high order volume in checkout or a very high SKU count.
+
+> Magento uses the Command Query Responsibility Segregation (CQRS) database pattern to seamlessly
+  support the routing of queries to the appropriate database. Because of this, developers do not need
+  to know which database configuration is being used, which simplifies customization. CQRS assumes
+  a Create Read Update Delete (CRUD) database access pattern is in use. Our framework uses that
+  assumption to route the generated queries to read (slave) or write (master) databases. Developers
+  customizing Magento do not need to incorporate code to support different database configurations
+  as the framework will handle this automatically. 
+
+**MySQL Cluster Support**
+
+> For situations where additional database scalability is needed, Magento Enterprise Edition 2.0 also supports
+  MySQL Cluster for checkout and order management databases. MySQL Cluster is a third-party offering
+  and provides a high-availability, multiple-master solution to scale MySQL. MySQL Cluster manages the
+  sharding of data across multiple database instances. Multiple master databases can be used in each of the
+  application domains as a result. This approach improves the write scalability of the application and enables
+  merchants to use MySQL Cluster to ease management of multiple master databases.
+
+> These database improvements represent a major advancement for Magento Enterprise Edition and provide
+  considerable flexibility in how the database tier can be scaled. Now each area of the application can be
+  tuned independently for its expected load. In addition, one can isolate the critical customer facing database
+  interactions from lower priority administrative tasks to achieve comprehensive scale for large and growing
+  enterprise customers.
+
 
 ### Performance Toolkit
+
+> The Magento Performance Toolkit is a script and a set of JMeter tests that allow for consistent and
+  repeatable performance testing for Magento applications. The script allows the generation of four distinct
+  customer profiles that are intended to represent different eCommerce business sizes. The data from the
+  script populates a Magento instance. The Performance Toolkit is bundled with the Magento distribution
+  (in the setup/performance-toolkit directory).
 
 
 ## Performance Results
 
+> To show the impact of Magento 2.0’s more flexible architecture and performance enhancements, a series
+  of benchmark tests were performed comparing the recommended configurations of Magento Enterprise
+  Edition 2.0 and Magento Enterprise Edition 1.14.2. These tests revealed that Magento Enterprise Edition
+  2.0, with its performance enhancements, tight integration with Varnish, and support for PHP7,
+  delivers higher throughput (orders/hour) and faster server response times across the board for
+  both small and large merchant deployments.
+
 
 ### Test Configuration
+
+**Software**
+
+> We tested the recommended and fully-supported out-of-the-box configurations for both products:
+  - Magento Enterprise Edition 2.0 with PHP7 and Varnish caching
+  - Magento Enterprise Edition 1.14.2 with PHP5.6 and Full-Page Caching
+
+> Testing of other scenarios is not valid as they do not provide data on recommended or supported
+  configurations. Additional software details are available in the Appendix.
+
+**Scenarios**
+
+> Two scenarios were investigated:
+  - **Small merchant** with $1-$5M in online sales deployed on a single 4-core web node and a single
+    database node. 25 simultaneous JMeter threads (representing 25 concurrent requests) were used to
+    show site performance during a period of peak traffic, such as a sale.
+  - **Large merchant** with $50-$100M in online sales deployed on five 4-core web nodes and a single
+    database node. 25 to 100 simultaneous JMeter threads (representing 25 to 100 concurrent requests)
+    were used to show site performance under increasing traffic loads. 
+
+> Both scenarios assumed the following Magento store profile:
+
+|Websites / Store Views|SKUs (Simple/Configurable)|Categories / Nesting|Catalog / Cart Rules|Customers in Database)|Orders (in Database)|
+|---|---|---|---|---|---|
+|2 / 2|16,000 / 1,000|300 / 3|20 / 20|200|1600|
+
+> Additional details on the scenarios are provided in the Appendix.
+
+**Testing Methodology**
+
+> The tests emulated typical eCommerce site usage scenarios, such as:
+  - Catalog browsing, including visiting the home page, a catalog page, a configurable product page,
+    and a simple product page
+  - Adding both a simple and configurable product to the cart
+  - Completing the full checkout process (all steps) as a guest and a registered customer
+
+> We assumed the following site traffic patterns for user sessions:
+  - 62% browsing only
+  - 30% browsing and adding products to the cart, but abandoning
+  - 4% completing checkout as a guest
+  - 4% completing checkout as a registered customer
+
+> All tests were conducted using the Magento Performance Toolkit and JMeter was used to measure and
+  report server response times in milliseconds.
 
 
 ### Small Merchant Deployment
 
+> The small merchant test scenario shows that Magento Enterprise Edition 2.0 successfully runs on a small
+  4-core server, even when handling high loads associated with 25 concurrent users during a sales event.
+  Magento Enterprise Edition 2.0 delivers better performance than Magento Enterprise Edition 1.14.2 across all
+  use cases:
+  - Processes 28% more order per hour, reaching 597 orders per hour
+  - Delivers nearly instant response times for catalog pages
+  - Enables up to 66% faster add-to-cart server response times
+  - Provides 48% faster guest checkout response times and 36% faster customer checkout response
+    times when all checkout steps are combined
+
+**Throughput Results**
+
+**Server Response Time Results**
+
 
 ### Large Merchant Deployment
+
+> Test results show that Magento Enterprise Edition 2.0 also delivers strong performance for large, highvolume sites, and once again outperforms Magento Enterprise Edition 1.14.2 across all use cases, and under
+  increasing load. Results show that it:
+  - Processes 39% more order per hour, reaching up to 2,558 orders per hour
+  - Delivers nearly instant response times for catalog pages
+  - Enables up to 66% faster add-to-cart server response times that are under 500 milliseconds
+  - Provides 51% faster guest checkout response times and 36% faster customer checkout response
+    times for all checkout steps combined
+
+**Throughput Results**
+
+**Server Response Time Results**
+
+Catalog Browsing
+
+Add to Cart
+
+Customer Checkout Operations (All Steps)
 
 
 ## Conclusion
 
+> Magento 2.0 is a highly efficient eCommerce platform that performs better at scale compared to previous
+  Magento versions. Its top-tier performance and scalability, combined with new functionality, powerful
+  business user tools, and unprecedented flexibility to create tailored shopping experiences make it the next-
+  generation solution that is right for your business.
+
+> Powering Magento 2.0’s performance and scalability gains are a comprehensive set of enhancements that
+  optimize the client side to reduce page weight, tightly integrate Varnish caching to accelerate page load
+  times, and optimize the application itself to support more efficient job processing and additional concurrent
+  Admin users. It also incorporates new technologies, like PHP7, to boost performance and includes a re-architected 
+  database tier with support for multiple master databases to offer a better ability to scale and
+  manage unique system load and business requirements.
+
+> Together, these enhancements result in a solution that sets a new standard for performance and scalability.
+  Benchmark tests show that Magento Enterprise Edition 2.0 delivers across-the-board improvements in
+  server response times for both small and large merchants. Catalog browsing, add-to-cart operations, and
+  checkouts are significantly faster and Magento Enterprise Edition 2.0 can process up to 39% more orders
+  per hour, enabling you to get more from your hardware investment. The chart below summarizes all key
+  benchmark test results so you can see for yourself the power of the Magento 2.0 platform.
+
 
 ## Small Merchant Deployment
 
+Throughput - orders per hour
+
+|Magento Enterprise Edition 1.14.2|Magento Enterprise Edition 2.0|
+|---|---|
+|467|597|
+
+Server Response Time - milliseconds
+
+||Magento Enterprise Edition 1.14.2|Magento Enterprise Edition 2.0|
+|---|---|---|
+|**Catalog Browsing**<br />Home Page<br />Category Page<br />Configurable Product<br />Simple Product|<br />37<br />41<br />35<br />35|<br />1<br />1<br />1<br />1|
+|**Add to Cart**<br />Simple Product<br />Configurable Product|<br />1,533<br />1,662|<br />523<br />656|
+|**Checkout (All Steps)**<br />Guest Checkout<br />Customer Checkout|<br />6,325<br />8,677|<br />3,303<br />5,558|
+
 
 ## Large Merchant Deployment
+
+Throughput – orders per hour
+
+
 
 
 ## Appendix
@@ -289,10 +501,84 @@ use in production deployments.
 
 ### Merchant Profile Details
 
+|Websites / Store Views|SKUs (Simple/Configurable)|Categories / Nesting|Catalog / Cart Rules|Customers (in Database)|Orders (in Database)|
+|---|---|---|---|---|---|
+|1 / 1|16,000 / 1,000|300 / 3|20 / 20|200|1600|
+
+> Definitions
+  - Websites: The number of websites on the store.
+  - Store views: The number of store views in the system total.
+  - Categories: The number of categories in the store.
+  - Nesting: How many nested layers of categories are in the store.
+  - Catalog / Cart Rules: The number of rules in each category in the system.
+  - Customers (in DB): The number of registered customers in the system before the test starts.
+  - Orders (in DB): The number of order existing in the system before the test starts.
+
 
 ### Small Merchant Deployment (4 web node cores)
+
+> - Software
+      - PhP 5.6.13 with Zend Opcache v7.0.6-dev (for Magento Enterprise Edition 1.14.2)
+      - PhP 7.0.3-1 with Opcache (for Magento Enterprise Edition 2.0)
+      - Nginx 1.6.2
+      - MySQL 5.6.28
+      - Varnish 4.0.2 (for Magento Enterprise Edition 2.0)
+      - Redis 3.0.5
+      - CentOS 6.4, CentOS 7.0 and Debian (on core 3.16.7)
+  - 1 Web Node
+      - 4 CPUs Core i7 with hyper threading
+      - 8GB of memory
+      - 500 GB 7200 RPM SSHD and RAID 1, 5, or 10 disks
+      - Running Software
+          - Nginx
+          - Varnish (for Magento Enterprise Edition 2.0)
+          - php-fpm
+  - 1 Database Node
+      - 4 CPUs Core i7 with hyper threading
+      - 8GB of memory
+      - 500 GB 7200 RPM SSHD and RAID 1, 5, or 10 disks
+      - Running Software
+          - MySQL
+          - Redis (FPC Cache for Magento Enterprise Edition 1.14.2, Session Storage)
+  - 1 JMeter node (to drive the tests)
+      - 4 CPUs Core i7 with hyper threading
+      - 8GB of memory
+      - 500 GB 7200 RPM SSHD and RAID 1, 5, or 10 disks
+  - All performance tests leverage real cores. Virtual can bring unexpectedly high deviation.
 
 
 ### Larger Merchant Deployment (20 web node cores)
 
+> - Software
+      - PhP 5.6.13 with Zend Opcache v7.0.6-dev (for Magento Enterprise Edition 1.14.2)
+      - PhP 7.0.3-1 with Opcache (for Magento Enterprise Edition 2.0)
+      - Nginx 1.6.2
+      - MySQL 5.6.28
+      - Varnish 4.0.2 (for Magento Enterprise Edition 2.0)
+      - Redis 3.0.5
+      - Memcache 1.4.21
+      - CentOS 6.4, CentOS 7.0 and Debian (on core 3.16.7)
+  - 5 Web Nodes
+      - 4 CPUs Core i7 with hyper threading
+      - 8GB of memory
+      - 500 GB 7200 RPM SSHD and RAID 1, 5, or 10 disks
+      - Running Software
+          - Web Node #1:
+              - Nginx
+              - Varnish (for Magento Enterprise Edition 2.0)
+              - php-fpm
+          - Web Node #2 - #5:
+              - php-fpm
+  - 1 Database Node
+      - 4 CPUs Core i7 with hyper threading
+      - 8GB of memory
+      - 500 GB 7200 RPM SSHD and RAID 1, 5, or 10 disks
+      - Running Software
+          - MySQL
+          - Redis (Session Storage, FPC Cache for Magento Enterprise Edition 1.14.2)
+  - JMeter node (to drive the tests)
+      - 4 CPUs Core i7 with hyper threading
+      - 8GB of memory
+      - 500 GB 7200 RPM SSHD and RAID 1, 5, or 10 disks
+  - All performance tests leverage real cores. Virtual can bring unexpectedly high deviation.
 
