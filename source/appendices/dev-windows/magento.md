@@ -42,10 +42,8 @@
 ### 创建容器
 
 - 在[本地开发框架](appendices/dev-windows/dev.html)目录下的 **projects** 文件夹中创建新文件夹，下载文件到该目录中
-- 修改 **domain** 文件指定新项目的主域名，该域名会被作为域名转发配置文件的文件名
-- 修改 **C:\Windows\System32\drivers\etc\hosts** 文件，添加域名映射
-- 修改 **.env** 文件指定项目名，该名字将作为项目各容器名的前缀
-- 通过 CMD 或 Power Shell 在项目目录下执行 `docker-compose up --no-recreate -d` 命令创建容器
+- 修改 **.env** 文件指定项目名和主域名，项目名将作为各相关容器名的前缀
+- 执行 **start.cmd** 文件以创建并开启相关容器
 
 
 ### 启动容器
