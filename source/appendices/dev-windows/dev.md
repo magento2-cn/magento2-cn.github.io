@@ -47,10 +47,12 @@ server {
 通过 `./config/phpmyadmin/config.user.inc.php` 文件为 `phpmyadmin/phpmyadmin` 容器添加各项目的 MySQL 数据库信息，比如
 
 ```php
-$cfg['Servers'][2]['auth_type'] = 'config';
-$cfg['Servers'][2]['host'] = 'test_mysql';
-$cfg['Servers'][2]['user'] = 'magento';
-$cfg['Servers'][2]['password'] = 'magento';
+$cfg['Servers'][] = [
+    'auth_type' => 'config',
+    'host'      => 'test_mysql',
+    'user'      => 'magento',
+    'password'  => 'magento'
+];
 ```
 
 其中 test_mysql 为 MySQL 容器的容器名。
@@ -60,9 +62,5 @@ $cfg['Servers'][2]['password'] = 'magento';
 
 - 下载文件到本地目录
 - 保证 22 及 80 端口未被使用，否则须修改 **.env** 文件，指定要映射的端口
-- 修改 **C:\Windows\System32\drivers\etc\hosts** 文件，添加域名映射：
-    - 127.0.0.1  localhost
-    - 127.0.0.1  db.localhost
-    - 127.0.0.1  mail.localhost
 - 执行 **start.cmd** 文件以生成自启动文件，创建并开启相关容器
 
