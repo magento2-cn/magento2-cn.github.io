@@ -32,7 +32,7 @@
 完整版在简化版基础上添加了：
 
 - `elasticsearch:6.8.6`（Magento 2.3 +）或 `elasticsearch:2.4.6`（Magento 2.1）容器
-- `kibana:6.8.6`（Magento 2.3 +）或 `elastichq/elasticsearch-hq:latest`（Magento 2.1）容器
+- `kibana:6.8.6`（Magento 2.3 +）或 `elastichq/elasticsearch-hq`（Magento 2.1）容器
 - 基于 `rabbitmq:management` 的自定义容器，自动创建 magento 用户
 - 基于 `varnish:latest` 的自定义容器，添加 Magento 2 对应规则
 
