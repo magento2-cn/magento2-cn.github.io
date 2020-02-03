@@ -3,13 +3,13 @@
 
 ## Github 地址
 
-- [Magento 1.9](https://github.com/zengliwei/dev-magento/tree/1.9-dev)
-- [Magento 2.1 简化版](https://github.com/zengliwei/dev-magento/tree/2.1-dev)
-- [Magento 2.1 完整版](https://github.com/zengliwei/dev-magento/tree/2.1-dev-full)
-- [Magento 2.2 简化版](https://github.com/zengliwei/dev-magento/tree/2.2-dev)
-- [Magento 2.2 完整版](https://github.com/zengliwei/dev-magento/tree/2.2-dev-full)
 - [Magento 2.3 简化版](https://github.com/zengliwei/dev-magento/tree/2.3-dev)
 - [Magento 2.3 完整版](https://github.com/zengliwei/dev-magento/tree/2.3-dev-full)
+- [Magento 2.2 简化版](https://github.com/zengliwei/dev-magento/tree/2.2-dev)
+- [Magento 2.2 完整版](https://github.com/zengliwei/dev-magento/tree/2.2-dev-full)
+- [Magento 2.1 简化版](https://github.com/zengliwei/dev-magento/tree/2.1-dev)
+- [Magento 2.1 完整版](https://github.com/zengliwei/dev-magento/tree/2.1-dev-full)
+- [Magento 1.9](https://github.com/zengliwei/dev-magento/tree/1.9-dev)
 
 
 ## 部署内容
