@@ -23,7 +23,7 @@
 - 基于 `php:x.x-fpm` 的自定义容器，包含以下内容：
     - 运行 Magento 2 对应版本所需的 PHP 插件及 Xdebug
     - MSMTP - 用于转发测试邮件到 `mailhog/mailhog` 容器
-    - Nginx - 用于处理页面请求
+    - Nginx - 用于处理页面请求，站点根目录为 **/var/www/current**
     - SSH - 用于执行 CLI 指令，及通过 SFTP 进行文件传输
 
 
