@@ -33,8 +33,8 @@
 
 - `elasticsearch:6.8.6`（Magento 2.3 +）或 `elasticsearch:2.4.6`（Magento 2.1）容器
 - `kibana:6.8.6`（Magento 2.3 +）或 `elastichq/elasticsearch-hq`（Magento 2.1）容器
+- `varnish:latest` 容器，预设 Magento 2 对应规则
 - 基于 `rabbitmq:management` 的自定义容器，自动创建 magento 用户
-- 基于 `varnish:latest` 的自定义容器，添加 Magento 2 对应规则
 
 假设项目主域名为 domain.com，完成部署后还可通过浏览器访问下面几个链接：
 
