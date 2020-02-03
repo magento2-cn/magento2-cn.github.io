@@ -19,6 +19,12 @@
     - SSH - 用于执行 CLI 指令，及通过 SFTP 进行文件传输 
 - 名为 dev_net 的 network
 
+完成部署后可通过浏览器访问下面几个链接：
+
+- http://localhost - 对应 `dev_web` 容器的 **/var/www/localhost** 目录
+- http://db.localhost - phpMyAdmin 的访问地址
+- http://mail.localhost - mailhog 的访问地址
+
 
 ## 配置文件
 

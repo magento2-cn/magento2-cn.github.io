@@ -36,6 +36,11 @@
 - 基于 `rabbitmq:management` 的自定义容器，自动创建 magento 用户
 - 基于 `varnish:latest` 的自定义容器，添加 Magento 2 对应规则
 
+假设项目主域名为 domain.com，完成部署后还可通过浏览器访问下面几个链接：
+
+- http://elastic.domain.com - ElasticSearch 管理平台
+- http://rabbitmq.domain.com - RabbitMQ 管理平台
+
 
 ## 部署步骤
 
