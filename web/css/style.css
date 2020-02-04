@@ -149,6 +149,7 @@ article .index li.t-h4 a { font-size:8px; line-height:12px; }
  * Footer
  */
 footer { background:#333; color:#fff; font-size:10px; padding:10px 0; position:relative; width:100%; z-index:2; }
+footer a { color:#fff; text-decoration:none; }
 footer.fixed { bottom:0; position:fixed; }
 footer .box { margin:0 20px; }
 footer .box nav { float:left; }

@@ -430,7 +430,7 @@ require( [ 'jquery', 'text!index.json', 'markdown', 'mousewheel', 'progress', 's
     const initFooter = function () {
 
         let html = '<div class="box">' +
-            '<div class="copyright">Copyright &copy; ' + ( new Date ).getFullYear() + ' Magento 2 笔记</div>' +
+            '<div class="copyright">Copyright &copy; ' + ( new Date ).getFullYear() + ' <a target="_blank" href="https://zengliwei.github.io/">Zengliwei</a></div>' +
             '</div>';
 
         elFooter.html( html );
