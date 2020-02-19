@@ -28,6 +28,11 @@
                 "name": "json-formatter",
                 "title": "JSON 处理",
                 "href": "appendices/tools/json-processor.html"
+            },
+            {
+                "name": "parse-url",
+                "title": "URL 解析",
+                "href": "appendices/tools/parse-url.html"
             }
         ]
     }

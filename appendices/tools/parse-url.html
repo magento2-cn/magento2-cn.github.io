@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>URL 解析 - Magento 2 笔记</title>
+    <base href="/" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+    <meta name="keywords" content="Magento,Magento 2,windows,常用工具,tool" />
+    <meta name="description" content="记录一切与 Magento 2 使用和开发相关的内容，包括使用指南、常用代码、异常处理、运维优化等等。" />
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico" />
+    <link rel="stylesheet" type="text/css" media="all" href="web/css/style.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="web/css/jquery.mCustomScrollbar.min.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="web/css/jquery.fancybox.min.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="web/css/pignose.calendar.css" />
+</head>
+<body class="tools log-filter">
+    <header></header>
+    <main>
+        <aside></aside>
+        <article>
+            <h1>URL 解析</h1>
+            <div class="section">
+                <div class="wrapper">
+                    <textarea id="url" class="input-text" placeholder="URL"></textarea>
+                </div>
+                <div class="wrapper">
+                    <textarea id="result" class="input-text" placeholder="解析結果" rows="20"></textarea>
+                </div>
+            </div>
+        </article>
+    </main>
+    <footer></footer>
+    <script type="text/javascript" src="web/js/require.js"></script>
+    <script type="text/javascript" src="web/js/site.js"></script>
+    <script type="text/javascript">
+
+        let objSortByKey = function ( obj ) {
+            let keys = [];
+            for ( let key in obj ) {
+                keys.push( key );
+            }
+            keys.sort();
+            let sortedObj = {};
+            for ( let i = 0; i < keys.length; i++ ) {
+                sortedObj[keys[i]] = obj[keys[i]];
+            }
+            return sortedObj;
+        };
+
+        let parseParams = function ( query ) {
+            let params = {}, e,
+                reg = /([^&=]+)=?([^&]*)/g,
+                decodeRE = /\+/g,
+                decode = function ( str ) {
+                    return decodeURIComponent( str.replace( decodeRE, ' ' ) );
+                };
+            while ( e = reg.exec( query ) ) params[decode( e[1] )] = decode( e[2] );
+            return params;
+        };
+
+        document.getElementById( 'url' ).oninput = function () {
+            let pos = this.value.indexOf( '?' );
+            document.getElementById( 'result' ).value = JSON.stringify( {
+                url: this.value.substr( 0, pos ),
+                params: objSortByKey( parseParams( this.value.substr( pos + 1 ) ) )
+            }, null, 4 );
+        };
+    </script>
+</body>
+</html>
