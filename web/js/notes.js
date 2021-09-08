@@ -119,7 +119,7 @@ require([
     };
 
     const initFooter = function () {
-        $footer.html('Copyright &copy; <a href="/"><strong>Zengliwei</strong></a>. All rights reserved.');
+        $footer.html('Copyright &copy; <a target="_blank" href="https://zengliwei.github.io/"><strong>Zengliwei</strong></a>. All rights reserved.');
     };
 
     initHeader();
