@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+    <base href="/"/>
+    <title>Magento 2 开发笔记</title>
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="web/css/notes.css"/>
+</head>
+<body>
+<main>
+    <article>
+        <h1>常用常量</h1>
+<h2>Framework</h2>
+<pre><code class="language-php">\Magento\Framework\App\Area::AREA_GLOBAL
+\Magento\Framework\App\Area::AREA_FRONTEND
+\Magento\Framework\App\Area::AREA_ADMIN
+\Magento\Framework\App\Area::AREA_ADMINHTML
+\Magento\Framework\App\Area::AREA_CRONTAB
+\Magento\Framework\App\Area::AREA_WEBAPI_REST
+\Magento\Framework\App\Area::AREA_WEBAPI_SOAP
+\Magento\Framework\App\Area::AREA_DOC</code></pre>
+<pre><code class="language-php">\Magento\Framework\App\State::PARAM_MODE
+
+\Magento\Framework\App\State::MODE_DEFAULT
+\Magento\Framework\App\State::MODE_DEVELOPER
+\Magento\Framework\App\State::MODE_PRODUCTION</code></pre>
+<h2>Store</h2>
+<pre><code class="language-php">\Magento\Store\Model\Store::DEFAULT_STORE_ID</code></pre>
+<pre><code class="language-php">\Magento\Store\Model\ScopeInterface::SCOPE_STORE
+\Magento\Store\Model\ScopeInterface::SCOPE_GROUP
+\Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE
+
+\Magento\Store\Model\ScopeInterface::SCOPE_STORES
+\Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES</code></pre>
+<h2>Entity</h2>
+<pre><code class="language-php">\Magento\Customer\Model\Customer::ENTITY
+\Magento\Customer\Api\AddressMetadataInterface::ENTITY_TYPE_ADDRESS
+\Magento\Catalog\Model\Category::ENTITY
+\Magento\Catalog\Model\Product::ENTITY
+\Magento\Sales\Model\Order::ENTITY</code></pre>
+<h2>Catalog</h2>
+<pre><code class="language-php">\Magento\Catalog\Model\Category::ROOT_CATEGORY_ID
+\Magento\Catalog\Model\Category::TREE_ROOT_ID</code></pre>
+<pre><code class="language-php">\Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED
+\Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED</code></pre>
+<pre><code class="language-php">\Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
+\Magento\Catalog\Model\Product\Type::TYPE_BUNDLE
+\Magento\Catalog\Model\Product\Type::TYPE_VIRTUAL
+\Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE</code></pre>
+<h2>Sales</h2>
+<pre><code class="language-php">\Magento\Sales\Model\Order::STATE_NEW
+\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT
+\Magento\Sales\Model\Order::STATE_PROCESSING
+\Magento\Sales\Model\Order::STATE_COMPLETE
+\Magento\Sales\Model\Order::STATE_CLOSED
+\Magento\Sales\Model\Order::STATE_CANCELED
+\Magento\Sales\Model\Order::STATE_HOLDED
+\Magento\Sales\Model\Order::STATE_PAYMENT_REVIEW
+
+\Magento\Sales\Model\Order::STATUS_FRAUD</code></pre>
+<pre><code class="language-php">\Magento\Sales\Model\Order\Shipment::STATUS_NEW</code></pre>
+<pre><code class="language-php">\Magento\Sales\Model\Order\Invoice::STATE_OPEN
+\Magento\Sales\Model\Order\Invoice::STATE_PAID
+\Magento\Sales\Model\Order\Invoice::STATE_CANCELED</code></pre>
+<pre><code class="language-php">\Magento\Sales\Model\Order\Creditmemo::STATE_OPEN
+\Magento\Sales\Model\Order\Creditmemo::STATE_REFUNDED
+\Magento\Sales\Model\Order\Creditmemo::STATE_CANCELED</code></pre>
+    </article>
+</main>
+<script src="web/js/lib/require.js" type="text/javascript"></script>
+<script src="web/js/require-config.js" type="text/javascript"></script>
+<script src="web/js/notes.js" type="text/javascript"></script>
+</body>
+</html>

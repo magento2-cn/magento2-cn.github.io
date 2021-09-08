@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+    <base href="/"/>
+    <title>Magento 2 开发笔记</title>
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="web/css/notes.css"/>
+</head>
+<body>
+<main>
+    <article>
+        <h1>产品价格</h1>
+<h2>概述</h2>
+<h3>价格的计算</h3>
+<p>Magento 产品价格的实现思想，主要是将各种计价逻辑的实现寄存在产品对象中，需要计算价钱时通过以下方法执行这些逻辑运算：</p>
+<pre><code class="language-php">/* @var $product \Magento\Catalog\Model\Product */
+/* @var $priceType string */
+/* @var $priceModel \Magento\Framework\Pricing\Price\PriceInterface */
+/* @var $price float */
+$priceModel = $product-&gt;getPriceInfo()-&gt;getPrice( $priceType );
+$price = $priceModel-&gt;getValue();</code></pre>
+<p>这些计价逻辑包括 <code>regular_price</code>、<code>final_price</code>、<code>tier_price</code>、<code>special_price</code>、<code>base_price</code>、<code>custom_option_price</code>、<code>configured_price</code>、<code>configured_regular_price</code> 等等。</p>
+<p>系统通过 <code>Magento\Framework\Pricing\PriceInfo\Factory</code>（Price Info Factory）为产品对象创建 <code>Magento\Framework\Pricing\PriceInfo\Base</code> （Price Info）实例来寄存价格信息。这些实例都有一个 <code>Magento\Framework\Pricing\Price\Collection</code>（Price Collection），不同类型产品的  Price Collection 包含不同的 <code>Magento\Framework\Pricing\Price\Pool</code>（Price Pool），而各种计价逻辑就包含在这个 Price Pool 中。</p>
+<p>不同类型的产品包含不同的计价逻辑，而所有产品又存在一些默认的逻辑。这是通过各组件的 <code>di.xml</code> 文件，对各类型产品的 Price Info Factory、Price Collection、Price Pool 指定不同参数来定义的，具体结构后面分产品类型进行描述。</p>
+<h3>价格的显示</h3>
+<p>Magento 通过以下两个 layout 定义了价格渲染器：</p>
+<ul>
+<li><code>Magento_Catalog/view/layout/base/empty.xml</code></li>
+<li><code>Magento_Catalog/view/layout/base/defalut.xml</code></li>
+</ul>
+<p>渲染器的具体内容由 <code>catalog_product_prices.xml</code> 定义，下边是各原生组件的这个 layout 合并整理后的内容：</p>
+<pre><code class="language-xml">&lt;block class="Magento\Framework\Pricing\Render\RendererPool" name="render.product.prices"&gt;
+    &lt;arguments&gt;
+
+        &lt;argument name="default" xsi:type="array"&gt;
+            &lt;item name="default_render_class" xsi:type="string"&gt;Magento\Catalog\Pricing\Render\PriceBox&lt;/item&gt;
+            &lt;item name="default_render_template" xsi:type="string"&gt;Magento_Catalog::product/price/default.phtml&lt;/item&gt;
+            &lt;item name="default_amount_render_class" xsi:type="string"&gt;Magento\Framework\Pricing\Render\Amount&lt;/item&gt;
+            &lt;item name="default_amount_render_template" xsi:type="string"&gt;Magento_Catalog::product/price/amount/default.phtml&lt;/item&gt;
+            &lt;item name="prices" xsi:type="array"&gt;
+                &lt;item name="final_price" xsi:type="array"&gt;
+                    &lt;item name="render_class" xsi:type="string"&gt;Magento\Catalog\Pricing\Render\FinalPriceBox&lt;/item&gt;
+                    &lt;item name="render_template" xsi:type="string"&gt;Magento_Catalog::product/price/final_price.phtml&lt;/item&gt;
+                &lt;/item&gt;
+                &lt;item name="special_price" xsi:type="array"&gt;
+                    &lt;item name="render_template" xsi:type="string"&gt;Magento_Catalog::product/price/special_price.phtml&lt;/item&gt;
+                &lt;/item&gt;
+                &lt;item name="tier_price" xsi:type="array"&gt;
+                    &lt;item name="render_template" xsi:type="string"&gt;Magento_Catalog::product/price/tier_prices.phtml&lt;/item&gt;
+                &lt;/item&gt;
+                &lt;item name="custom_option_price" xsi:type="array"&gt;
+                    &lt;item name="amount_render_template" xsi:type="string"&gt;Magento_Catalog::product/price/amount/default.phtml&lt;/item&gt;
+                &lt;/item&gt;
+                &lt;item name="configured_price" xsi:type="array"&gt;
+                    &lt;item name="render_class" xsi:type="string"&gt;Magento\Catalog\Pricing\Render\ConfiguredPriceBox&lt;/item&gt;
+                    &lt;item name="render_template" xsi:type="string"&gt;Magento_Catalog::product/price/configured_price.phtml&lt;/item&gt;
+                &lt;/item&gt;
+                &lt;item name="msrp_price" xsi:type="array"&gt;
+                    &lt;item name="render_class" xsi:type="string"&gt;Magento\Catalog\Pricing\Render\PriceBox&lt;/item&gt;
+                    &lt;item name="render_template" xsi:type="string"&gt;Magento_Msrp::product/price/msrp.phtml&lt;/item&gt;
+                &lt;/item&gt;
+                &lt;item name="wishlist_configured_price" xsi:type="array"&gt;
+                    &lt;item name="render_class" xsi:type="string"&gt;Magento\Wishlist\Pricing\Render\ConfiguredPriceBox&lt;/item&gt;
+                    &lt;item name="render_template" xsi:type="string"&gt;Magento_Catalog::product/price/configured_price.phtml&lt;/item&gt;
+                &lt;/item&gt;
+            &lt;/item&gt;
+            &lt;item name="adjustments" xsi:type="array"&gt;
+                &lt;item name="default" xsi:type="array"&gt;
+                    &lt;item name="tax" xsi:type="array"&gt;
+                        &lt;item name="adjustment_render_class" xsi:type="string"&gt;Magento\Weee\Pricing\Render\TaxAdjustment&lt;/item&gt;
+                        &lt;item name="adjustment_render_template" xsi:type="string"&gt;Magento_Tax::pricing/adjustment.phtml&lt;/item&gt;
+                    &lt;/item&gt;
+                    &lt;item name="weee" xsi:type="array"&gt;
+                        &lt;item name="adjustment_render_class" xsi:type="string"&gt;Magento\Weee\Pricing\Render\Adjustment&lt;/item&gt;
+                        &lt;item name="adjustment_render_template" xsi:type="string"&gt;Magento_Weee::pricing/adjustment.phtml&lt;/item&gt;
+                    &lt;/item&gt;
+                &lt;/item&gt;
+            &lt;/item&gt;
+        &lt;/argument&gt;
+
+        &lt;argument name="configurable" xsi:type="array"&gt;
+            &lt;item name="prices" xsi:type="array"&gt;
+                &lt;item name="final_price" xsi:type="array"&gt;
+                    &lt;item name="render_class" xsi:type="string"&gt;Magento\ConfigurableProduct\Pricing\Render\FinalPriceBox&lt;/item&gt;
+                    &lt;item name="render_template" xsi:type="string"&gt;Magento_ConfigurableProduct::product/price/final_price.phtml&lt;/item&gt;
+                &lt;/item&gt;
+                &lt;item name="tier_price" xsi:type="array"&gt;
+                    &lt;item name="render_class" xsi:type="string"&gt;Magento\ConfigurableProduct\Pricing\Render\TierPriceBox&lt;/item&gt;
+                    &lt;item name="render_template" xsi:type="string"&gt;Magento_ConfigurableProduct::product/price/tier_price.phtml&lt;/item&gt;
+                &lt;/item&gt;
+                &lt;item name="wishlist_configured_price" xsi:type="array"&gt;
+                    &lt;item name="render_template" xsi:type="string"&gt;Magento_Wishlist::product/price/configurable/configured_price.phtml&lt;/item&gt;
+                &lt;/item&gt;
+            &lt;/item&gt;
+        &lt;/argument&gt;
+
+        &lt;argument name="bundle" xsi:type="array"&gt;
+            &lt;item name="prices" xsi:type="array"&gt;
+                &lt;item name="final_price" xsi:type="array"&gt;
+                    &lt;item name="render_class" xsi:type="string"&gt;Magento\Bundle\Pricing\Render\FinalPriceBox&lt;/item&gt;
+                    &lt;item name="render_template" xsi:type="string"&gt;Magento_Bundle::product/price/final_price.phtml&lt;/item&gt;
+                &lt;/item&gt;
+                &lt;item name="tier_price" xsi:type="array"&gt;
+                    &lt;item name="render_template" xsi:type="string"&gt;Magento_Bundle::product/price/tier_prices.phtml&lt;/item&gt;
+                &lt;/item&gt;
+                &lt;item name="bundle_option" xsi:type="array"&gt;
+                    &lt;item name="amount_render_template" xsi:type="string"&gt;Magento_Bundle::product/price/selection/amount.phtml&lt;/item&gt;
+                &lt;/item&gt;
+                &lt;item name="wishlist_configured_price" xsi:type="array"&gt;
+                    &lt;item name="render_template" xsi:type="string"&gt;Magento_Wishlist::product/price/bundle/configured_price.phtml&lt;/item&gt;
+                &lt;/item&gt;
+            &lt;/item&gt;
+            &lt;item name="adjustments" xsi:type="array"&gt;
+                &lt;item name="bundle_option" xsi:type="array"&gt;
+                    &lt;item name="tax" xsi:type="array"&gt;
+                        &lt;item name="adjustment_render_class" xsi:type="string"&gt;Magento\Tax\Pricing\Render\Adjustment&lt;/item&gt;
+                        &lt;item name="adjustment_render_template" xsi:type="string"&gt;Magento_Tax::pricing/adjustment/bundle.phtml&lt;/item&gt;
+                    &lt;/item&gt;
+                &lt;/item&gt;
+            &lt;/item&gt;
+        &lt;/argument&gt;
+
+        &lt;argument name="grouped" xsi:type="array"&gt;
+            &lt;item name="prices" xsi:type="array"&gt;
+                &lt;item name="final_price" xsi:type="array"&gt;
+                    &lt;item name="render_class" xsi:type="string"&gt;Magento\Catalog\Pricing\Render\FinalPriceBox&lt;/item&gt;
+                    &lt;item name="render_template" xsi:type="string"&gt;Magento_GroupedProduct::product/price/final_price.phtml&lt;/item&gt;
+                &lt;/item&gt;
+            &lt;/item&gt;
+        &lt;/argument&gt;
+
+        &lt;argument name="giftcard" xsi:type="array"&gt;
+            &lt;item name="prices" xsi:type="array"&gt;
+                &lt;item name="final_price" xsi:type="array"&gt;
+                    &lt;item name="render_class" xsi:type="string"&gt;Magento\GiftCard\Pricing\Render\FinalPriceBox&lt;/item&gt;
+                    &lt;item name="render_template" xsi:type="string"&gt;Magento_GiftCard::product/price/final_price.phtml&lt;/item&gt;
+                &lt;/item&gt;
+            &lt;/item&gt;
+        &lt;/argument&gt;
+
+    &lt;/arguments&gt;
+&lt;/block&gt;</code></pre>
+<p>各类型产品（default、configurable、bundle、grouped、giftcard）的各种计价逻辑都是由这里指定的渲染类和模板输出。</p>
+<h3>产品列表</h3>
+<p>按如下步骤调用相关方法：</p>
+<pre><code class="language-php">Magento_Catalog::product/list.phtml
+    Magento\Catalog\Block\Product\ListProduct::getProductPrice
+        Magento\Catalog\Block\Product\ListProduct::getPriceRender
+        Magento\Framework\Pricing\Render::render( 'final_price', ... )</code></pre>
+<p>可见列表页默认是采用名为 <code>final_price</code> 的渲染器来显示价格。 </p>
+<h3>产品内页</h3>
+<p>产品内页则是在 layout 中定义了两个价格相关的 block：</p>
+<pre><code class="language-xml">&lt;referenceBlock name="product.info.options.wrapper.bottom"&gt;
+    &lt;container name="product.info.price.configurable" label="Product info auxiliary container" htmlTag="div" htmlClass="product-info-price" before="product.info.addtocart.additional"&gt;
+        &lt;block class="Magento\Catalog\Pricing\Render" name="product.price.final.configurable"&gt;
+            &lt;arguments&gt;
+                &lt;argument name="price_render" xsi:type="string"&gt;product.price.render.default&lt;/argument&gt;
+                &lt;argument name="price_type_code" xsi:type="string"&gt;final_price&lt;/argument&gt;
+                &lt;argument name="zone" xsi:type="string"&gt;item_view&lt;/argument&gt;
+            &lt;/arguments&gt;
+        &lt;/block&gt;
+    &lt;/container&gt;
+    &lt;block class="Magento\Catalog\Pricing\Render" name="product.price.tier.configurable" after="product.info.price.form"&gt;
+        &lt;arguments&gt;
+            &lt;argument name="price_render" xsi:type="string"&gt;product.price.render.default&lt;/argument&gt;
+            &lt;argument name="price_type_code" xsi:type="string"&gt;tier_price&lt;/argument&gt;
+            &lt;argument name="zone" xsi:type="string"&gt;item_view&lt;/argument&gt;
+        &lt;/arguments&gt;
+    &lt;/block&gt;
+&lt;/referenceBlock&gt;</code></pre>
+<p>产品内页默认同样是采用名为 <code>final_price</code> 的渲染器来显示价格，同时也会渲染 <code>tier_price</code>。 </p>
+<h2>默认计价逻辑</h2>
+<p><code>Magento_Catalog::etc/di.xml</code></p>
+<pre><code class="language-xml">&lt;type name="Magento\Framework\Pricing\PriceInfo\Factory"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="types" xsi:type="array"&gt;
+            &lt;item name="default" xsi:type="array"&gt;
+                &lt;item name="infoClass" xsi:type="string"&gt;Magento\Framework\Pricing\PriceInfo\Base&lt;/item&gt;
+                &lt;item name="prices" xsi:type="string"&gt;Magento\Catalog\Pricing\Price\Collection&lt;/item&gt;
+            &lt;/item&gt;
+        &lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/type&gt;</code></pre>
+<pre><code class="language-xml">&lt;virtualType name="Magento\Catalog\Pricing\Price\Collection" type="Magento\Framework\Pricing\Price\Collection"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="pool" xsi:type="object"&gt;Magento\Catalog\Pricing\Price\Pool&lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/virtualType&gt;</code></pre>
+<pre><code class="language-xml">&lt;virtualType name="Magento\Catalog\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="prices" xsi:type="array"&gt;
+            &lt;item name="regular_price" xsi:type="string"&gt;Magento\Catalog\Pricing\Price\RegularPrice&lt;/item&gt;
+            &lt;item name="final_price" xsi:type="string"&gt;Magento\Catalog\Pricing\Price\FinalPrice&lt;/item&gt;
+            &lt;item name="tier_price" xsi:type="string"&gt;Magento\Catalog\Pricing\Price\TierPrice&lt;/item&gt;
+            &lt;item name="special_price" xsi:type="string"&gt;Magento\Catalog\Pricing\Price\SpecialPrice&lt;/item&gt;
+            &lt;item name="base_price" xsi:type="string"&gt;Magento\Catalog\Pricing\Price\BasePrice&lt;/item&gt;
+            &lt;item name="custom_option_price" xsi:type="string"&gt;Magento\Catalog\Pricing\Price\CustomOptionPrice&lt;/item&gt;
+            &lt;item name="configured_price" xsi:type="string"&gt;Magento\Catalog\Pricing\Price\ConfiguredPrice&lt;/item&gt;
+            &lt;item name="configured_regular_price" xsi:type="string"&gt;Magento\Catalog\Pricing\Price\ConfiguredRegularPrice&lt;/item&gt;
+        &lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/virtualType&gt;</code></pre>
+<h3>关联产品的价格构建</h3>
+<p>在 Magento 中，高级产品（可配置产品、捆绑产品等）都是由若干个相关联的基础产品（简单产品、虚拟产品等）组成。Catalog 组件为获取这些高级产品的价格，提供了基础的数据库语句构建方法：</p>
+<p>通过 Select Builder 创建 Select</p>
+<pre><code class="language-php">Magento\Catalog\Model\ResourceModel\Product\LinkedProductSelectBuilderByBasePrice
+Magento\Catalog\Model\ResourceModel\Product\LinkedProductSelectBuilderBySpecialPrice
+Magento\Catalog\Model\ResourceModel\Product\LinkedProductSelectBuilderByTierPrice
+Magento\Catalog\Model\ResourceModel\Product\Indexer\LinkedProductSelectBuilderByIndexPrice
+Magento\CatalogRule\Model\ResourceModel\Product\LinkedProductSelectBuilderByCatalogRulePrice</code></pre>
+<p>通过 Select Processor 加入过滤条件</p>
+<pre><code class="language-php">Magento\Catalog\Model\ResourceModel\Product\StatusBaseSelectProcessor
+Magento\Catalog\Model\ResourceModel\Product\Website\SelectProcessor
+Magento\CatalogInventory\Model\ResourceModel\Product\StockStatusBaseSelectProcessor</code></pre>
+<h2>可配置产品</h2>
+<p><code>Magento_ConfigurableProduct::etc/di.xml</code></p>
+<pre><code class="language-xml">&lt;type name="Magento\Framework\Pricing\PriceInfo\Factory"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="types" xsi:type="array"&gt;
+            &lt;item name="configurable" xsi:type="array"&gt;
+                &lt;item name="infoClass" xsi:type="string"&gt;Magento\Framework\Pricing\PriceInfo\Base&lt;/item&gt;
+                &lt;item name="prices" xsi:type="string"&gt;Magento\ConfigurableProduct\Pricing\Price\Collection&lt;/item&gt;
+            &lt;/item&gt;
+        &lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/type&gt;</code></pre>
+<pre><code class="language-xml">&lt;virtualType name="Magento\ConfigurableProduct\Pricing\Price\Collection" type="Magento\Framework\Pricing\Price\Collection"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="pool" xsi:type="object"&gt;Magento\ConfigurableProduct\Pricing\Price\Pool&lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/virtualType&gt;</code></pre>
+<pre><code class="language-xml">&lt;virtualType name="Magento\ConfigurableProduct\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="prices" xsi:type="array"&gt;
+            &lt;item name="regular_price" xsi:type="string"&gt;Magento\ConfigurableProduct\Pricing\Price\ConfigurableRegularPrice&lt;/item&gt;
+            &lt;item name="final_price" xsi:type="string"&gt;Magento\ConfigurableProduct\Pricing\Price\FinalPrice&lt;/item&gt;
+        &lt;/argument&gt;
+        &lt;argument name="target" xsi:type="object"&gt;Magento\Catalog\Pricing\Price\Pool&lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/virtualType&gt;</code></pre>
+<p><code>Magento_Wishlist::etc/di.xml</code></p>
+<pre><code class="language-xml">&lt;virtualType name="Magento\ConfigurableProduct\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="prices" xsi:type="array"&gt;
+            &lt;item name="wishlist_configured_price" xsi:type="string"&gt;Magento\Wishlist\Pricing\ConfiguredPrice\ConfigurableProduct&lt;/item&gt;
+        &lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/virtualType&gt;</code></pre>
+<p>Configurable 产品获取每种价格的执行过程当中都会用到 <code>Magento\ConfigurableProduct\Pricing\Price\LowestPriceOptionsProvider</code> 这个类，其作用是分别获取各类价格中最低价的那个子产品的 ID。</p>
+<h3>最低价 <code>final_price</code></h3>
+<pre><code>Magento_ConfigurableProduct::product/price/final_price.phtml
+    Magento\ConfigurableProduct\Pricing\Render\FinalPriceBox [Magento\Framework\Pricing\Render\PriceBox] :: getPriceType
+    Magento\ConfigurableProduct\Pricing\Price\FinalPrice [Magento\Framework\Pricing\Price\AbstractPrice] :: getAmount
+        Magento\ConfigurableProduct\Pricing\Price\FinalPrice :: getValue
+            Magento\ConfigurableProduct\Pricing\Price\ConfigurablePriceResolver :: resolvePrice( $product )
+                $associatedProducts = Magento\ConfigurableProduct\Pricing\Price\LowestPriceOptionsProvider :: getProducts
+                foreach ( $associatedProducts as $associatedProduct )
+                    $productPrice = Magento\ConfigurableProduct\Pricing\Price\FinalPriceResolver :: resolvePrice( $associatedProduct )
+                        Magento\Framework\Pricing\PriceInfo\Base :: getPrice
+                        Magento\Catalog\Pricing\Price\FinalPrice :: getValue
+                            Magento\Catalog\Pricing\Price\BasePrice :: getValue
+                                $associatedProductPrices = Magento\Framework\Pricing\PriceInfo\Base :: getPrices
+                                foreach ( $associatedProductPrices as $associatedProductPrice )
+                                    if ( $associatedProductPrice instanceof Magento\Framework\Pricing\Price\BasePriceProviderInterface )
+                                        min( $associatedProductPrice :: getValue )
+                    min( $productPrice )</code></pre>
+<h2>捆绑产品</h2>
+<p><code>Magento_Bundle::etc/di.xml</code></p>
+<pre><code class="language-xml">&lt;type name="Magento\Framework\Pricing\PriceInfo\Factory"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="types" xsi:type="array"&gt;
+            &lt;item name="bundle" xsi:type="array"&gt;
+                &lt;item name="infoClass" xsi:type="string"&gt;Magento\Bundle\Pricing\PriceInfo&lt;/item&gt;
+                &lt;item name="prices" xsi:type="string"&gt;Magento\Bundle\Pricing\Price\Collection&lt;/item&gt;
+            &lt;/item&gt;
+        &lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/type&gt;</code></pre>
+<pre><code class="language-xml">&lt;virtualType name="Magento\Bundle\Pricing\Price\Collection" type="Magento\Framework\Pricing\Price\Collection"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="pool" xsi:type="object"&gt;Magento\Bundle\Pricing\Price\Pool&lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/virtualType&gt;</code></pre>
+<pre><code class="language-xml">&lt;virtualType name="Magento\Bundle\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="prices" xsi:type="array"&gt;
+            &lt;item name="regular_price" xsi:type="string"&gt;Magento\Bundle\Pricing\Price\BundleRegularPrice&lt;/item&gt;
+            &lt;item name="final_price" xsi:type="string"&gt;Magento\Bundle\Pricing\Price\FinalPrice&lt;/item&gt;
+            &lt;item name="tier_price" xsi:type="string"&gt;Magento\Bundle\Pricing\Price\TierPrice&lt;/item&gt;
+            &lt;item name="special_price" xsi:type="string"&gt;Magento\Bundle\Pricing\Price\SpecialPrice&lt;/item&gt;
+            &lt;item name="custom_option_price" xsi:type="string"&gt;Magento\Catalog\Pricing\Price\CustomOptionPrice&lt;/item&gt;
+            &lt;item name="base_price" xsi:type="string"&gt;Magento\Catalog\Pricing\Price\BasePrice&lt;/item&gt;
+            &lt;item name="configured_price" xsi:type="string"&gt;Magento\Bundle\Pricing\Price\ConfiguredPrice&lt;/item&gt;
+            &lt;item name="configured_regular_price" xsi:type="string"&gt;Magento\Bundle\Pricing\Price\ConfiguredRegularPrice&lt;/item&gt;
+            &lt;item name="bundle_option" xsi:type="string"&gt;Magento\Bundle\Pricing\Price\BundleOptionPrice&lt;/item&gt;
+            &lt;item name="bundle_option_regular_price" xsi:type="string"&gt;Magento\Bundle\Pricing\Price\BundleOptionRegularPrice&lt;/item&gt;
+            &lt;item name="catalog_rule_price" xsi:type="string"&gt;Magento\CatalogRule\Pricing\Price\CatalogRulePrice&lt;/item&gt;
+        &lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/virtualType&gt;</code></pre>
+<p><code>Magento_Msrp::etc/di.xml</code></p>
+<pre><code class="language-xml">&lt;virtualType name="Magento\Bundle\Pricing\Price\Pool"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="prices" xsi:type="array"&gt;
+            &lt;item name="msrp_price" xsi:type="string"&gt;Magento\Msrp\Pricing\Price\MsrpPrice&lt;/item&gt;
+        &lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/virtualType&gt;</code></pre>
+<p><code>Magento_Wishlist::etc/di.xml</code></p>
+<pre><code class="language-xml">&lt;virtualType name="Magento\Bundle\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="prices" xsi:type="array"&gt;
+            &lt;item name="wishlist_configured_price" xsi:type="string"&gt;Magento\Bundle\Pricing\Price\ConfiguredPrice&lt;/item&gt;
+        &lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/virtualType&gt;</code></pre>
+<h2>组合产品</h2>
+<p><code>Magento_GroupedProduct::etc/di.xml</code></p>
+<pre><code class="language-xml">&lt;type name="Magento\Framework\Pricing\PriceInfo\Factory"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="types" xsi:type="array"&gt;
+            &lt;item name="grouped" xsi:type="array"&gt;
+                &lt;item name="infoClass" xsi:type="string"&gt;Magento\Framework\Pricing\PriceInfo\Base&lt;/item&gt;
+                &lt;item name="prices" xsi:type="string"&gt;Magento\GroupedProduct\Pricing\Price\Collection&lt;/item&gt;
+            &lt;/item&gt;
+        &lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/type&gt;</code></pre>
+<pre><code class="language-xml">&lt;virtualType name="Magento\GroupedProduct\Pricing\Price\Collection" type="Magento\Framework\Pricing\Price\Collection"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="pool" xsi:type="object"&gt;Magento\GroupedProduct\Pricing\Price\Pool&lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/virtualType&gt;</code></pre>
+<pre><code class="language-xml">&lt;virtualType name="Magento\GroupedProduct\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="prices" xsi:type="array"&gt;
+            &lt;item name="final_price" xsi:type="string"&gt;Magento\GroupedProduct\Pricing\Price\FinalPrice&lt;/item&gt;
+            &lt;item name="configured_price" xsi:type="string"&gt;Magento\GroupedProduct\Pricing\Price\ConfiguredPrice&lt;/item&gt;
+            &lt;item name="configured_regular_price" xsi:type="string"&gt;Magento\GroupedProduct\Pricing\Price\ConfiguredRegularPrice&lt;/item&gt;
+        &lt;/argument&gt;
+        &lt;argument name="target" xsi:type="object"&gt;Magento\Catalog\Pricing\Price\Pool&lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/virtualType&gt;</code></pre>
+<p><code>Magento_Wishlist::etc/di.xml</code></p>
+<pre><code class="language-xml">&lt;virtualType name="Magento\GroupedProduct\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="prices" xsi:type="array"&gt;
+            &lt;item name="wishlist_configured_price" xsi:type="string"&gt;Magento\GroupedProduct\Pricing\Price\ConfiguredPrice&lt;/item&gt;
+        &lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/virtualType&gt;</code></pre>
+<h2>可下载产品</h2>
+<p><code>Magento_Downloadable::etc/di.xml</code></p>
+<pre><code class="language-xml">&lt;type name="Magento\Framework\Pricing\PriceInfo\Factory"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="types" xsi:type="array"&gt;
+            &lt;item name="downloadable" xsi:type="array"&gt;
+                &lt;item name="infoClass" xsi:type="string"&gt;Magento\Framework\Pricing\PriceInfo\Base&lt;/item&gt;
+                &lt;item name="prices" xsi:type="string"&gt;Magento\Downloadable\Pricing\Price\Collection&lt;/item&gt;
+            &lt;/item&gt;
+        &lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/type&gt;</code></pre>
+<pre><code class="language-xml">&lt;virtualType name="Magento\Downloadable\Pricing\Price\Collection" type="Magento\Framework\Pricing\Price\Collection"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="pool" xsi:type="object"&gt;Magento\Downloadable\Pricing\Price\Pool&lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/virtualType&gt;</code></pre>
+<pre><code class="language-xml">&lt;virtualType name="Magento\Downloadable\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="prices" xsi:type="array"&gt;
+            &lt;item name="link_price" xsi:type="string"&gt;Magento\Downloadable\Pricing\Price\LinkPrice&lt;/item&gt;
+        &lt;/argument&gt;
+        &lt;argument name="target" xsi:type="object"&gt;Magento\Catalog\Pricing\Price\Pool&lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/virtualType&gt;</code></pre>
+<p><code>Magento_Wishlist::etc/di.xml</code></p>
+<pre><code class="language-xml">&lt;virtualType name="Magento\Downloadable\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="prices" xsi:type="array"&gt;
+            &lt;item name="wishlist_configured_price" xsi:type="string"&gt;Magento\Wishlist\Pricing\ConfiguredPrice\Downloadable&lt;/item&gt;
+        &lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/virtualType&gt;</code></pre>
+<h2>礼金券</h2>
+<p><code>Magento_GiftCard::etc/di.xml</code></p>
+<pre><code class="language-xml">&lt;type name="Magento\Framework\Pricing\PriceInfo\Factory"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="types" xsi:type="array"&gt;
+            &lt;item name="giftcard" xsi:type="array"&gt;
+                &lt;item name="infoClass" xsi:type="string"&gt;Magento\Framework\Pricing\PriceInfo\Base&lt;/item&gt;
+                &lt;item name="prices" xsi:type="string"&gt;Magento\GiftCard\Pricing\Price\Collection&lt;/item&gt;
+            &lt;/item&gt;
+        &lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/type&gt;</code></pre>
+<pre><code class="language-xml">&lt;virtualType name="Magento\GiftCard\Pricing\Price\Collection" type="Magento\Framework\Pricing\Price\Collection"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="pool" xsi:type="object"&gt;Magento\GiftCard\Pricing\Price\Pool&lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/virtualType&gt;</code></pre>
+<pre><code class="language-xml">&lt;virtualType name="Magento\GiftCard\Pricing\Price\Pool" type="Magento\Framework\Pricing\Price\Pool"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="prices" xsi:type="array"&gt;
+            &lt;item name="regular_price" xsi:type="string"&gt;Magento\Catalog\Pricing\Price\RegularPrice&lt;/item&gt;
+            &lt;item name="final_price" xsi:type="string"&gt;Magento\GiftCard\Pricing\Price\FinalPrice&lt;/item&gt;
+            &lt;item name="tier_price" xsi:type="string"&gt;Magento\Catalog\Pricing\Price\TierPrice&lt;/item&gt;
+            &lt;item name="special_price" xsi:type="string"&gt;Magento\Catalog\Pricing\Price\SpecialPrice&lt;/item&gt;
+            &lt;item name="msrp_price" xsi:type="string"&gt;Magento\Msrp\Pricing\Price\MsrpPrice&lt;/item&gt;
+            &lt;item name="custom_option_price" xsi:type="string"&gt;Magento\Catalog\Pricing\Price\CustomOptionPrice&lt;/item&gt;
+            &lt;item name="base_price" xsi:type="string"&gt;Magento\Catalog\Pricing\Price\BasePrice&lt;/item&gt;
+            &lt;item name="configured_price" xsi:type="string"&gt;Magento\GiftCard\Pricing\Price\ConfiguredPrice&lt;/item&gt;
+            &lt;item name="configured_regular_price" xsi:type="string"&gt;Magento\Bundle\Pricing\Price\ConfiguredRegularPrice&lt;/item&gt;
+            &lt;item name="bundle_option" xsi:type="string"&gt;Magento\Bundle\Pricing\Price\BundleOptionPrice&lt;/item&gt;
+            &lt;item name="bundle_option_regular_price" xsi:type="string"&gt;Magento\Bundle\Pricing\Price\BundleOptionRegularPrice&lt;/item&gt;
+            &lt;item name="wishlist_configured_price" xsi:type="string"&gt;Magento\GiftCard\Pricing\Price\ConfiguredPrice&lt;/item&gt;
+        &lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/virtualType&gt;</code></pre>
+    </article>
+</main>
+<script src="web/js/lib/require.js" type="text/javascript"></script>
+<script src="web/js/require-config.js" type="text/javascript"></script>
+<script src="web/js/notes.js" type="text/javascript"></script>
+</body>
+</html>

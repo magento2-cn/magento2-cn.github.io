@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+    <base href="/"/>
+    <title>Magento 2 开发笔记</title>
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="web/css/notes.css"/>
+</head>
+<body>
+<main>
+    <article>
+        <h1>文件路径和 URL</h1>
+<h2>获取 URL</h2>
+<h3>当前页面 URL</h3>
+<pre><code class="language-php">/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+$currentUrl = $objectManager-&gt;get( \Magento\Framework\UrlInterface::class )-&gt;getCurrentUrl();</code></pre>
+<h3>指定路由及参数的 URL</h3>
+<pre><code class="language-php">/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+/* @var $path string */
+/* @var $params array */
+$url = $objectManager-&gt;get( \Magento\Store\Model\StoreManagerInterface::class )-&gt;getStore()-&gt;getUrl( $path, $params );</code></pre>
+<h3>各种目录 URL</h3>
+<pre><code class="language-php">/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+$store = $objectManager-&gt;get( \Magento\Store\Model\StoreManagerInterface::class )-&gt;getStore();
+
+$url = $store-&gt;getBaseUrl( \Magento\Framework\UrlInterface::URL_TYPE_LINK );
+$url = $store-&gt;getBaseUrl( \Magento\Framework\UrlInterface::URL_TYPE_DIRECT_LINK );
+$url = $store-&gt;getBaseUrl( \Magento\Framework\UrlInterface::URL_TYPE_WEB );
+$url = $store-&gt;getBaseUrl( \Magento\Framework\UrlInterface::URL_TYPE_MEDIA );
+$url = $store-&gt;getBaseUrl( \Magento\Framework\UrlInterface::URL_TYPE_STATIC );</code></pre>
+<h3>在模板中获取完整 URL</h3>
+<p>首页 URL</p>
+<pre><code>$block-&gt;getBaseUrl();</code></pre>
+<p>指定路由及参数的 URL</p>
+<pre><code>/* @var $path string */
+/* @var $params array */
+$block-&gt;getUrl( $path, $params );</code></pre>
+<p>指定静态文件的 URL</p>
+<pre><code>$block-&gt;getViewFileUrl( 'Magento_Checkout::cvv.png' );
+$block-&gt;getViewFileUrl( 'images/loader-2.gif' );</code></pre>
+<h3>在后台环境下获取前台 URL</h3>
+<pre><code>/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+/* @var $store \Magento\Store\Api\Data\StoreInterface */
+/* @var $path string */
+$scopeResolver = $objectManager-&gt;create( \Magento\Framework\Url\ScopeResolverInterface::class, [ 'areaCode' =&gt; \Magento\Framework\App\Area::AREA_FRONTEND ] );
+$url = $objectManager-&gt;create( \Magento\Framework\Url::class, [ 'scopeResolver' =&gt; $scopeResolver ] )-&gt;setScope( $store )-&gt;getUrl( $path, [ '_scope_to_url' =&gt; false, '_nosid' =&gt; true ] );</code></pre>
+<h3>指定店铺视图的 URL</h3>
+<pre><code>/* @var $urlHandler \Magento\Framework\UrlInterface */
+/* @var $urlHelper \Magento\Framework\Url\Helper\Data */
+/* @var $targetUrl string */
+/* @var $storeViewCode string */
+$url = $urlHandler-&gt;getUrl( 'stores/store/switch', [
+    \Magento\Framework\App\ActionInterface::PARAM_NAME_URL_ENCODED =&gt; $urlHelper-&gt;getEncodedUrl( $targetUrl ),
+    \Magento\Store\Api\StoreResolverInterface::PARAM_NAME =&gt; $storeViewCode 
+] );</code></pre>
+<h3>资源文件 URL</h3>
+<pre><code class="language-php">/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+$assetRepo = $objectManager-&gt;get( \Magento\Framework\View\Asset\Repository::class );
+$asset = $assetRepo-&gt;createAsset( 'Vendor_Module::js/script.js' );
+$url = $asset-&gt;getUrl();</code></pre>
+<h2>获取文件或目录路径</h2>
+<h3>文件目录路径</h3>
+<pre><code class="language-php">use Magento\Framework\App\Filesystem\DirectoryList;
+
+/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+$filesystem = $objectManager-&gt;get( \Magento\Framework\Filesystem::class );
+
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::ROOT ); // [root]
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::APP ); // [root]/app
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::CONFIG ); // [root]/app/etc
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::LIB_INTERNAL ); // [root]/lib/internal
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::LIB_WEB ); // [root]/lib/web
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::PUB ); // [root]/pub
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::MEDIA ); // [root]/pub/media
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::UPLOAD ); // [root]/pub/media/upload
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::STATIC_VIEW ); // [root]/pub/static
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::SETUP ); // [root]/setup/src
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::VAR_DIR ); // [root]/var
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::TMP ); // [root]/var/tmp
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::CACHE ); // [root]/var/cache
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::LOG ); // [root]/var/log
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::SESSION ); // [root]/var/session
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::DI ); // [root]/var/di
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::GENERATION ); // [root]/var/generation
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::COMPOSER_HOME ); // [root]/var/composer_home
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::TMP_MATERIALIZATION_DIR ); // [root]/var/view_preprocessed
+$dirSource = $filesystem-&gt;getDirectoryRead( DirectoryList::TEMPLATE_MINIFICATION_DIR ); // [root]/var/view_preprocessed/html
+
+$absolutePath = $dirSource-&gt;getAbsolutePath();
+$relativePath = $dirSource-&gt;getRelativePath();</code></pre>
+<h3>资源文件路径</h3>
+<pre><code class="language-php">/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+$assetRepo = $objectManager-&gt;get( \Magento\Framework\View\Asset\Repository::class );
+$asset = $assetRepo-&gt;createAsset( 'Vendor_Module::js/script.js' );
+$filePath = $asset-&gt;getFilePath();</code></pre>
+<h3>模板文件路径</h3>
+<pre><code class="language-php">/* @var $templateFileResolver \Magento\Framework\View\Element\Template\File\Resolver */
+/* @var $templateName string */
+$filePath = $templateFileResolver-&gt;getTemplateFileName( $templateName )</code></pre>
+    </article>
+</main>
+<script src="web/js/lib/require.js" type="text/javascript"></script>
+<script src="web/js/require-config.js" type="text/javascript"></script>
+<script src="web/js/notes.js" type="text/javascript"></script>
+</body>
+</html>

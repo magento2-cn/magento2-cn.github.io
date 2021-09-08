@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+    <base href="/"/>
+    <title>Magento 2 开发笔记</title>
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="web/css/notes.css"/>
+</head>
+<body>
+<main>
+    <article>
+        <h1>产品库存 Inventory</h1>
+<h2>获取产品库存</h2>
+<h2>其他</h2>
+<h3>批量更新库存</h3>
+<pre><code class="language-php">/* @var $objectManager \Magento\Framework\App\ObjectManager */
+/* @var $websiteId int */
+/* @var $qtys array */
+
+$dataObjectHelper = $objectManager-&gt;get( \Magento\Framework\Api\DataObjectHelper::class );
+$stockRegistry = $objectManager-&gt;create( \Magento\CatalogInventory\Api\StockRegistryInterface::class );
+$stockItemRepository = $objectManager-&gt;create( \Magento\CatalogInventory\Api\StockItemRepositoryInterface::class );
+
+// prepare inventory data
+$inventoryData = [ ];
+$options = $objectManager-&gt;get( \Magento\CatalogInventory\Api\StockConfigurationInterface::class )-&gt;getConfigItemOptions();
+foreach ( $options as $option ) {
+    if ( isset( $inventoryData[$option] ) &amp;&amp; !isset( $inventoryData['use_config_' . $option] ) ) {
+        $inventoryData['use_config_' . $option] = 0;
+    }
+}
+
+// update stock items
+$productIds = [ ];
+foreach ( $qtys as $sku =&gt; $qty ) {
+    try {
+        $stockItem = $stockRegistry-&gt;getStockItemBySku( $sku, $websiteId );
+        $stockItemId = $stockItem-&gt;getId();
+        $productIds[] = $stockItem-&gt;getProductId();
+        $inventoryData['qty'] = $qty;
+        $dataObjectHelper-&gt;populateWithArray( $stockItem, $inventoryData, '\Magento\CatalogInventory\Api\Data\StockItemInterface' );
+        $stockItem-&gt;setItemId( $stockItemId );
+        $stockItemRepository-&gt;save( $stockItem );
+    }
+    catch ( \Exception $e ) {
+        $e-&gt;getMessage();
+    }
+}
+
+// update index
+$objectManager-&gt;get( \Magento\CatalogInventory\Model\Indexer\Stock\Processor::class )-&gt;reindexList( $productIds );</code></pre>
+    </article>
+</main>
+<script src="web/js/lib/require.js" type="text/javascript"></script>
+<script src="web/js/require-config.js" type="text/javascript"></script>
+<script src="web/js/notes.js" type="text/javascript"></script>
+</body>
+</html>

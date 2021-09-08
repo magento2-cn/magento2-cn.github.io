@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+    <base href="/"/>
+    <title>Magento 2 开发笔记</title>
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="web/css/notes.css"/>
+</head>
+<body>
+<main>
+    <article>
+        <h1>依赖注入 di.xml</h1>
+<p><br />
+Magento 2 允许开发者通过组件的 <code>di.xml</code> 文件对类进行配置。 这个机制方便我们在不修改核心代码的前提下对原生功能进行修改，令定制开发在不影响系统升级的同时也非常灵活。</p>
+<p>指定 <code>area</code> 下的 <code>di.xml</code> 文件（比如 <code>etc/frontend/di.xml</code>）只会在这个作用域里起作用，对其他作用域的同一个类/接口都没有影响。</p>
+<p><code>di.xml</code> 文件的所有配置内容都在 <code>config</code> 节点中进行：</p>
+<pre><code class="language-xml">&lt;?xml version="1.0"?&gt;
+&lt;config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd"&gt;
+    ...
+&lt;/config&gt;</code></pre>
+<p>需要注意的是，di 文件的设置只对系统自动加载的类，或者通过 ObjectManager 加载的类起作用，对直接 new 出来的实例不生效。</p>
+<h2>指定单例</h2>
+<p>通过 <code>peference</code> 标签可以指定接口所对应的类：</p>
+<pre><code class="language-xml">&lt;preference for="Magento\Catalog\Api\Data\ProductInterface"
+    type="Namespace\Module\Model\Product" /&gt;</code></pre>
+<p>或者设置使用一个新的类来代替（重写）已经存在的类：</p>
+<pre><code class="language-xml">&lt;preference for="Magento\Catalog\Model\ResourceModel\Product\Collection"
+    type="Namespace\Module\Override\Magento\Catalog\Model\ResourceModel\Product\Collection" /&gt;</code></pre>
+<h2>指定注入某个类的参数</h2>
+<pre><code class="language-xml">&lt;type name="Magento\Catalog\Helper\Product"&gt;
+    &lt;arguments&gt;
+        &lt;argument name="catalogSession" xsi:type="object"&gt;Magento\Catalog\Model\Session\Proxy&lt;/argument&gt;
+        &lt;argument name="reindexPriceIndexerData" xsi:type="array"&gt;
+            &lt;item name="byDataResult" xsi:type="array"&gt;
+                &lt;item name="tier_price_changed" xsi:type="string"&gt;tier_price_changed&lt;/item&gt;
+            &lt;/item&gt;
+            &lt;item name="byDataChange" xsi:type="array"&gt;
+                &lt;item name="status" xsi:type="string"&gt;status&lt;/item&gt;
+                &lt;item name="price" xsi:type="string"&gt;price&lt;/item&gt;
+                &lt;item name="special_price" xsi:type="string"&gt;special_price&lt;/item&gt;
+                &lt;item name="special_from_date" xsi:type="string"&gt;special_from_date&lt;/item&gt;
+                &lt;item name="special_to_date" xsi:type="string"&gt;special_to_date&lt;/item&gt;
+                &lt;item name="website_ids" xsi:type="string"&gt;website_ids&lt;/item&gt;
+                &lt;item name="gift_wrapping_price" xsi:type="string"&gt;gift_wrapping_price&lt;/item&gt;
+                &lt;item name="tax_class_id" xsi:type="string"&gt;tax_class_id&lt;/item&gt;
+            &lt;/item&gt;
+        &lt;/argument&gt;
+        &lt;argument name="reindexProductCategoryIndexerData" xsi:type="array"&gt;
+            &lt;item name="byDataChange" xsi:type="array"&gt;
+                &lt;item name="category_ids" xsi:type="string"&gt;category_ids&lt;/item&gt;
+                &lt;item name="entity_id" xsi:type="string"&gt;entity_id&lt;/item&gt;
+                &lt;item name="store_id" xsi:type="string"&gt;store_id&lt;/item&gt;
+                &lt;item name="website_ids" xsi:type="string"&gt;website_ids&lt;/item&gt;
+                &lt;item name="visibility" xsi:type="string"&gt;visibility&lt;/item&gt;
+                &lt;item name="status" xsi:type="string"&gt;status&lt;/item&gt;
+            &lt;/item&gt;
+        &lt;/argument&gt;
+        &lt;argument name="productRepository" xsi:type="object"&gt;Magento\Catalog\Api\ProductRepositoryInterface\Proxy&lt;/argument&gt;
+    &lt;/arguments&gt;
+&lt;/type&gt;</code></pre>
+<h2>插件 Plugin</h2>
+<p>在 Magento 2 中，我们可以通过定义插件来修改或者扩展原生类的行为。</p>
+<p>插件可以且只可以影响指定类的公有方法。且若类 A 被类 B 所继承，作用于类 A 的插件不会影响类 B 的行为。</p>
+<p>插件仅能作用于类，无法作用于接口。</p>
+<h3>插件的定义</h3>
+<pre><code class="language-xml">&lt;type name="Original\Class\Name"&gt;
+    &lt;plugin name="plugin_name"
+        type="Namespace\Module\Plugin\Resource\Visitor"
+        sortOrder="1" disabled="true" /&gt;
+&lt;/type&gt;</code></pre>
+<ul>
+<li><strong>type:name</strong> - 需要执行插件的类。包含空间名，如 Magento\Customer\Model\Resource\Visitor</li>
+<li><strong>plugin:name</strong> - 插件名。全站同一个域内唯一，如 catalogLog</li>
+<li><strong>plugin:type</strong> - 插件的类名。包含空间名，如 Magento\Catalog\Model\Plugin\Log</li>
+<li><strong>plugin:sortOrder</strong> - 执行顺序。当同一个类有多个插件时，根据这个参数决定插件的执行顺序</li>
+<li><strong>plugin:disabled</strong> - 该参数为 true 时不执行该插件</li>
+</ul>
+<h3>before 侦听方法</h3>
+<p>当我们需要修改一个方法的参数，或者在执行这个方法之前执行一些预操作的时候，可以为插件添加 before 侦听方法。</p>
+<p>before 侦听方法的命名规则是，将原生方法的首字母改成大写，并在原生方法名前添加前缀 <code>before</code>。</p>
+<p>before 侦听方法的第一个参数是原生方法所属类的实例。如果原生方法有参数，则从第二个参数起往后分别对应原生方法的各个参数。参数类型可以与原生方法不一致，这相当于在 di.xml 中指定对应参数的类。</p>
+<p>如果需要修改原生方法的参数，可以在 before 侦听方法中返回一个数组，数组第一到 n 个元素依次为原生方法的入参；不返回任何值则原生方法的入参内容不变。</p>
+<p>下边是原生插件 <code>Magento\Catalog\Model\Indexer\Product\Flat\Plugin</code> 的 before 侦听方法的内容：</p>
+<pre><code class="language-php">public function beforeSave(\Magento\Store\Model\ResourceModel\Store $subject, \Magento\Framework\Model\AbstractModel $object)
+{
+    if (!$object-&gt;getId() || $object-&gt;dataHasChangedFor('group_id')) {
+        $this-&gt;_productFlatIndexerProcessor-&gt;markIndexerAsInvalid();
+    }
+}</code></pre>
+<h3>after 侦听方法</h3>
+<p>当我们需要修改一个方法的返回值，或者在执行这个方法之后执行一些后续操作的时候，可以为插件添加 after 侦听方法。</p>
+<p>after 侦听方法的命名规则是，将原生方法的首字母改成大写，并在原生方法名前添加前缀 <code>after</code>。</p>
+<p>after 侦听方法的第一个参数是原生方法所属类的实例。如果原生方法有返回值，则第二个参数为原生方法的返回值。</p>
+<p>after 侦听方法的返回值类型必须与原生方法一致。</p>
+<p>下边是原生插件 <code>Magento\Catalog\Plugin\Model\Indexer\Category\Product\Execute</code> 的 after 侦听方法的内容：</p>
+<pre><code class="language-php">public function afterExecute(AbstractAction $subject, AbstractAction $result)
+{
+    if ($this-&gt;config-&gt;isEnabled()) {
+        $this-&gt;typeList-&gt;invalidate('full_page');
+    }
+    return $result;
+}</code></pre>
+<h3>around 侦听方法</h3>
+<p>当我们需要同时修改一个方法的参数和返回值，或者在执行这个方法前后都要执行额外操作的时候，就用到 around 侦听方法。</p>
+<p>around 侦听方法的命名规则是，将原生方法的首字母改成大写，并在原生方法名前添加前缀 <code>around</code>。</p>
+<p>around 侦听方法的第一个参数是原生方法所属类的实例。第二个参数是针对同一原生方法的下一个插件的 around 侦听方法，或者原生方法本身。如果原生方法有参数，则以同一顺序依次跟在第二个参数之后。</p>
+<p>around 侦听方法的返回值类型必须与原生方法一致。</p>
+<p>下边是原生插件 <code>Magento\Catalog\Plugin\Model\ResourceModel\Attribute\Save</code> 的 around 侦听方法的内容：</p>
+<pre><code class="language-php">public function aroundSave(
+    \Magento\Catalog\Model\ResourceModel\Attribute $subject,
+    \Closure $proceed,
+    \Magento\Framework\Model\AbstractModel $attribute
+) {
+    $result = $proceed($attribute);
+    if ($this-&gt;config-&gt;isEnabled()) {
+        $this-&gt;typeList-&gt;invalidate('full_page');
+    }
+    return $result;
+}</code></pre>
+<h3>执行顺序</h3>
+<p>当多个插件/侦听方法同时指向同一个原生方法时，将按以下顺序执行：</p>
+<ol>
+<li>执行 <code>sortOrder</code> 最小的插件的 before 侦听方法</li>
+<li>执行 <code>sortOrder</code> 最小的插件的 around 侦听方法</li>
+<li>按 <code>sortOrder</code> 值从小到大顺序执行插件的其他 before 侦听方法</li>
+<li>按 <code>sortOrder</code> 值从小到大顺序执行插件的其他 around 侦听方法</li>
+<li>按 <code>sortOrder</code> 值从大到小顺序执行插件的 after 侦听方法</li>
+</ol>
+<h2>插件的一些应用技巧</h2>
+<h3>使用原生类的私有方法</h3>
+<p>Magento 原生插件仅支持对公共方法的修改，且传参的形式让我们无法直接使用其实例的私有方法。但通过利用 php 的闭包特性，我们可以达到使用私有方法的目的。比如，有一原生类 A 的公共方法 external 中用到私有方法 internal ：</p>
+<pre><code class="language-php">class A
+{
+    private function internal( $paramI1, $paramI2, ... )
+    {
+        ...
+    }
+
+    public function external( $paramE1, $paramE2, ... )
+    {
+        $this-&gt;inernal( $paramI1, $paramI2, ... );
+    }
+}</code></pre>
+<p>当我们需要在插件 APlugin 中用到私有方法 internal，可以这样写：</p>
+<pre><code class="language-php">class APlugin
+{
+    public aroundExternal( A $subject, \Closure $processed, $paramE1, $paramE2, ... )
+    {
+        return ( function () use ( $paramE1, $paramE2, ... ) {
+            $this-&gt;inernal( $paramI1, $paramI2, ... );
+        } )-&gt;call( $subject );
+    }
+}</code></pre>
+<p>或者</p>
+<pre><code class="language-php">class APlugin
+{
+    static public internal( A $subject, $paramI1, $paramI2, ... )
+    {
+        return ( function () use ( $paramI1, $paramI2, ... ) {
+            // sth. to do before running inernal
+            $this-&gt;inernal( $paramI1, $paramI2, ... );
+            // sth. to do after running inernal
+        } )-&gt;call( $subject );
+    }
+
+    public aroundExternal( A $subject, \Closure $processed, $paramE1, $paramE2, ... )
+    {
+        return ( function () use ( $paramE1, $paramE2, ... ) {
+            APlugin::internal( $subject, $paramI1, $paramI2, ... );
+        } )-&gt;call( $subject );
+    }
+}</code></pre>
+    </article>
+</main>
+<script src="web/js/lib/require.js" type="text/javascript"></script>
+<script src="web/js/require-config.js" type="text/javascript"></script>
+<script src="web/js/notes.js" type="text/javascript"></script>
+</body>
+</html>

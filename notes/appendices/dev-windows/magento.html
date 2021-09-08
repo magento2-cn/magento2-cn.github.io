@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+    <base href="/"/>
+    <title>Magento 2 开发笔记</title>
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="web/css/notes.css"/>
+</head>
+<body>
+<main>
+    <article>
+        <h1>Magento 开发环境</h1>
+<p>使用 docker-compose 为每个项目部署开发所需的容器，这基于<a href="appendices/dev-windows/dev.html">本地开发框架</a>。</p>
+<h2>Github 地址</h2>
+<ul>
+<li><a href="https://github.com/zengliwei/dev-magento/tree/2.3-dev">Magento 2.3 简化版</a></li>
+<li><a href="https://github.com/zengliwei/dev-magento/tree/2.3-dev-full">Magento 2.3 完整版</a></li>
+<li><a href="https://github.com/zengliwei/dev-magento/tree/2.2-dev">Magento 2.2 简化版</a></li>
+<li><a href="https://github.com/zengliwei/dev-magento/tree/2.2-dev-full">Magento 2.2 完整版</a></li>
+<li><a href="https://github.com/zengliwei/dev-magento/tree/2.1-dev">Magento 2.1 简化版</a></li>
+<li><a href="https://github.com/zengliwei/dev-magento/tree/2.1-dev-full">Magento 2.1 完整版</a></li>
+<li><a href="https://github.com/zengliwei/dev-magento/tree/1.9-dev">Magento 1.9</a></li>
+</ul>
+<h2>部署内容</h2>
+<h3>简化版</h3>
+<p>该版本包含三个容器：</p>
+<ul>
+<li><code>mysql:5.7</code> 容器</li>
+<li><code>redis:latest</code> 容器</li>
+<li>基于 <code>php:x.x-fpm</code> 的自定义容器，包含以下内容：
+<ul>
+<li>运行 Magento 2 对应版本所需的 PHP 插件及 Xdebug</li>
+<li>MSMTP - 用于转发测试邮件到 <code>mailhog/mailhog</code> 容器</li>
+<li>Nginx - 用于处理页面请求，站点根目录为 <strong>/var/www/current</strong></li>
+<li>SSH - 用于执行 CLI 指令，及通过 SFTP 进行文件传输</li>
+</ul></li>
+</ul>
+<h3>完整版</h3>
+<p>完整版在简化版基础上添加了：</p>
+<ul>
+<li><code>elasticsearch:6.8.6</code>（Magento 2.3 +）或 <code>elasticsearch:2.4.6</code>（Magento 2.1）容器</li>
+<li><code>kibana:6.8.6</code>（Magento 2.3 +）或 <code>elastichq/elasticsearch-hq</code>（Magento 2.1）容器</li>
+<li><code>varnish:latest</code> 容器，预设 Magento 2 对应规则</li>
+<li>基于 <code>rabbitmq:management</code> 的自定义容器，自动创建 magento 用户</li>
+</ul>
+<p>假设项目主域名为 domain.com，完成部署后还可通过浏览器访问下面几个链接：</p>
+<ul>
+<li><a href="http://elastic.domain.com">http://elastic.domain.com</a> - ElasticSearch 管理平台</li>
+<li><a href="http://rabbitmq.domain.com">http://rabbitmq.domain.com</a> - RabbitMQ 管理平台</li>
+</ul>
+<h2>部署步骤</h2>
+<h3>创建容器</h3>
+<ul>
+<li>在<a href="appendices/dev-windows/dev.html">本地开发框架</a>目录下的 <strong>projects</strong> 文件夹中创建新文件夹，下载文件到该目录中</li>
+<li>修改 <strong>.env</strong> 文件指定项目名和主域名，项目名将作为各相关容器名的前缀</li>
+<li>将扩展名为 <strong>.sql</strong> 或 <strong>.sql.gz</strong> 的数据库导入文件复制到 <strong>db</strong> 目录（可选）</li>
+<li>将扩展名为 <strong>.tar</strong> 或 <strong>.tar.gz</strong> 的源代码打包复制到 <strong>src</strong> 目录（可选）</li>
+<li>执行 <strong>start.cmd</strong> 文件以创建并开启相关容器</li>
+</ul>
+<h3>启动容器</h3>
+<p>每次启动 docker 后须执行 <strong>start.cmd</strong> 文件以开启相关容器，修改域名转发配置文件后缀并重启域名转发服务。</p>
+    </article>
+</main>
+<script src="web/js/lib/require.js" type="text/javascript"></script>
+<script src="web/js/require-config.js" type="text/javascript"></script>
+<script src="web/js/notes.js" type="text/javascript"></script>
+</body>
+</html>

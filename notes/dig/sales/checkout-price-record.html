@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+    <base href="/"/>
+    <title>Magento 2 开发笔记</title>
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="web/css/notes.css"/>
+</head>
+<body>
+<main>
+    <article>
+        <h1>购物车的价格记录</h1>
+<h2>数据表字段分析</h2>
+<h3>quote</h3>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>global_currency_code</td>
+<td>默认 currency code</td>
+</tr>
+<tr>
+<td>base_currency_code</td>
+<td>下单网站的 base currency code</td>
+</tr>
+<tr>
+<td>store_currency_code</td>
+<td>下单网站的默认 currency code</td>
+</tr>
+<tr>
+<td>quote_currency_code</td>
+<td>订单 currency code</td>
+</tr>
+<tr>
+<td>store_to_base_rate</td>
+<td>？</td>
+</tr>
+<tr>
+<td>store_to_quote_rate</td>
+<td>？</td>
+</tr>
+<tr>
+<td>base_to_global_rate</td>
+<td>？</td>
+</tr>
+<tr>
+<td>base_to_quote_rate</td>
+<td>用于计算的汇率</td>
+</tr>
+<tr>
+<td>base_subtotal</td>
+<td>折前不含税总额</td>
+</tr>
+<tr>
+<td>base_subtotal_with_discount</td>
+<td>折后不含税总额</td>
+</tr>
+<tr>
+<td>subtotal</td>
+<td>折前不含税总额</td>
+</tr>
+<tr>
+<td>subtotal_with_discount</td>
+<td>折后不含税总额</td>
+</tr>
+</tbody>
+</table>
+<h3>quote_item</h3>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>base_price</td>
+<td>不含税单价：<br />- Catalog Prices 为 Excluding Tax：min price<br />- Catalog Prices 为 Including Tax：<code>base_price_incl_tax</code> - <code>base_tax_amount</code></td>
+</tr>
+<tr>
+<td>base_price_incl_tax</td>
+<td>含税单价：<br />- Catalog Prices 为 Excluding Tax：<code>base_price</code> + <code>base_tax_amount</code><br />- Catalog Prices 为 Including Tax：min price</td>
+</tr>
+<tr>
+<td>qty</td>
+<td>行数量</td>
+</tr>
+<tr>
+<td>discount_percent</td>
+<td>折扣百分比</td>
+</tr>
+<tr>
+<td>base_discount_amount</td>
+<td>行总折扣金额</td>
+</tr>
+<tr>
+<td>tax_percent</td>
+<td>税率</td>
+</tr>
+<tr>
+<td>base_tax_amount</td>
+<td>行税额：<br />- Catalog Prices 为 Excluding Tax：<code>base_price</code> <em> <code>tax_percent</code> / 100<br />- Catalog Prices 为 Including Tax：<code>base_price_incl_tax</code> </em> (1 - 1 / (1 + <code>tax_percent</code> / 100))</td>
+</tr>
+<tr>
+<td>base_row_total</td>
+<td>行不含税总额 base_price * qty</td>
+</tr>
+<tr>
+<td>base_row_total_incl_tax</td>
+<td>行含税总额 base_price_incl_tax * qty</td>
+</tr>
+<tr>
+<td>base_discount_tax_compensation_amount</td>
+<td>行折后税差额：<br />- Apply Customer Tax 为 Before Discount：0<br />- Apply Customer Tax 为 After Discount，Catalog Prices 为 Excluding Tax：<code>base_tax_amount</code> - (<code>base_row_total_incl_tax</code> - <code>base_discount_amount</code>) <em> <code>tax_percent</code> / 100<br />- Apply Customer Tax 为 After Discount，Catalog Prices 为 Excluding Tax：<code>base_tax_amount</code> - (<code>base_row_total_incl_tax</code> - <code>base_discount_amount</code>) </em> (1 - 1 / (1 + <code>tax_percent</code> / 100))</td>
+</tr>
+<tr>
+<td>base_tax_before_discount</td>
+<td>?</td>
+</tr>
+<tr>
+<td>price</td>
+<td>不含税单价</td>
+</tr>
+<tr>
+<td>price_incl_tax</td>
+<td>含税单价</td>
+</tr>
+<tr>
+<td>discount_amount</td>
+<td>行总折扣金额</td>
+</tr>
+<tr>
+<td>tax_amount</td>
+<td>行税额</td>
+</tr>
+<tr>
+<td>row_total</td>
+<td>行不含税总价</td>
+</tr>
+<tr>
+<td>row_total_incl_tax</td>
+<td>行含税总价</td>
+</tr>
+<tr>
+<td>discount_tax_compensation_amount</td>
+<td>行折后税差额</td>
+</tr>
+<tr>
+<td>tax_before_discount</td>
+<td>?</td>
+</tr>
+</tbody>
+</table>
+    </article>
+</main>
+<script src="web/js/lib/require.js" type="text/javascript"></script>
+<script src="web/js/require-config.js" type="text/javascript"></script>
+<script src="web/js/notes.js" type="text/javascript"></script>
+</body>
+</html>

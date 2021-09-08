@@ -1,0 +1,109 @@
+[
+    {
+        "title": "常用代码",
+        "children": [
+            {
+                "title": "测试 Debug",
+                "path": "notes/codes/others/debug.html"
+            },
+            {
+                "title": "常用类和接口",
+                "path": "notes/codes/others/common-classes.html"
+            },
+            {
+                "title": "常用常量",
+                "path": "notes/codes/others/constants.html"
+            },
+            {
+                "title": "依赖注入 di.xml",
+                "path": "notes/codes/others/di.html"
+            },
+            {
+                "title": "日期和时间",
+                "path": "notes/codes/others/datetime.html"
+            },
+            {
+                "title": "文件路径和 URL",
+                "path": "notes/codes/others/resources.html"
+            },
+            {
+                "title": "产品 Product",
+                "path": "notes/codes/catalog/product.html"
+            },
+            {
+                "title": "产品分类 Category",
+                "path": "notes/codes/catalog/category.html"
+            },
+            {
+                "title": "产品库存 Inventory",
+                "path": "notes/codes/catalog/inventory.html"
+            },
+            {
+                "title": "用户 Customer",
+                "path": "notes/codes/customers/customer.html"
+            },
+            {
+                "title": "集合 Collection",
+                "path": "notes/codes/others/collection.html"
+            },
+            {
+                "title": "后台设置",
+                "path": "notes/codes/back-end/store-config.html"
+            },
+            {
+                "title": "后台 UI",
+                "path": "notes/codes/back-end/ui.html"
+            },
+            {
+                "title": "自定义入口文件",
+                "path": "notes/codes/others/custom-index.html"
+            }
+        ]
+    },
+    {
+        "title": "原理分析",
+        "children": [
+            {
+                "title": "产品价格",
+                "path": "notes/dig/catalog/product-price.html"
+            },
+            {
+                "title": "税价计算",
+                "path": "notes/dig/catalog/tax-calculate.html"
+            },
+            {
+                "title": "购物车的价格计算",
+                "path": "notes/dig/sales/checkout-price-calculate.html"
+            },
+            {
+                "title": "购物车的价格记录",
+                "path": "notes/dig/sales/checkout-price-record.html"
+            },
+
+
+
+
+            {
+                "title": "产品价格",
+                "path": "notes/dig/catalog/product-price.html"
+            },
+            {
+                "title": "税价计算",
+                "path": "notes/dig/catalog/tax-calculate.html"
+            },
+            {
+                "title": "购物车的价格计算",
+                "path": "notes/dig/sales/checkout-price-calculate.html"
+            },
+            {
+                "title": "购物车的价格记录",
+                "path": "notes/dig/sales/checkout-price-record.html"
+            }
+        ]
+    },
+    {
+        "title": "异常处理",
+        "children": [
+        ]
+    }
+]

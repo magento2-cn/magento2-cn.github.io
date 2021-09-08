@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+    <base href="/"/>
+    <title>Magento 2 开发笔记</title>
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="web/css/notes.css"/>
+</head>
+<body>
+<main>
+    <article>
+        <h1>税价计算</h1>
+<h2>税率的匹配逻辑</h2>
+<p>所有类型的 <code>Tax Rate</code>（Product、Shipping）都是通过以下两步获得：</p>
+<ul>
+<li>由 Customer Tax Class 和 Product Tax Class 决定 <code>Tax Rule</code></li>
+<li>根据参考地址的 Country、State 和 Post Code 匹配与该 <code>Tax Rule</code> 关联的 <code>Tax Rate</code></li>
+</ul>
+<h3>用户组的税费类型</h3>
+<p>前台 Customer Tax Class 由当前用户的用户组决定，这组关联可在后台 <strong><em>STORES / Other Settings / Customer Groups</em></strong> 进行设置。</p>
+<p>默认状态下，游客属于 <code>NOT LOGGED IN</code> 组，其 Customer Tax Class 与登录用户一样都是 <code>Retail Customer</code>。</p>
+<h3>参考地址的选取</h3>
+<h4>后台税率计算的参考地址</h4>
+<p>后台产品信息编辑页以 <strong><em>SALES / Shipping Settings / Origin</em></strong> 设定的地址作为参考地址。</p>
+<p>关于后台产品价格设定需要注意的是，当店铺设置 <strong><em>SALES / Tax / Calculation Settings &gt; Catalog Prices</em></strong> 为 Including Tax 时，后台设置的产品价格不一定已经含税，还要看该产品的 Tax Class 和参考地址是否匹配。 </p>
+<h4>前台税率计算的参考地址</h4>
+<p>前台则根据不同的店铺设置、不同的用户状态，以及不同页面使用不同的参考地址。当 <strong><em>SALES / Tax / Calculation Settings / Tax Calculation Based On</em></strong> 为默认值 Shipping Address 时如下表：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Product List / Detail</th>
+<th>Cart Page Summary</th>
+<th>Shopping Cart</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>计算依据</strong></td>
+<td>根据当前用户的默认地址进行计算。</td>
+<td>根据 Estimate Shipping and Tax 所选地区进行计算。</td>
+<td>根据 Checkout 所填地址进行计算。</td>
+</tr>
+<tr>
+<td><strong>默认状态</strong></td>
+<td>游客或未设定默认地址的用户的参考地址，通过后台 SALES / Tax / Default Tax Destination Calculation 设定。</td>
+<td>Estimate Shipping and Tax 的参考地址，由当前用户的默认地址决定；游客或未设定默认地址的用户的参考地址，通过后台 SALES / Tax / Default Tax Destination Calculation 设定。<br /><br />若选择了 Country 但不选 State，系统会使用 SALES / Tax / Default Tax Destination Calculation &gt; Default State 作为选项。</td>
+<td>若未选择运送地址，则使用当前用户的默认地址作为参考地址；<br /><br />游客或未设定默认地址的参考地址，通过后台 SALES / Tax / Default Tax Destination Calculation 设定。</td>
+</tr>
+<tr>
+<td><strong>生命周期</strong></td>
+<td>更改默认地址，或登录/登出都会马上影响 Product List / Detail 页内 Tax 的计算。</td>
+<td>Estimate Shipping and Tax 的生命周期由手动更改或登录/登出后开始，完成下单或登出后结束；<br /><br />Checkout 中修改订单地址不会对其造成影响；<br /><br />游客添加产品并访问 Cart 页面后，Estimate Shipping and Tax 的选项即已保存到 Session，此时到后台修改设置并刷新 Cart 页亦不会使其变化，需登录后登出才可看到效果。</td>
+<td>Shopping Cart 地址的生命周期由手动更改或登出后开始，完成下单或用户登出后结束。</td>
+</tr>
+</tbody>
+</table>
+<h2>税费计算方式</h2>
+<p>系统取按不同优惠规则计算后得到的最小值作为计算基值：</p>
+<pre><code>min( fn( price, catalog price rule ), special_price )</code></pre>
+<p>根据不同的店铺设置，有如下区别：</p>
+<p>当 <strong><em>SALES / Tax / Calculation Settings &gt; Catalog Prices</em></strong> 为 Excluding Tax 时（默认），以这个基值作为不含税单价 <code>base_price</code>，税费为</p>
+<pre><code>base_tax_amount = base_price * tax_percent / 100</code></pre>
+<p>当 <strong><em>SALES / Tax / Calculation Settings &gt; Catalog Prices</em></strong> 为 Including Tax 时，以这个基值作为含税单价 <code>base_price_incl_tax</code>，税费为</p>
+<pre><code>base_tax_amount = base_price_incl_tax - base_price_incl_tax / ( 1 + tax_percent / 100 )</code></pre>
+<h2>税费相关的店铺设置</h2>
+<p><strong><em>SALES / Tax / Shopping Cart Display Settings</em></strong></p>
+<table>
+<thead>
+<tr>
+<th>设置</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Include Tax In Order Total</td>
+<td>Yes - 仅显示带税的 Order Total。<br />No  - 同时显示 Order Total Incl. Tax 及 Order Total Excl. Tax。</td>
+</tr>
+<tr>
+<td>Display Full Tax Summary</td>
+<td>Yes - 在 Tax 栏出现折叠内容，展开后显示购物车内所有税目的详细情况。<br />No  - 在 Tax 栏仅显示总税价。</td>
+</tr>
+<tr>
+<td>Display Zero Tax Subtotal</td>
+<td>Yes - 当购物车内所有项目（包括产品及运费）均不含税时，仍显示 Tax 栏。<br />No  - 当购物车内所有项目（包括产品及运费）均不含税时，不显示 Tax 栏。</td>
+</tr>
+</tbody>
+</table>
+<p><strong><em>SALES / Tax / Tax Classes</em></strong></p>
+<table>
+<thead>
+<tr>
+<th>设置</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tax Class for Shipping</td>
+<td>选择用于计算运输税的 Tax Rule 关联的 Product Tax Class。</td>
+</tr>
+<tr>
+<td>Default Tax Class for Product</td>
+<td>选择用于匹配 Tax Rule 的默认 Customer Tax Class。</td>
+</tr>
+<tr>
+<td>Default Tax Class for Customer</td>
+<td>选择用于匹配 Tax Rule 的默认 Product Tax Class。</td>
+</tr>
+</tbody>
+</table>
+<p><strong><em>SALES / Tax / Calculation Settings</em></strong></p>
+<table>
+<thead>
+<tr>
+<th>设置</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tax Calculation Method Based On</td>
+<td>Unit Price - 基于单个产品计算税费。<br />Row Total  - 基于购物车的一行产品计算税费。<br />Total      - 基于所有产品总价计算税费。</td>
+</tr>
+<tr>
+<td>Tax Calculation Based On</td>
+<td>Shipping Address - 基于收货地址计算税费，虚拟订单基于账单地址计算税费。<br />Billing Address  - 基于账单地址计算税费。<br />Shipping Orign   - 基于发货地址计算税费。</td>
+</tr>
+<tr>
+<td>Catalog Prices</td>
+<td>Excluding Tax - 后台产品价格设定不包含税费。<br />Including Tax - 后台产品价格设定已包含税费。</td>
+</tr>
+<tr>
+<td>Shipping Prices</td>
+<td>Excluding Tax - 后台运费设定不包含税费。<br />Including Tax - 后台运费设定已包含税费。</td>
+</tr>
+<tr>
+<td>Apply Customer Tax</td>
+<td>After Discount  - 在计算折扣价之后计算税费。<br />Before Discount - 在这算折扣价之前计算税费。</td>
+</tr>
+<tr>
+<td>Apply Discount On Prices</td>
+<td>这项设置仅在 Apply Customer Tax 为 After Discount 时生效：<br /><br />Excluding Tax - 折扣不含税费。<br />Including Tax - 折扣已包含税费。</td>
+</tr>
+<tr>
+<td>Apply Tax On</td>
+<td>Custom price if available - 基于不同产品设置生效之后的价格计算税费。<br />Original price only       - 仅基于产品原价计算税费。</td>
+</tr>
+<tr>
+<td>Enable Cross Border Trade</td>
+<td>Yes - 当 Catalog Prices 为 Including Tax 时，不管税率为多少均保持该税后价不变。下边举例说明：<br /><br /><em>设置 Tax Calculation Based On 为 Shipping Address，Catalog Prices 为 Including Tax，一产品在后台设定含税价为 $66.50，默认目的地对应税率为 10%，前台列表页时显示为 $66.50。<br /><br />该项设置为 No（默认值）：当用户把产品加入到购物车并选择一个税率不同于默认地址的运送地，系统会先通过默认地址对应税率和含税价计算得到不含税的价格 $60.45，然后乘上所选运送地对应税率得出最终价格。<br /><br />该项设置为 Yes：用户把产品加入到购物车后，不管选择任何收货地址都不会影响产品含税价，始终为 $66.50。</em></td>
+</tr>
+</tbody>
+</table>
+<p><strong><em>SALES / Tax / Default Tax Destination Calculation</em></strong></p>
+<table>
+<thead>
+<tr>
+<th>设置</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default Country</td>
+<td>用于匹配 Tax Rate 的默认地址。</td>
+</tr>
+<tr>
+<td>Default State</td>
+<td>用于匹配 Tax Rate 的默认地址。</td>
+</tr>
+<tr>
+<td>Default Post Code</td>
+<td>用于匹配 Tax Rate 的默认地址。</td>
+</tr>
+</tbody>
+</table>
+<p><strong><em>SALES / Shipping Settings / Origin</em></strong></p>
+<table>
+<thead>
+<tr>
+<th>设置</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Country</td>
+<td>发货地址，后台以此地址作为税价计算依据。</td>
+</tr>
+<tr>
+<td>Region/State</td>
+<td>发货地址，后台以此地址作为税价计算依据。</td>
+</tr>
+<tr>
+<td>ZIP/Postal Code</td>
+<td>发货地址，后台以此地址作为税价计算依据。</td>
+</tr>
+</tbody>
+</table>
+    </article>
+</main>
+<script src="web/js/lib/require.js" type="text/javascript"></script>
+<script src="web/js/require-config.js" type="text/javascript"></script>
+<script src="web/js/notes.js" type="text/javascript"></script>
+</body>
+</html>

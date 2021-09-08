@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+    <base href="/"/>
+    <title>Magento 2 开发笔记</title>
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="web/css/notes.css"/>
+</head>
+<body>
+<main>
+    <article>
+        <h1>常用类和接口</h1>
+<h2>Framework</h2>
+<pre><code class="language-php">Magento\Framework\App\Config\ScopeConfigInterface // Magento\Framework\App\Config
+Magento\Framework\App\RequestInterface // Magento\Framework\App\Request\Http
+Magento\Framework\App\ResponseInterface // Magento\Framework\App\Response\Http
+Magento\Framework\ObjectManagerInterface // Magento\Framework\ObjectManager\ObjectManager
+
+Magento\Framework\App\DeploymentConfig
+Magento\Framework\App\ResourceConnection
+Magento\Framework\App\State
+Magento\Framework\Registry</code></pre>
+<h2>Store</h2>
+<pre><code class="language-php">Magento\Store\Model\StoreManagerInterface // Magento\Store\Model\StoreManager</code></pre>
+<h2>Catalog</h2>
+<pre><code class="language-php">Magento\Catalog\Api\CategoryRepositoryInterface // Magento\Catalog\Model\CategoryRepository
+Magento\Catalog\Api\ProductRepositoryInterface // Magento\Catalog\Model\ProductRepository
+
+Magento\Catalog\Model\CategoryFactory
+Magento\Catalog\Model\ProductFactory
+
+Magento\Catalog\Model\ResourceModel\Category
+Magento\Catalog\Model\ResourceModel\Product</code></pre>
+<h2>Customer</h2>
+<pre><code class="language-php">Magento\Customer\Api\AddressRepositoryInterface // Magento\Customer\Model\ResourceModel\AddressRepository
+Magento\Customer\Api\CustomerRepositoryInterface // Magento\Customer\Model\ResourceModel\CustomerRepository
+Magento\Customer\Api\GroupRepositoryInterface // Magento\Customer\Model\ResourceModel\GroupRepository
+
+Magento\Customer\Model\AddressFactory
+Magento\Customer\Model\CustomerFactory
+Magento\Customer\Model\GroupFactory
+
+Magento\Catalog\Model\ResourceModel\Address
+Magento\Catalog\Model\ResourceModel\Customer
+Magento\Catalog\Model\ResourceModel\Group</code></pre>
+<h2>Log</h2>
+<pre><code class="language-php">Psr\Log\LoggerInterface // Magento\Framework\Logger\Monolog</code></pre>
+    </article>
+</main>
+<script src="web/js/lib/require.js" type="text/javascript"></script>
+<script src="web/js/require-config.js" type="text/javascript"></script>
+<script src="web/js/notes.js" type="text/javascript"></script>
+</body>
+</html>

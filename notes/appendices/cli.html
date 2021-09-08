@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+    <base href="/"/>
+    <title>Magento 2 开发笔记</title>
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="web/css/notes.css"/>
+</head>
+<body>
+<main>
+    <article>
+        <h1>常用命令及参数</h1>
+<h2>Magento 命令</h2>
+<p>以下命令须在站点根目录下执行：</p>
+<h3>清空主题文件</h3>
+<pre><code class="language-sh">rm -rf pub/static/*
+rm -rf var/view_preprocessed/*</code></pre>
+<h3>开启维护模式，清空所有临时文件</h3>
+<pre><code class="language-sh">php bin/magento maintenance:enable</code></pre>
+<pre><code class="language-sh">rm -rf generated/*
+rm -rf pub/static/*
+rm -rf var/di
+rm -rf var/generation
+rm -rf var/view_preprocessed
+rm -rf var/cache
+rm -rf var/page_cache</code></pre>
+<pre><code class="language-sh">chown -R www-data:www-data ./generated
+chown -R www-data:www-data ./var</code></pre>
+<h3>更新组件数据库，并开启产品模式（自动部署）</h3>
+<pre><code>rm -rf pub/static/*
+
+php bin/magento deploy:mode:set production -vvv
+php bin/magento setup:upgrade --keep-generated
+</code></pre>
+<h3>开启产品模式（手动分步部署）</h3>
+<pre><code>php bin/magento maintenance:enable
+
+rm -rf generated/*
+rm -rf pub/static/*
+rm -rf var/cache/*
+rm -rf var/di/*
+rm -rf var/view_preprocessed/*
+
+php bin/magento setup:di:compile
+php bin/magento setup:static-content:deploy zh_Hant_HK en_US zh_Hans_CN
+php bin/magento deploy:mode:set production --skip-compilation
+php bin/magento setup:upgrade --keep-generated
+php bin/magento maintenance:disable
+</code></pre>
+<h3>更新静态文件（无需开启维护模式）</h3>
+<pre><code class="language-sh">rm -rf var/view_preprocessed/*
+
+php bin/magento cache:flush
+php bin/magento setup:static-content:deploy zh_Hant_HK en_US zh_Hans_CN
+</code></pre>
+<pre><code class="language-sh">find ./pub/static/ -name '*.css' -print|xargs rm -rf</code></pre>
+<h2>Linux 命令</h2>
+<h3>文件用户组及权限</h3>
+<pre><code class="language-sh">chown -R www-data:www-data .</code></pre>
+<pre><code class="language-sh">chown -R apache:apache .</code></pre>
+<pre><code class="language-sh">find ./ -type f -print|xargs chmod 644;
+find ./ -type d -print|xargs chmod 755;</code></pre>
+<pre><code class="language-sh">find ./ -type f -print|xargs chmod 664;
+find ./ -type d -print|xargs chmod 775;</code></pre>
+<h3>打包及解压</h3>
+<p>.tar</p>
+<pre><code>解包：tar xvf FileName.tar
+打包：tar cvf FileName.tar DirName</code></pre>
+<p>.tar.gz 和 .tgz</p>
+<p>解压：</p>
+<pre><code>tar zxvf FileName.tar.gz</code></pre>
+<p>压缩：</p>
+<pre><code>tar zcvf FileName.tar.gz \
+  --exclude=app/etc/env.php \
+  --exclude=generated \
+  --exclude=pub/media \
+  --exclude=pub/static \
+  --exclude=var \
+  .</code></pre>
+<p>.zip</p>
+<pre><code>解压：unzip FileName.zip
+压缩：zip FileName.zip DirName</code></pre>
+<p>.bz2</p>
+<pre><code>解压：bzip2 -d FileName.bz2
+解压：tar -xjvf xxx.bz2
+压缩：bzip2 -z FileName</code></pre>
+<h3>导出 GIT 文件</h3>
+<p>最后一次提交修改的文件</p>
+<pre><code class="language-bash">git archive --output=latest.tar HEAD \
+  $(git diff-tree -r --no-commit-id --name-only --diff-filter=ACMRT HEAD^)</code></pre>
+<p>指定版本与最后一次提交相异的文件</p>
+<pre><code class="language-bash">git archive --output=latest.tar HEAD \
+  $(git diff-tree -r --no-commit-id --name-only --diff-filter=ACMRT OLD_COMMIT_ID HEAD)</code></pre>
+<p>指定的两个版本间相异的文件</p>
+<pre><code class="language-bash">git archive --output=latest.tar COMMIT_ID_2 \
+  $(git diff-tree -r --no-commit-id --name-only --diff-filter=ACMRT COMMIT_ID_1 COMMIT_ID_2)</code></pre>
+<h3>在 GIT 中忽略本地文件</h3>
+<pre><code class="language-sh">git update-index --skip-worktree path/to/file</code></pre>
+<h2>数据库指令</h2>
+<h3>访问数据库</h3>
+<pre><code class="language-sh">mysql --default-character-set utf8 -u root -p</code></pre>
+<h3>导入数据</h3>
+<pre><code class="language-mysql">use `magento`;
+set FOREIGN_KEY_CHECKS = 0;
+source database_source_file.sql;</code></pre>
+<h3>导出数据</h3>
+<pre><code class="language-sh">mysqldump -h localhost -u root -p magento &gt; database_source_file.sql</code></pre>
+    </article>
+</main>
+<script src="web/js/lib/require.js" type="text/javascript"></script>
+<script src="web/js/require-config.js" type="text/javascript"></script>
+<script src="web/js/notes.js" type="text/javascript"></script>
+</body>
+</html>

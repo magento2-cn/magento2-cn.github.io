@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+    <base href="/"/>
+    <title>Magento 2 开发笔记</title>
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="web/css/notes.css"/>
+</head>
+<body>
+<main>
+    <article>
+        <h1>产品 Product</h1>
+<h2>获取产品集合</h2>
+<pre><code class="language-php">/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+$collection = $objectManager-&gt;get( \Magento\Catalog\Model\ProductFactory::class )-&gt;create()-&gt;getCollection();</code></pre>
+<p>以下为 AND 条件使用实例：</p>
+<pre><code class="language-php">$collection
+    -&gt;addAttributeToFilter( 'news_from_date', [ 'to' =&gt; date( 'Y-m-d' ) ] )
+    -&gt;addAttributeToFilter( 'title', [ 'like' =&gt; '%abc' ] );</code></pre>
+<p>以下为 OR 条件使用实例：</p>
+<pre><code class="language-php">$collection-&gt;addAttributeToFilter( [
+    [ 'attribute' =&gt; 'news_from_date', 'from' =&gt; date( 'Y-m-d' ) ],
+    [ 'attribute' =&gt; 'news_to_date', 'to' =&gt; date( 'Y-m-d' ) ]
+] );</code></pre>
+<p>下面列出可用条件：</p>
+<pre><code>'eq'            =&gt; "{{fieldName}} = ?",
+'neq'           =&gt; "{{fieldName}} != ?",
+'like'          =&gt; "{{fieldName}} LIKE ?",
+'nlike'         =&gt; "{{fieldName}} NOT LIKE ?",
+'in'            =&gt; "{{fieldName}} IN(?)",
+'nin'           =&gt; "{{fieldName}} NOT IN(?)",
+'is'            =&gt; "{{fieldName}} IS ?",
+'notnull'       =&gt; "{{fieldName}} IS NOT NULL",
+'null'          =&gt; "{{fieldName}} IS NULL",
+'gt'            =&gt; "{{fieldName}} &gt; ?",
+'lt'            =&gt; "{{fieldName}} &lt; ?",
+'gteq'          =&gt; "{{fieldName}} &gt;= ?",
+'lteq'          =&gt; "{{fieldName}} &lt;= ?",
+'finset'        =&gt; "FIND_IN_SET(?, {{fieldName}})",
+'regexp'        =&gt; "{{fieldName}} REGEXP ?",
+'from'          =&gt; "{{fieldName}} &gt;= ?",
+'to'            =&gt; "{{fieldName}} &lt;= ?",
+'seq'           =&gt; null,
+'sneq'          =&gt; null,
+'ntoa'          =&gt; "INET_NTOA({{fieldName}}) LIKE ?",</code></pre>
+<h3>为集合的产品添加访问次数属性</h3>
+<pre><code class="language-php">/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+$from = date( 'Y-m-d', time() - 3600 * 24 * 30 );
+$to = date( 'Y-m-d' );
+$collection = $objectManager-&gt;create( \Magento\Reports\Model\ResourceModel\Product\Collection::class );
+$collection-&gt;addViewsCount( $from, $to ); // $from 及 $to 为可选参数
+foreach( $collection as $product ) {
+    $views = $product-&gt;getData( 'views' );
+}</code></pre>
+<p>p.s. 开启 full page cache 可能使该方法的结果变得非常不准确，需设置关闭产品详细页缓存。</p>
+<h3>获取多个指定分类的产品</h3>
+<p>可选用两个可选条件 <code>in</code> 或 <code>nin</code>。</p>
+<pre><code class="language-php">/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+/* @var $categoryIds array */
+$collection = $objectManager-&gt;create( \Magento\Catalog\Model\ResourceModel\Product\Collection::class )
+        -&gt;addCategoriesFilter( [ 'in' =&gt; $categoryIds ] );</code></pre>
+<h3>获取可见产品集合</h3>
+<p>如果执行 load 方法则无需添加 stock 相关代码，系统原生插件在 load 之前添加了库存过滤。</p>
+<pre><code class="language-php">/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+/* @var $catalogProductVisibility \Magento\Catalog\Model\Product\Visibility */
+$productCollection = $objectManager-&gt;create( \Magento\Catalog\Model\ResourceModel\Product\Collection::class );
+//$productCollection-&gt;setVisibility( $catalogProductVisibility-&gt;getVisibleInSearchIds() );
+//$productCollection-&gt;setVisibility( $catalogProductVisibility-&gt;getVisibleInCatalogIds() );
+$productCollection-&gt;setVisibility( $catalogProductVisibility-&gt;getVisibleInSiteIds() );
+
+/* @var $stockConfig \Magento\CatalogInventory\Model\Configuration */
+/* @var $stockHelper \Magento\CatalogInventory\Helper\Stock */
+if ( !$stockConfig-&gt;isShowOutOfStock() ) {
+    $stockHelper-&gt;addInStockFilterToCollection( $productCollection );
+}</code></pre>
+<h3>为产品集合加载多个 store 的属性数据</h3>
+<pre><code class="language-php">/* @var $productCollection \Magento\Catalog\Model\ResourceModel\Product\Collection */
+/* @var $alias string */
+/* @var $attribute string */
+/* @var $bind string */
+/* @var $filter string */
+/* @var $joinType string */
+/* @var $storeId int */
+$productCollection-&gt;joinAttribute( $alias, $attribute, $bind, $filter, $joinType, $storeId );</code></pre>
+<ul>
+<li><strong><em>$alias</em></strong> - 别名，使用 getData 方法时用到的名字</li>
+<li><strong><em>$attribute</em></strong> - 属性名，格式为 <code>[entity_type]/[attribute_code]</code>，比如 <code>catalog_product/name</code></li>
+<li><strong><em>$bind</em></strong> - 指定用作关联的产品 attribute code</li>
+<li><strong><em>$filter</em></strong> - 指定的产品数据表中用作关联的字段，默认为 <code>row_id</code></li>
+<li><strong><em>$joinType</em></strong> - inner / left</li>
+<li><strong><em>$storeId</em></strong> - Store View ID</li>
+</ul>
+<h3>联合其他数据表查询</h3>
+<pre><code class="language-php">/* @var $productCollection \Magento\Catalog\Model\ResourceModel\Product\Collection */
+/* @var $table string|array */
+/* @var $bind string */
+/* @var $fields array */
+/* @var $cond null|string|array */
+/* @var $joinType null|string */
+$productCollection-&gt;joinTable( $table, $bind, $fields, $cond, $joinType );</code></pre>
+<ul>
+<li><strong><em>$table</em></strong> - 联合的数据表，必须</li>
+<li><strong><em>$bind</em></strong> - 联合条件，格式为 <code>field_name=attribute_code</code>，必须</li>
+<li><strong><em>$fields</em></strong> - 联合的表中要查询的字段，格式为 <code>[ field_alias =&gt; field_name ]</code>，必须</li>
+<li><strong><em>$cond</em></strong> - 额外的联合条件。
+以字符串作参数时，系统会将 <code>{{table}}</code> 解释为联合数据表的别名，比如 <code>{{table}}.id = 123</code>；
+以数组作参数时，格式为 <code>[ field_name =&gt; [ condition =&gt; value ] ]</code>，其中 <code>field_name</code> 是联合数据表当中的字段名</li>
+<li><strong><em>$joinType</em></strong> - inner / left</li>
+</ul>
+<h3>同时获取多个 Website 的产品页链接</h3>
+<pre><code class="language-php">/* @var $storeManager \Magento\Store\Model\StoreManagerInterface */
+/* @var $productCollectionFactory \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory */
+foreach ( $storeManager-&gt;getWebsites() as $website ) {
+    $storeManager-&gt;setCurrentStore( $website-&gt;getDefaultStore() );
+
+    $productCollection = $productCollectionFactory-&gt;create()
+            -&gt;setStore( $website-&gt;getDefaultStore()-&gt;getId() )
+            -&gt;addWebsiteFilter( $website-&gt;getId() )
+            -&gt;load()
+            // Below methods only run completely after collection loaded
+            -&gt;addUrlRewrite();
+
+    foreach ( $productCollection as $product ) {
+        $product-&gt;getProductUrl();
+    }
+}</code></pre>
+<h2>产品属性</h2>
+<h3>获取属性的所有可选项</h3>
+<p>如果已经指定产品，可以</p>
+<pre><code class="language-php">/* @var $product \Magento\Catalog\Model\Product */
+/* @var $attributeCode string */
+/* @var $withEmptyOption boolean */
+$options = $product-&gt;getResource()-&gt;getAttribute( $attributeCode )
+    -&gt;getSource()-&gt;getAllOptions( $withEmptyOption );</code></pre>
+<p>或者</p>
+<pre><code>/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+/* @var $attributeCode string */
+/* @var $withEmptyOption boolean */
+$objectManager-&gt;create( \Magento\Catalog\Model\Entity\Attribute::class )
+    -&gt;loadByCode( \Magento\Catalog\Api\ProductAttributeInterface::ENTITY_TYPE_CODE, $attributeCode )
+    -&gt;getSource()-&gt;getAllOptions( $withEmptyOption );</code></pre>
+<h3>获取属性值的 Label</h3>
+<p>如果已经指定产品，可以</p>
+<pre><code class="language-php">/* @var $product \Magento\Catalog\Model\Product */
+/* @var $attributeCode string */
+$valueTxt = $product-&gt;getAttributeText( $attributeCode );</code></pre>
+<p>或者通过属性 code 或 ID 及值的 ID 获取值名</p>
+<pre><code class="language-php">/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+/* @var $attributeCode string */
+/* @var $attributeOptionId int */
+$objectManager-&gt;create( \Magento\Catalog\Model\Entity\Attribute::class )
+    -&gt;loadByCode( \Magento\Catalog\Api\ProductAttributeInterface::ENTITY_TYPE_CODE, $attributeCode )
+    -&gt;getSource()-&gt;getOptionText( $attributeOptionId );</code></pre>
+<h3>通过属性选项的 Admin Label 取值</h3>
+<pre><code>/* @var $objectManager \Magento\Framework\ObjectManagerInterface */
+/* @var $attributeCode string */
+$options = $objectManager-&gt;create( \Magento\Catalog\Model\Entity\Attribute::class )
+    -&gt;loadByCode( \Magento\Catalog\Api\ProductAttributeInterface::ENTITY_TYPE_CODE, $attributeCode )
+    -&gt;getSource()-&gt;getAllOptions( false, true );
+
+/* @var $label string */
+foreach ( $options as $option ) {
+    if ( $option['label'] == $label ) {
+        return $option['value'];
+    }
+}</code></pre>
+<h3>获取指定产品的所有属性</h3>
+<p>获得一个以属性 code 为键名的数组</p>
+<pre><code class="language-php">/* @var $productResource \Magento\Catalog\Model\ResourceModel\Product */
+/* @var $attributeSetId int */
+$attributes = $productResource-&gt;loadAllAttributes()-&gt;getAttributesByCode();</code></pre>
+<p>获取指定属性集的所有属性</p>
+<pre><code class="language-php">/* @var $productResource \Magento\Catalog\Model\ResourceModel\Product */
+/* @var $attributeSetId int */
+$attributes = $productResource-&gt;loadAllAttributes()-&gt;getSortedAttributes( $attributeSetId );</code></pre>
+<h3>通过 Setup 添加产品属性</h3>
+<pre><code>namespace Namespace\Module\Setup;
+
+use Magento\Catalog\Model\Product;
+use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
+use Magento\Eav\Setup\EavSetupFactory;
+use Magento\Framework\DB\Ddl\Table;
+use Magento\Framework\Setup\ModuleContextInterface;
+use Magento\Framework\Setup\ModuleDataSetupInterface;
+
+class InstallData implements \Magento\Framework\Setup\InstallDataInterface {
+
+    /**
+     * @var int
+     */
+    private $defaultProductAttributeSetId;
+
+    /**
+     * @var \Magento\Eav\Setup\EavSetup
+     */
+    private $eavSetup;
+
+    /**
+     * @var \Magento\Eav\Setup\EavSetupFactory
+     */
+    private $eavSetupFactory;
+
+    public function __construct( EavSetupFactory $eavSetupFactory )
+    {
+        $this-&gt;eavSetupFactory = $eavSetupFactory;
+    }
+
+    private function addProductAttribute()
+    {
+        /* @var $attributeCode string */
+        /* @var $attributeGroupCode string */
+
+        $this-&gt;eavSetup-&gt;addAttribute( Product::ENTITY, $attributeCode, [
+            'type' =&gt; 'int', // datetime, decimal, int, text, varchar
+            'label' =&gt; 'Attribute Name',
+            'input' =&gt; 'select', // select, text, date, hidden, boolean, multiline, textarea, image, media_image, multiselect
+            'source' =&gt; 'Magento\Eav\Model\Entity\Attribute\Source\Table',
+            'required' =&gt; false,
+            'sort_order' =&gt; 602,
+            'global' =&gt; ScopedAttributeInterface::SCOPE_GLOBAL,
+            'user_defined' =&gt; false, // eav_attribute
+            'is_visible_in_grid' =&gt; false,
+            'is_filterable_in_grid' =&gt; false,
+            'visible' =&gt; true, // whether to show in back-end
+            'visible_on_front' =&gt; false, // whether to show in front-end product detail page
+            'used_in_product_listing' =&gt; false, // whether to create in flat table
+            'used_for_sort_by' =&gt; false // whether to add as an option of sort by in front-end
+         ] );
+
+        $groupId = (int) $this-&gt;eavSetup-&gt;getAttributeGroupByCode( Product::ENTITY, $this-&gt;defaultProductAttributeSetId, $attributeGroupCode, 'attribute_group_id' );
+        $this-&gt;eavSetup-&gt;addAttributeToGroup( Product::ENTITY, $this-&gt;defaultProductAttributeSetId, $groupId, $attributeCode );
+    }
+
+    public function install( ModuleDataSetupInterface $setup, ModuleContextInterface $context )
+    {
+        $this-&gt;eavSetup = $this-&gt;eavSetupFactory-&gt;create( [ 'setup' =&gt; $setup ] );
+        $this-&gt;defaultProductAttributeSetId = $this-&gt;eavSetup-&gt;getDefaultAttributeSetId( Product::ENTITY );
+
+        $this-&gt;addProductAttribute();
+    }
+}</code></pre>
+<h2>其他</h2>
+<h3>创建一个新产品</h3>
+<p>以下方法没有使用 Product Repository 以便跳过必填属性检查：</p>
+<pre><code class="language-php">use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\Catalog\Model\Product\Type;
+use Magento\Catalog\Model\Product\Visibility;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\Store\Model\Store;
+
+/* @var $resourceModel \Magento\Catalog\Model\ResourceModel\Product */
+/* @var $productFactory \Magento\Catalog\Model\ProductFactory */
+/* @var $attributeSetId int */
+/* @var $websiteIds array */
+/* @var $categoryIds array */
+/* @var $urlKey string */
+
+$simpleProduct = $productFactory-&gt;create()-&gt;setStoreId( Store::DEFAULT_STORE_ID )
+    -&gt;setTypeId( Type::TYPE_SIMPLE )
+    -&gt;setAttributeSetId( $attributeSetId )
+    -&gt;setWebsiteIds( $websiteIds )
+    -&gt;setStatus( Status::STATUS_ENABLED )
+    -&gt;setVisibility( Visibility::VISIBILITY_NOT_VISIBLE )
+    -&gt;setCategoryIds( $categoryIds )
+    -&gt;setUrlKey( $urlKey );
+
+$resourceModel-&gt;save( $simpleProduct );
+
+/* @var $configAttribute \Magento\Catalog\Model\Entity\Attribute */
+/* @var $optionsFactory \Magento\ConfigurableProduct\Helper\Product\Options\Factory */
+/* @var $childrenIds array */
+
+$configProduct = $productFactory-&gt;create()-&gt;setStoreId( Store::DEFAULT_STORE_ID )
+    -&gt;setTypeId( Configurable::TYPE_CODE )
+    -&gt;setAttributeSetId( $attributeSetId )
+    -&gt;setWebsiteIds( $websiteIds )
+    -&gt;setStatus( Status::STATUS_ENABLED )
+    -&gt;setVisibility( Visibility::VISIBILITY_BOTH )
+    -&gt;setCategoryIds( $categoryIds )
+    -&gt;setUrlKey( $urlKey );
+
+$attributeValues = [];
+foreach ( $configAttribute-&gt;getOptions() as $option ) {
+    if ( $option-&gt;getValue() ) {
+        $attributeValues[] = [
+            'label' =&gt; $option-&gt;getLabel(),
+            'attribute_id' =&gt; $configAttribute-&gt;getId(),
+            'value_index' =&gt; $option-&gt;getValue() ];
+    }
+}
+
+$configurableOptionsData = [];
+$configurableOptionsData[] = [
+    'attribute_id' =&gt; $configAttribute-&gt;getId(),
+    'code' =&gt; $configAttribute-&gt;getAttributeCode(),
+    'label' =&gt; $configAttribute-&gt;getStoreLabel(),
+    'values' =&gt; $attributeValues ];
+
+$options = $optionsFactory-&gt;create( $configurableOptionsData );
+$configProduct-&gt;getExtensionAttributes()-&gt;setConfigurableProductOptions( $options );
+$configProduct-&gt;getExtensionAttributes()-&gt;setConfigurableProductLinks( $childrenIds );
+$resourceModel-&gt;save( $configProduct );</code></pre>
+    </article>
+</main>
+<script src="web/js/lib/require.js" type="text/javascript"></script>
+<script src="web/js/require-config.js" type="text/javascript"></script>
+<script src="web/js/notes.js" type="text/javascript"></script>
+</body>
+</html>

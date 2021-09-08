@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+    <base href="/"/>
+    <title>Magento 2 开发笔记</title>
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="web/css/notes.css"/>
+</head>
+<body>
+<main>
+    <article>
+        <h1>购物车的价格计算</h1>
+<h2>基本规则</h2>
+<p>价格计算有如下基本规则：</p>
+<ul>
+<li>
+<p>所有计算均基于 base currency</p>
+</li>
+<li>
+<p>取按不同优惠规则计算后得到的最小值作为基值：<br />
+<code>min( fn( price, catalog price rule ), special_price )</code></p>
+</li>
+<li>
+<p>当 <strong><em>SALES / Tax / Calculation Settings &gt; Catalog Prices</em></strong> 为 Excluding Tax 时（默认），以这个基值作为不含税单价 base_price<br />
+<code>base_tax_amount = base_price * tax_percent / 100</code></p>
+</li>
+<li>
+<p>当 <strong><em>SALES / Tax / Calculation Settings &gt; Catalog Prices</em></strong> 为 Including Tax 时，以这个基值作为含税单价 base_price_incl_tax<br />
+<code>base_tax_amount = base_price_incl_tax - base_price_incl_tax / ( 1 + tax_percent / 100 )</code></p>
+</li>
+</ul>
+<h2>计价过程简述</h2>
+<p>下单过程中，商品价格计算由 Quote 组件进行处理，里边涉及两层循环，流程大致如下：</p>
+<pre><code>\Magento\Quote\Model\Quote :: collectTotals
+    \Magento\Quote\Model\Quote\TotalsCollector :: collect
+        [ event : sales_quote_collect_totals_before ]
+
+        // 多地址累加，包括 billing（virtual product）及 shipping
+        foreach ( \Magento\Quote\Model\Quote :: getAllAddresses )
+            \Magento\Quote\Model\Quote\TotalsCollector :: collectAddressTotals
+                [ event : sales_quote_address_collect_totals_before ]
+
+                // 多个 collector 分步计算
+                foreach ( \Magento\Quote\Model\Quote\TotalsCollectorList :: getCollectors )
+                   \Magento\Quote\Model\Quote\Address\Total\CollectorInterface :: collect
+                endforeach
+
+                [ event : sales_quote_address_collect_totals_after ]
+        endforeach
+
+        [ event : sales_quote_collect_totals_after ]</code></pre>
+<p>由于 Magento 支持多地址收货，不同地址的商品和运费不一样，因此需要遍历订单中的每个地址并分别进行价格计算，从而最终取得总价，这是第一层循环。</p>
+<p>系统对每个地址都用同一套 collector 进行计算，每一个 collector 负责一个类型价格的计算，比如 subtotal、discount、tax 等等，这是第二层循环。</p>
+<h2>原生的 collector</h2>
+<p>collector 由每个组件的 <code>etc/sales.xml</code> 文件定义，原生 collector 的定义就分布在好几个组件中，合并整理后内容如下： </p>
+<pre><code class="language-xml">&lt;section name="quote"&gt;
+    &lt;group name="totals"&gt;
+        &lt;item name="subtotal" instance="Magento\Quote\Model\Quote\Address\Total\Subtotal" sort_order="100"&gt;
+            &lt;renderer name="adminhtml" instance="Magento\Sales\Block\Adminhtml\Order\Create\Totals\Subtotal"/&gt;
+            &lt;renderer name="frontend" instance="Magento\Tax\Block\Checkout\Subtotal"/&gt;
+        &lt;/item&gt;
+        &lt;item name="tax_subtotal" instance="Magento\Tax\Model\Sales\Total\Quote\Subtotal" sort_order="200"/&gt;
+        &lt;item name="weee" instance="Magento\Weee\Model\Total\Quote\Weee" sort_order="225"/&gt;
+        &lt;item name="shipping" instance="Magento\Quote\Model\Quote\Address\Total\Shipping" sort_order="250"&gt;
+            &lt;renderer name="adminhtml" instance="Magento\Sales\Block\Adminhtml\Order\Create\Totals\Shipping"/&gt;
+            &lt;renderer name="frontend" instance="Magento\Tax\Block\Checkout\Shipping"/&gt;
+        &lt;/item&gt;
+        &lt;item name="tax_shipping" instance="Magento\Tax\Model\Sales\Total\Quote\Shipping" sort_order="300"/&gt;
+        &lt;item name="discount" instance="Magento\SalesRule\Model\Quote\Discount" sort_order="400"&gt;
+            &lt;renderer name="adminhtml" instance="Magento\Sales\Block\Adminhtml\Order\Create\Totals\Discount"/&gt;
+            &lt;renderer name="frontend" instance="Magento\Tax\Block\Checkout\Discount"/&gt;
+        &lt;/item&gt;
+        &lt;item name="tax" instance="Magento\Tax\Model\Sales\Total\Quote\Tax" sort_order="450"&gt;
+            &lt;renderer name="adminhtml" instance="Magento\Sales\Block\Adminhtml\Order\Create\Totals\Tax"/&gt;
+            &lt;renderer name="frontend" instance="Magento\Tax\Block\Checkout\Tax"/&gt;
+        &lt;/item&gt;
+        &lt;item name="weee_tax" instance="Magento\Weee\Model\Total\Quote\WeeeTax" sort_order="460"/&gt;
+        &lt;item name="grand_total" instance="Magento\Quote\Model\Quote\Address\Total\Grand" sort_order="550"&gt;
+            &lt;renderer name="adminhtml" instance="Magento\Sales\Block\Adminhtml\Order\Create\Totals\Grandtotal"/&gt;
+            &lt;renderer name="frontend" instance="Magento\Tax\Block\Checkout\Grandtotal"/&gt;
+        &lt;/item&gt;
+    &lt;/group&gt;
+&lt;/section&gt;</code></pre>
+<h3>Subtotal</h3>
+<pre><code>\Magento\Quote\Model\Quote\Address\Total\Subtotal :: collect
+    \Magento\Quote\Model\Quote\Address\Total\Subtotal :: _initItem
+
+        $product = $quoteItem-&gt;getProduct()
+
+        if ( $quoteItem-&gt;getParentItem() &amp;&amp; $quoteItem-&gt;isChildrenCalculated() ) :
+            $parentItem = $quoteItem-&gt;getParentItem()
+            $parentProduct = $parentItem-&gt;getProduct()
+            $finalPrice = $parentProduct-&gt;getPriceModel()-&gt;getChildFinalPrice( $parentProduct, $parentItem-&gt;getQty(), $product, $quoteItem-&gt;getQty() )
+
+        else : // 所有原生产品类型（simple、configurable、bundle 等等）均在此列
+            $finalPrice = $product-&gt;getFinalPrice( $quoteItem-&gt;getQty() )
+                \Magento\Bundle\Model\Product\Price :: getFinalPrice( $qty, $product )
+                \Magento\Downloadable\Model\Product\Price :: getFinalPrice( $qty, $product )
+                \Magento\GiftCard\Model\Catalog\Product\Price\Giftcard :: getFinalPrice( $qty, $product )
+                \Magento\GroupedProduct\Model\Product\Type\Grouped\Price :: getFinalPrice( $qty, $product )
+                \Magento\ConfigurableProduct\Model\Product\Type\Configurable\Price :: getFinalPrice( $qty, $product )
+                \Magento\Catalog\Model\Product\Type\Price :: getFinalPrice( $qty, $product )
+                    [ event :: catalog_product_get_final_price ]
+        endif
+
+        \Magento\Quote\Model\Quote\Address\Total\Subtotal :: _calculateRowTotal
+            \Magento\Quote\Model\Quote\Item\AbstractItem :: setPrice
+            \Magento\Quote\Model\Quote\Item\AbstractItem :: setBaseOriginalPrice
+            \Magento\Quote\Model\Quote\Item\AbstractItem :: calcRowTotal</code></pre>
+<h3>Subtotal Tax</h3>
+<pre><code>\Magento\Tax\Model\Sales\Total\Quote\Subtotal :: collect
+    // 这里会通过有别于 \Magento\Quote\Model\Quote\Address\Total\Subtotal 的方法改变 subtotal 的值
+    \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector :: mapItems
+    \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector :: processProductItems</code></pre>
+<h3>WEEE</h3>
+<p>WEEE 是欧盟关于报废电子电器的回收指令，出口到欧盟的电子产品都需要注册回收，认证检测需要一定的费用。</p>
+<pre><code>\Magento\Weee\Model\Total\Quote\Weee :: collect</code></pre>
+<h3>Shipping</h3>
+<pre><code>\Magento\Quote\Model\Quote\Address\Total\Shipping :: collect</code></pre>
+<h3>Shipping Tax</h3>
+<pre><code>\Magento\Tax\Model\Sales\Total\Quote\Shipping :: collect</code></pre>
+<h3>Discount</h3>
+<pre><code>\Magento\SalesRule\Model\Quote\Discount :: collect
+    foreach ( $items as $item )
+        \Magento\SalesRule\Model\Validator :: process( $item )
+            \Magento\SalesRule\Model\RulesApplier :: applyRules( $item, $rules )
+                foreach ( $rules as $rule )
+                    \Magento\SalesRule\Model\Utility :: canProcessRule
+                    \Magento\Rule\Model\Action\Collection [ Magento\Rule\Model\Condition\Combine ] :: validate
+                    \Magento\SalesRule\Model\RulesApplier :: applyRule( $item, $rule )
+                        \Magento\SalesRule\Model\RulesApplier :: getDiscountData( $item, $rule )
+                            xxx [ Magento\SalesRule\Model\Rule\Action\Discount\AbstractDiscount ] :: fixQuantity( $qty, $rule )
+                            xxx [ Magento\SalesRule\Model\Rule\Action\Discount\AbstractDiscount ] :: calculate( $rule, $item, $qty )</code></pre>
+<h3>Tax</h3>
+<pre><code>\Magento\Tax\Model\Sales\Total\Quote\Tax :: collect</code></pre>
+<h3>WEEE Tax</h3>
+<pre><code>\Magento\Weee\Model\Total\Quote\WeeeTax :: collect</code></pre>
+<h3>Grand Total</h3>
+<pre><code>\Magento\Quote\Model\Quote\Address\Total\Grand :: collect</code></pre>
+    </article>
+</main>
+<script src="web/js/lib/require.js" type="text/javascript"></script>
+<script src="web/js/require-config.js" type="text/javascript"></script>
+<script src="web/js/notes.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+    <base href="/"/>
+    <title>Magento 2 开发笔记</title>
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="web/css/notes.css"/>
+</head>
+<body>
+<main>
+    <article>
+        <h1>产品分类 Category</h1>
+<h2>获取分类数据集 Collection</h2>
+<pre><code>/* @var $categoryCollectionFactory \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory */
+$categoryCollection = $categoryCollectionFactory-&gt;create();</code></pre>
+<h3>获取当前店铺的所有分类</h3>
+<p>这个方法仅限于前台使用：</p>
+<pre><code class="language-php">/* @var $categoryRepository \Magento\Catalog\Api\CategoryRepositoryInterface */
+/* @var $storeManager \Magento\Store\Model\StoreManagerInterface */
+$rootCategoryId = $storeManager-&gt;getStore()-&gt;getRootCategoryId();
+$categories = $categoryRepository-&gt;get( $rootCategoryId )-&gt;getChildrenCategories();</code></pre>
+<p>获取分类树：</p>
+<pre><code class="language-php">/* @var $categoryTreeFactory \Magento\Catalog\Model\ResourceModel\Category\TreeFactory */
+/* @var $storeManager \Magento\Store\Model\StoreManagerInterface */
+/* @var $categoryCollectionFactory \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory */
+$categoryCollection = $categoryCollectionFactory-&gt;create()
+    -&gt;addAttributeToSelect( [ 'name' ] )
+    -&gt;addAttributeToSort( 'name' );
+$rootCategoryId = $storeManager-&gt;getStore()-&gt;getRootCategoryId();
+$categoryTree = $categoryTreeFactory-&gt;create();
+$nodes = $categoryTree-&gt;loadNode( $rootCategoryId )-&gt;loadChildren( 0 )-&gt;getChildren();
+$categoryTree-&gt;addCollectionData( $categoryCollection, true, [], true, true ); // this line MUST execute after `loadNode` method</code></pre>
+<h2>其他</h2>
+<h3>创建新分类</h3>
+<pre><code class="language-php">use Magento\Store\Model\Store;
+
+/* @var $resourceModel \Magento\Catalog\Model\ResourceModel\Category */
+/* @var $categoryFactory \Magento\Catalog\Model\CategoryFactory */
+/* @var $parentId int */
+/* @var $path string */
+/* @var $name string */
+/* @var $description string */
+
+$category = $categoryFactory-&gt;create()
+    -&gt;setStoreId( Store::DEFAULT_STORE_ID )
+    -&gt;addData( [
+    'parent_id' =&gt; $parentId,
+    'path' =&gt; $path, // use ID path of parent for creating new category
+    'name' =&gt; $name,
+    'description' =&gt; $description
+] );
+
+$resourceModel-&gt;save( $category );</code></pre>
+    </article>
+</main>
+<script src="web/js/lib/require.js" type="text/javascript"></script>
+<script src="web/js/require-config.js" type="text/javascript"></script>
+<script src="web/js/notes.js" type="text/javascript"></script>
+</body>
+</html>
