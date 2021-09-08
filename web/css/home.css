@@ -19,7 +19,7 @@ body.home > .info .content .box { margin:-30px 0 0; padding:0 20px; position:rel
 body.home > .info .content h1 { font-size:32px; font-weight:normal; margin:0 0 45px; }
 body.home > .info .content p { font-size:16px; }
 body.home > main { display:block; margin:600px 0 0; width:100%; }
-body.home > main .section { box-shadow:0px 0px 4px #bbb; min-height:180px; position:relative; }
+body.home > main .section { box-shadow:0px 0px 4px #ccc; min-height:180px; position:relative; }
 body.home > main .section .bg { background:#fff; position:relative; z-index:1; }
 body.home > main .section .bg img { display:block; position: relative; width:100%; }
 body.home > main .section .bg:after { background: #fff; content: ''; display: block; opacity: .6; position: absolute; bottom: 0; left: 0; right: 0; top: 0; }
