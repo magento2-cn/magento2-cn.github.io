@@ -1,0 +1,58 @@
+* { box-sizing:border-box; margin:0; outline:none; padding:0; touch-action:pan-y; }
+
+body { background:#fff; background-size:cover; color:#545454; font:15px/24px Arial, Helvetica, sans-serif; }
+
+/**
+ * Footer
+ */
+footer { font-size:10px; padding:10px 0; position:relative; text-align:center;  width:100%; z-index:2; }
+footer a { color:#669; text-decoration:none; }
+
+/**
+ * Home page
+ */
+body.home > .info { left:0; overflow:hidden; position:fixed; right:0; top:0; z-index:0; }
+body.home > .info .bg { position:relative; z-index:1; }
+body.home > .info .bg img { display:block; width:100%; }
+body.home > .info .content { align-items:center; bottom:0; color:#fff; display:flex; height:100%; left:0; justify-content:center; position:absolute; right:0; top:0; z-index:2; }
+body.home > .info .content .box { margin:-30px 0 0; padding:0 20px; position:relative; text-align:center; }
+body.home > .info .content h1 { font-size:32px; font-weight:normal; margin:0 0 45px; }
+body.home > .info .content p { font-size:16px; }
+body.home > main { background:#f6f6f6; display:block; margin:600px 0 0; width:100%; }
+body.home > main .section { box-shadow:0px -3px 6px #ccc; min-height:180px; position:relative; }
+body.home > main .section .bg { background:#fff; position:relative; z-index:1; }
+body.home > main .section .bg img { display:block; position: relative; width:100%; }
+body.home > main .section .bg:after { background: #fff; content: ''; display: block; opacity: .6; position: absolute; bottom: 0; left: 0; right: 0; top: 0; }
+body.home > main .section .content { align-items:center; bottom:0; display:flex; height:100%; left:0; justify-content:center; position:absolute; right:0; top:0; z-index:2; }
+body.home > main .section .content .box { margin:-30px 0 0; position:relative; width:1000px; }
+body.home > main .section .content h2 { color:#669; font-size:24px; font-weight:normal; margin:0 0 30px; }
+body.home > main .section .content p { font-size:16px; padding:0 0 5px; }
+body.home > main .section.dig .content .box { padding:0 20px 0 320px; text-align:right; }
+body.home > main .section.codes .content .box { padding:0 320px 0 20px; text-align:left; }
+body.home > main .section.exceptions .content .box { padding:0 20px 0 320px; text-align:right; }
+body.home > main .section.about .bg { padding-top:30px; }
+body.home > main .section.about .content .box { padding:0 320px 0 20px; text-align:left; }
+
+
+@media only screen and (max-width:768px) {
+
+    body.home > header { position:relative; top:auto; }
+    body.home > header.close { top:auto; }
+    body.home > .info { left:auto; position:relative; right:auto; top:auto; z-index:0; }
+    body.home > .info .content .box { margin:0; }
+    body.home > .info .content h1 { font-size:24px; font-weight:normal; margin:0 0 20px; }
+    body.home > .info .content p { font-size:14px; }
+    body.home > main { margin:0; }
+    body.home > main .section { min-height:0; padding:40px 0 0; }
+    body.home > main .section .bg { display:none; }
+    body.home > main .section .content { position:relative; }
+    body.home > main .section .content .box { margin:0; }
+    body.home > main .section .content h2 { font-size:20px; margin:0 0 12px; }
+    body.home > main .section .content p { font-size:14px; }
+    body.home > main .section.dig { box-shadow:none; }
+    body.home > main .section.dig .content .box { padding:0 20px; text-align:left; }
+    body.home > main .section.codes .content .box { padding:0 20px; }
+    body.home > main .section.exceptions .content .box { padding:0 20px; text-align:left; }
+    body.home > main .section.about .content .box { padding:0 20px 80px; }
+
+}

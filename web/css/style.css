@@ -157,30 +157,6 @@ footer .box .copyright { float:right; }
 footer .box:after { clear:both; content:''; display:table; }
 
 /**
- * Home page
- */
-body.home > .info { left:0; overflow:hidden; position:fixed; right:0; top:0; z-index:0; }
-body.home > .info .bg { position:relative; z-index:1; }
-body.home > .info .bg img { display:block; width:100%; }
-body.home > .info .content { align-items:center; bottom:0; color:#fff; display:flex; height:100%; left:0; justify-content:center; position:absolute; right:0; top:0; z-index:2; }
-body.home > .info .content .box { margin:-30px 0 0; padding:0 20px; position:relative; text-align:center; }
-body.home > .info .content h1 { font-size:32px; font-weight:normal; margin:0 0 45px; }
-body.home > .info .content p { font-size:16px; }
-body.home > main { background:#f6f6f6; display:block; margin:640px 0 0; width:100%; }
-body.home > main .section { min-height:180px; position:relative; }
-body.home > main .section .bg { opacity:.3; position:relative; z-index:1; }
-body.home > main .section .bg img { display:block; width:100%; }
-body.home > main .section .content { align-items:center; bottom:0; display:flex; height:100%; left:0; justify-content:center; position:absolute; right:0; top:0; z-index:2; }
-body.home > main .section .content .box { margin:-30px 0 0; position:relative; width:1000px; }
-body.home > main .section .content h2 { font-size:24px; font-weight:normal; margin:0 0 30px; }
-body.home > main .section .content p { font-size:16px; padding:0 0 5px; }
-body.home > main .section.dig { box-shadow:0 0px 6px #ccc; }
-body.home > main .section.dig .content .box { padding:0 20px 0 320px; text-align:right; }
-body.home > main .section.codes .content .box { padding:0 320px 0 20px; text-align:left; }
-body.home > main .section.exceptions .content .box { padding:0 20px 0 320px; text-align:right; }
-body.home > main .section.about .content .box { padding:0 320px 0 20px; text-align:left; }
-
-/**
  * Tools
  */
 body.tools > main .wrapper textarea { height:100%; resize:none; }
@@ -274,24 +250,5 @@ body.log-filter .filters-box .custom-filter-box .filter span { display:inline-bl
     footer { text-align:center; }
     footer .box nav { float:none; }
     footer .box .copyright { float:none; }
-
-    body.home > header { position:relative; top:auto; }
-    body.home > header.close { top:auto; }
-    body.home > .info { left:auto; position:relative; right:auto; top:auto; z-index:0; }
-    body.home > .info .content .box { margin:0; }
-    body.home > .info .content h1 { font-size:24px; font-weight:normal; margin:0 0 20px; }
-    body.home > .info .content p { font-size:14px; }
-    body.home > main { margin:0; }
-    body.home > main .section { min-height:0; padding:40px 0 0; }
-    body.home > main .section .bg { display:none; }
-    body.home > main .section .content { position:relative; }
-    body.home > main .section .content .box { margin:0; }
-    body.home > main .section .content h2 { font-size:20px; margin:0 0 12px; }
-    body.home > main .section .content p { font-size:14px; }
-    body.home > main .section.dig { box-shadow:none; }
-    body.home > main .section.dig .content .box { padding:0 20px; text-align:left; }
-    body.home > main .section.codes .content .box { padding:0 20px; }
-    body.home > main .section.exceptions .content .box { padding:0 20px; text-align:left; }
-    body.home > main .section.about .content .box { padding:0 20px 80px; }
 
 }
