@@ -1,75 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://magento2cn.github.io/</loc>
+        <loc>https://magento2cn.github.io/notes/</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/codes/catalog/</loc>
+        <loc>https://magento2cn.github.io/notes/codes/catalog/</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/codes/catalog/category.html</loc>
+        <loc>https://magento2cn.github.io/notes/codes/catalog/category.html</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/codes/catalog/inventory.html</loc>
+        <loc>https://magento2cn.github.io/notes/codes/catalog/inventory.html</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/codes/catalog/product.html</loc>
+        <loc>https://magento2cn.github.io/notes/codes/catalog/product.html</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/codes/customers/</loc>
+        <loc>https://magento2cn.github.io/notes/codes/customers/</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/codes/customers/customer.html</loc>
+        <loc>https://magento2cn.github.io/notes/codes/customers/customer.html</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/codes/others/</loc>
+        <loc>https://magento2cn.github.io/notes/codes/others/</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/codes/others/debug.html</loc>
+        <loc>https://magento2cn.github.io/notes/codes/others/debug.html</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/codes/others/common-classes.html</loc>
+        <loc>https://magento2cn.github.io/notes/codes/others/common-classes.html</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/codes/others/constants.html</loc>
+        <loc>https://magento2cn.github.io/notes/codes/others/constants.html</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/codes/others/di.html</loc>
+        <loc>https://magento2cn.github.io/notes/codes/others/di.html</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/codes/others/datetime.html</loc>
+        <loc>https://magento2cn.github.io/notes/codes/others/datetime.html</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/codes/others/resources.html</loc>
+        <loc>https://magento2cn.github.io/notes/codes/others/resources.html</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/codes/sales/</loc>
+        <loc>https://magento2cn.github.io/notes/codes/sales/</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/codes/sales/order.html</loc>
+        <loc>https://magento2cn.github.io/notes/codes/sales/order.html</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/appendices/dev-windows/quick.html</loc>
+        <loc>https://magento2cn.github.io/notes/appendices/dev-windows/quick.html</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/appendices/dev-windows/step-by-step.html</loc>
+        <loc>https://magento2cn.github.io/notes/appendices/dev-windows/step-by-step.html</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/appendices/cli.html</loc>
+        <loc>https://magento2cn.github.io/notes/appendices/cli.html</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/appendices/tools/module-version-error-processor.html</loc>
+        <loc>https://magento2cn.github.io/notes/appendices/tools/module-version-error-processor.html</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/appendices/tools/log-filter.html</loc>
+        <loc>https://magento2cn.github.io/notes/appendices/tools/log-filter.html</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/appendices/tools/trace-filter.html</loc>
+        <loc>https://magento2cn.github.io/notes/appendices/tools/trace-filter.html</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/appendices/tools/content-diff.html</loc>
+        <loc>https://magento2cn.github.io/notes/appendices/tools/content-diff.html</loc>
     </url>
     <url>
-        <loc>https://magento2cn.github.io/appendices/tools/json-processor.html</loc>
+        <loc>https://magento2cn.github.io/notes/appendices/tools/json-processor.html</loc>
     </url>
 </urlset>
