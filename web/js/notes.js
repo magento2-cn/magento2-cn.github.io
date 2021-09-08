@@ -6,6 +6,7 @@ require([
 ], function ($, highlight) {
     'use strict';
 
+    const $win = $(window);
     const $body = $('body');
     const $main = $body.find('> main');
     const $header = $('<header/>').insertBefore($main);
@@ -51,9 +52,9 @@ require([
                 success: function ($source) {
                     renderTree($source, $nav, 1);
                     $navItems = $nav.find('a.nav-item');
-                    $nav.mCustomScrollbar({
-                        axis: 'yx',
-                        theme: 'minimal-dark'
+                    $nav.mCustomScrollbar({theme: 'minimal-dark'});
+                    $win.on('resize', function () {
+                        $nav.mCustomScrollbar('update');
                     });
                 }
             });
@@ -110,12 +111,12 @@ require([
                     .addClass(this.tagName.toLowerCase())
                     .appendTo($indexBox);
             });
-            $indexBox.mCustomScrollbar({
-                axis: 'yx',
-                theme: 'minimal-dark'
+            $indexBox.mCustomScrollbar({theme: 'minimal-dark'});
+            $win.on('resize', function () {
+                $indexBox.mCustomScrollbar('update');
             });
         }
-    }
+    };
 
     const initFooter = function () {
         $footer.html('Copyright &copy; <a href="/"><strong>Zengliwei</strong></a>. All rights reserved.');
