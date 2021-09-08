@@ -78,32 +78,7 @@
             {
                 "title": "购物车的价格记录",
                 "path": "notes/dig/sales/checkout-price-record.html"
-            },
-
-
-
-
-            {
-                "title": "产品价格",
-                "path": "notes/dig/catalog/product-price.html"
-            },
-            {
-                "title": "税价计算",
-                "path": "notes/dig/catalog/tax-calculate.html"
-            },
-            {
-                "title": "购物车的价格计算",
-                "path": "notes/dig/sales/checkout-price-calculate.html"
-            },
-            {
-                "title": "购物车的价格记录",
-                "path": "notes/dig/sales/checkout-price-record.html"
             }
-        ]
-    },
-    {
-        "title": "异常处理",
-        "children": [
         ]
     }
 ]

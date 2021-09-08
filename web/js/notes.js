@@ -97,6 +97,7 @@ require([
         const $sections = $main.find('h2, h3');
         if ($sections.length > 0) {
             $('<h3>本章目录</h3>').appendTo($index);
+            const $indexBox = $('<div class="index-box"/>').appendTo($index);
             $sections.each(function () {
                 const el = $(this);
                 let id = el.attr('id');
@@ -107,7 +108,11 @@ require([
                 $('<a/>').attr('href', window.location.pathname + '#' + id)
                     .html('<span>' + el.html() + '</span>')
                     .addClass(this.tagName.toLowerCase())
-                    .appendTo($index);
+                    .appendTo($indexBox);
+            });
+            $indexBox.mCustomScrollbar({
+                axis: 'yx',
+                theme: 'minimal-dark'
             });
         }
     }
