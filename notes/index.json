@@ -80,5 +80,22 @@
                 "path": "notes/dig/sales/checkout-price-record.html"
             }
         ]
+    },
+    {
+        "title": "其他",
+        "children": [
+            {
+                "title": "常用命令及参数",
+                "path": "notes/appendices/cli.html"
+            },
+            {
+                "title": "Magento 开发环境",
+                "path": "notes/appendices/dev-windows/magento.html"
+            },
+            {
+                "title": "词汇表",
+                "path": "notes/appendices/glossary.html"
+            }
+        ]
     }
 ]
