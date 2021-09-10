@@ -128,6 +128,7 @@ require([
 
         $search.html('<input type="text" placeholder="搜索标题" data-bind="textInput: keyword"/>');
         viewModel.keyword.subscribe(function (keyword) {
+            updateLinks();
             window.localStorage.setItem('notes-keyword', keyword);
         });
 
