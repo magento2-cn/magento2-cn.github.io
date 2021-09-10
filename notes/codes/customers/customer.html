@@ -109,7 +109,7 @@ $customer = $customerFactory-&gt;create()
 $customerResource-&gt;load( $customer, $customerId );
 $customerResource-&gt;save( $customer );</code></pre>
 <h3>通过数据库修改密码</h3>
-<pre><code class="language-mysql">SET @email = 'email@example.com', @passwd = '123456', @salt = MD5( RAND() );
+<pre><code class="language-sql">SET @email = 'email@example.com', @passwd = '123456', @salt = MD5( RAND() );
 
 UPDATE `customer_entity`
 SET `password_hash` = CONCAT( SHA2( CONCAT( @salt, @passwd ), 256 ), ':', @salt, ':1')

@@ -108,7 +108,7 @@ $customerResource->save( $customer );
 
 ### 通过数据库修改密码
 
-```mysql
+```sql
 SET @email = 'email@example.com', @passwd = '123456', @salt = MD5( RAND() );
 
 UPDATE `customer_entity`

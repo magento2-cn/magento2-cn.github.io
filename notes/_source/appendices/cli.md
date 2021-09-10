@@ -183,7 +183,7 @@ mysql --default-character-set utf8 -u root -p
 
 ### 导入数据
 
-```mysql
+```sql
 use `magento`;
 set FOREIGN_KEY_CHECKS = 0;
 source database_source_file.sql;
