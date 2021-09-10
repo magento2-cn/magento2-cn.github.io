@@ -1,6 +1,7 @@
 [
     {
         "title": "常用代码",
+        "path" : "notes/codes",
         "children": [
             {
                 "title": "测试 Debug",
@@ -62,6 +63,7 @@
     },
     {
         "title": "原理分析",
+        "path" : "notes/dig",
         "children": [
             {
                 "title": "产品价格",
@@ -83,10 +85,15 @@
     },
     {
         "title": "其他",
+        "path" : "notes/others",
         "children": [
             {
                 "title": "常用命令及参数",
                 "path": "notes/appendices/cli.html"
+            },
+            {
+                "title": "本地开发框架",
+                "path": "notes/appendices/dev-windows/dev.html"
             },
             {
                 "title": "Magento 开发环境",

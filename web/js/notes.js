@@ -1,9 +1,10 @@
 require([
     'jquery',
+    'knockout',
     'highlight',
     'mousewheel',
     'scrollbar'
-], function ($, highlight) {
+], function ($, ko) {
     'use strict';
 
     const $win = $(window);
@@ -23,61 +24,114 @@ require([
 
     const initSidebar = function () {
 
-        const $search = $('<section id=search/>').appendTo($sidebar);
-        const $nav = $('<nav/>').appendTo($sidebar);
+        const $search = $('<section id="search"/>').appendTo($sidebar);
+        const $nav = $('<section id="nav"/>').appendTo($sidebar);
 
-        let $navItems;
+        let favoursData = JSON.parse(window.localStorage.getItem('notes-favours') || '{}');
 
-        const initNav = function () {
+        const updateLinks = function () {
+            const keyword = viewModel.keyword();
+            const links = viewModel.links();
+            for (let l = 0; l < links.length; l++) {
+                const visible = (keyword == '')
+                    ? (links[l]['level'] == 1 || links[l]['parent'] == viewModel.currentPath())
+                    : (new RegExp(keyword, 'i')).test(links[l]['title']);
+                links[l]['visible'](visible);
+            }
+        };
 
-            const renderTree = function (tree, $parentNode, level) {
-                for (let c = 0; c < tree.length; c++) {
-                    const $link = $('<a/>')
-                        .attr('title', tree[c].title)
-                        .addClass('nav-item')
-                        .addClass('level-' + level)
-                        .html('<span>' + tree[c].title + '</span>')
-                        .appendTo($parentNode);
+        const viewModel = {
+            keyword: ko.observable(window.localStorage.getItem('notes-keyword') || ''),
+            links: ko.observableArray([]),
+            currentPath: ko.observable(null),
 
-                    if (tree[c]['children']) {
-                        renderTree(tree[c]['children'], $parentNode, level + 1);
-                    } else {
-                        $link.attr('href', tree[c]['path']);
+            favours: ko.pureComputed(function () {
+                const links = viewModel.links();
+                let favours = [];
+                for (let l = 0; l < links.length; l++) {
+                    if (links[l].favoured()) {
+                        favours.push(links[l]);
                     }
                 }
-            };
+                return favours;
+            }),
 
-            $.ajax({
-                url: '/notes/index.json',
-                success: function ($source) {
-                    renderTree($source, $nav, 1);
-                    $navItems = $nav.find('a.nav-item');
-                    $nav.mCustomScrollbar({theme: 'minimal-dark'});
-                    $win.on('resize', function () {
-                        $nav.mCustomScrollbar('update');
-                    });
+            click: function (link) {
+                if (link['level'] == 1) {
+                    viewModel.currentPath((link['path'] == viewModel.currentPath()) ? null : link['path']);
+                    updateLinks();
+                    return false;
                 }
-            });
-        };
+                return true;
+            },
 
-        const initSearch = function () {
-            const $searchForm = $('<form/>').appendTo($search);
-            const $searchInput = $('<input type="text" placeholder="搜索标题"/>').appendTo($searchForm);
-
-            $searchInput.on('input', function (evt) {
-                const q = $searchInput.val().replace(/^s/, '');
-                if (q === '') {
-                    $navItems.show();
+            favour: function (link) {
+                link.favoured(!link.favoured());
+                if (favoursData[link['path']]) {
+                    delete favoursData[link['path']];
                 } else {
-                    $navItems.each(function (i, el) {
-                        el.innerText.indexOf(q) > -1 ? $(el).show() : $(el).hide();
-                    });
+                    favoursData[link['path']] = true;
                 }
-            });
+                window.localStorage.setItem('notes-favours', JSON.stringify(favoursData));
+            }
         };
 
-        initNav();
-        initSearch();
+        $nav.html('<nav class="favours">'
+            + '<a class="level-1" data-bind="visible: (favours().length > 0 && keyword() == \'\')"><span>我的收藏</span></a>'
+            + '<!-- ko foreach: favours -->'
+            + '<a data-bind="attr: {title: title, href: path}, '
+            + 'class: (\'favoured level-\' + level), '
+            + 'visible: $parent.keyword() == \'\'">'
+            + '<span data-bind="text: title"/><span class="favour" data-bind="click: $parent.favour"/>'
+            + '</a>'
+            + '<!-- /ko -->'
+            + '</nav>'
+            + '<nav class="links" data-bind="foreach: links">'
+            + '<a data-bind="attr: {title: title, href: path}, '
+            + 'class: (\'level-\' + level), css: {favoured: favoured, current: (path == $parent.currentPath())}, '
+            + 'visible: visible, click: $parent.click">'
+            + '<span data-bind="text: title"/><span class="favour" data-bind="click: $parent.favour"/>'
+            + '</a>'
+            + '</nav>');
+
+        $.ajax({
+            url: '/notes/index.json',
+            success: function ($source) {
+                const collectLinksData = function (tree, parentPath, level) {
+                    const keyword = viewModel.keyword();
+                    let links = [];
+                    for (let c = 0; c < tree.length; c++) {
+                        const visible = (keyword == '')
+                            ? (level == 1)
+                            : (new RegExp(keyword, 'i')).test(tree[c]['title']);
+                        links.push({
+                            title: tree[c]['title'],
+                            path: tree[c]['path'],
+                            parent: parentPath,
+                            level: level,
+                            favoured: ko.observable(favoursData[tree[c]['path']] || false),
+                            visible: ko.observable(visible)
+                        });
+                        if (tree[c]['children']) {
+                            links.push.apply(links, collectLinksData(tree[c]['children'], tree[c]['path'], level + 1));
+                        }
+                    }
+                    return links;
+                };
+                viewModel.links(collectLinksData($source, null, 1));
+                $nav.mCustomScrollbar({theme: 'minimal-dark'});
+                $win.on('resize', function () {
+                    $nav.mCustomScrollbar('update');
+                });
+            }
+        });
+
+        $search.html('<input type="text" placeholder="搜索标题" data-bind="textInput: keyword"/>');
+        viewModel.keyword.subscribe(function (keyword) {
+            window.localStorage.setItem('notes-keyword', keyword);
+        });
+
+        ko.applyBindings(viewModel, $sidebar.get(0));
     };
 
     const initMain = function () {

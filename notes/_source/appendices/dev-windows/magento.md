@@ -1,10 +1,12 @@
 # Magento 开发环境
 
-使用 docker-compose 为每个项目部署开发所需的容器，这基于[本地开发框架](appendices/dev-windows/dev.html)。
+使用 docker-compose 为每个项目部署开发所需的容器，这基于[本地开发框架](notes/appendices/dev-windows/dev.html)。
 
 
 ## Github 地址
 
+- [Magento 2.4 简化版](https://github.com/zengliwei/dev-magento/tree/2.4-dev)
+- [Magento 2.4 完整版](https://github.com/zengliwei/dev-magento/tree/2.4-dev-full)
 - [Magento 2.3 简化版](https://github.com/zengliwei/dev-magento/tree/2.3-dev)
 - [Magento 2.3 完整版](https://github.com/zengliwei/dev-magento/tree/2.3-dev-full)
 - [Magento 2.2 简化版](https://github.com/zengliwei/dev-magento/tree/2.2-dev)
