@@ -186,7 +186,6 @@ body > .sidebar nav.links a.level-1:after {
     right: 18px;
     top: 6px;
     transform: rotateZ(0deg);
-    transition: transform .4s;
 }
 
 body > .sidebar nav.links a.level-1.current:after {
