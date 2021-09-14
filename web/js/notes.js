@@ -158,7 +158,8 @@ require([
                 const el = $(this);
                 let id = el.attr('id');
                 if (!id) {
-                    id = uuidv4();
+                    //id = uuidv4();
+                    id = el.text().toLowerCase().replace(/[\s+]/, '-');
                     el.attr('id', id);
                 }
                 $('<a/>').attr('href', window.location.pathname + '#' + id)
