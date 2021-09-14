@@ -140,26 +140,29 @@ require([
     };
 
     const initIndex = function () {
-        /**
-         * @return {string} uuid
-         * @see https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
-         */
-        const uuidv4 = function () {
-            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-                (c ^ window.crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-            );
-        };
-
         const $sections = $main.find('h2, h3');
         if ($sections.length > 0) {
             $('<h3>本章目录</h3>').appendTo($index);
             const $indexBox = $('<div class="index-box"/>').appendTo($index);
+
+            let idList = [];
+            const getUniqueId = function (id) {
+                for (let i = 2; i < 9999; i++) {
+                    if (idList.indexOf(id) > -1) {
+                        id = id + '-' + i;
+                    } else {
+                        break;
+                    }
+                }
+                idList.push(id);
+                return id;
+            };
+
             $sections.each(function () {
                 const el = $(this);
                 let id = el.attr('id');
                 if (!id) {
-                    //id = uuidv4();
-                    id = el.text().toLowerCase().replace(/[\s+]/, '-');
+                    id = getUniqueId(el.text().toLowerCase().replace(/[\s+]/, '-'));
                     el.attr('id', id);
                 }
                 $('<a/>').attr('href', window.location.pathname + '#' + id)
