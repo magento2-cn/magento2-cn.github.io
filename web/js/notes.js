@@ -162,7 +162,7 @@ require([
                 const el = $(this);
                 let id = el.attr('id');
                 if (!id) {
-                    id = getUniqueId(el.text().toLowerCase().replace(/[\s+]/, '-'));
+                    id = getUniqueId(el.text().toLowerCase().replace(/[\s+]/g, '-'));
                     el.attr('id', id);
                 }
                 $('<a/>').attr('href', window.location.pathname + '#' + id)

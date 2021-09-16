@@ -84,12 +84,16 @@
         ]
     },
     {
-        "title": "其他",
-        "path" : "notes/others",
+        "title": "附录",
+        "path" : "notes/appendices",
         "children": [
             {
                 "title": "常用命令及参数",
                 "path": "notes/appendices/cli.html"
+            },
+            {
+                "title": "资源索引",
+                "path": "/"
             },
             {
                 "title": "本地开发框架",
