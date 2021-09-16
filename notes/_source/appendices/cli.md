@@ -11,7 +11,6 @@ rm -rf pub/static/*
 rm -rf var/view_preprocessed/*
 ```
 
-
 ### 开启维护模式，清空所有临时文件
 
 ```sh
@@ -33,7 +32,6 @@ chown -R www-data:www-data ./generated
 chown -R www-data:www-data ./var
 ```
 
-
 ### 更新组件数据库，并开启产品模式（自动部署）
 
 ```
@@ -44,10 +42,9 @@ php bin/magento setup:upgrade --keep-generated
 
 ```
 
-
 ### 开启产品模式（手动分步部署）
 
-```
+```sh
 php bin/magento maintenance:enable
 
 rm -rf generated/*
@@ -64,7 +61,6 @@ php bin/magento maintenance:disable
 
 ```
 
-
 ### 更新静态文件（无需开启维护模式）
 
 ```sh
@@ -79,8 +75,23 @@ php bin/magento setup:static-content:deploy zh_Hant_HK en_US zh_Hans_CN
 find ./pub/static/ -name '*.css' -print|xargs rm -rf
 ```
 
-## Linux 命令
+### 安装新项目
 
+```sh
+php bin/magento setup:install \
+  --db-host=magento_mysql --db-name=magento --db-user=magento --db-password=magento \
+  --cache-backend-redis-server=magento_redis --cache-backend=redis --cache-backend-redis-db=0 \
+  --page-cache-redis-server=magento_redis --page-cache=redis --page-cache-redis-db=1 \
+  --session-save-redis-host=magento_redis --session-save=redis --session-save-redis-db=2 --session-save-redis-log-level=3 \
+  --elasticsearch-host=magento_elasticsearch \
+  --use-sample-data \
+  --base-url={{base_url}} \
+  --admin-firstname=Web --admin-lastname=Master --admin-email=admin@dev.com --backend-frontname=admin \
+  --admin-user=admin --admin-password=admin123 \
+  --currency=USD --language=en_US --timezone=America/Chicago --use-rewrites=1
+```
+
+## Linux 命令
 
 ### 文件用户组及权限
 
@@ -102,10 +113,10 @@ find ./ -type f -print|xargs chmod 664;
 find ./ -type d -print|xargs chmod 775;
 ```
 
-
 ### 打包及解压
 
 .tar
+
 ```
 解包：tar xvf FileName.tar
 打包：tar cvf FileName.tar DirName
@@ -114,10 +125,13 @@ find ./ -type d -print|xargs chmod 775;
 .tar.gz 和 .tgz
 
 解压：
+
 ```
 tar zxvf FileName.tar.gz
 ```
+
 压缩：
+
 ```
 tar zcvf FileName.tar.gz \
   --exclude=app/etc/env.php \
@@ -129,18 +143,19 @@ tar zcvf FileName.tar.gz \
 ```
 
 .zip
+
 ```
 解压：unzip FileName.zip
 压缩：zip FileName.zip DirName
 ```
 
 .bz2
+
 ```
 解压：bzip2 -d FileName.bz2
 解压：tar -xjvf xxx.bz2
 压缩：bzip2 -z FileName
 ```
-
 
 ### 导出 GIT 文件
 
@@ -165,13 +180,11 @@ git archive --output=latest.tar COMMIT_ID_2 \
   $(git diff-tree -r --no-commit-id --name-only --diff-filter=ACMRT COMMIT_ID_1 COMMIT_ID_2)
 ```
 
-
 ### 在 GIT 中忽略本地文件
 
 ```sh
 git update-index --skip-worktree path/to/file
 ```
-
 
 ## 数据库指令
 
@@ -184,9 +197,12 @@ mysql --default-character-set utf8 -u root -p
 ### 导入数据
 
 ```sql
-use `magento`;
-set FOREIGN_KEY_CHECKS = 0;
-source database_source_file.sql;
+use
+`magento`;
+set
+FOREIGN_KEY_CHECKS = 0;
+source
+database_source_file.sql;
 ```
 
 ### 导出数据

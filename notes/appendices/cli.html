@@ -37,7 +37,7 @@ php bin/magento deploy:mode:set production -vvv
 php bin/magento setup:upgrade --keep-generated
 </code></pre>
 <h3>开启产品模式（手动分步部署）</h3>
-<pre><code>php bin/magento maintenance:enable
+<pre><code class="language-sh">php bin/magento maintenance:enable
 
 rm -rf generated/*
 rm -rf pub/static/*
@@ -58,6 +58,18 @@ php bin/magento cache:flush
 php bin/magento setup:static-content:deploy zh_Hant_HK en_US zh_Hans_CN
 </code></pre>
 <pre><code class="language-sh">find ./pub/static/ -name '*.css' -print|xargs rm -rf</code></pre>
+<h3>安装新项目</h3>
+<pre><code class="language-sh">php bin/magento setup:install \
+  --db-host=magento_mysql --db-name=magento --db-user=magento --db-password=magento \
+  --cache-backend-redis-server=magento_redis --cache-backend=redis --cache-backend-redis-db=0 \
+  --page-cache-redis-server=magento_redis --page-cache=redis --page-cache-redis-db=1 \
+  --session-save-redis-host=magento_redis --session-save=redis --session-save-redis-db=2 --session-save-redis-log-level=3 \
+  --elasticsearch-host=magento_elasticsearch \
+  --use-sample-data \
+  --base-url={{base_url}} \
+  --admin-firstname=Web --admin-lastname=Master --admin-email=admin@dev.com --backend-frontname=admin \
+  --admin-user=admin --admin-password=admin123 \
+  --currency=USD --language=en_US --timezone=America/Chicago --use-rewrites=1</code></pre>
 <h2>Linux 命令</h2>
 <h3>文件用户组及权限</h3>
 <pre><code class="language-sh">chown -R www-data:www-data .</code></pre>
@@ -104,9 +116,12 @@ find ./ -type d -print|xargs chmod 775;</code></pre>
 <h3>访问数据库</h3>
 <pre><code class="language-sh">mysql --default-character-set utf8 -u root -p</code></pre>
 <h3>导入数据</h3>
-<pre><code class="language-sql">use `magento`;
-set FOREIGN_KEY_CHECKS = 0;
-source database_source_file.sql;</code></pre>
+<pre><code class="language-sql">use
+`magento`;
+set
+FOREIGN_KEY_CHECKS = 0;
+source
+database_source_file.sql;</code></pre>
 <h3>导出数据</h3>
 <pre><code class="language-sh">mysqldump -h localhost -u root -p magento &gt; database_source_file.sql</code></pre>
     </article>
