@@ -5,22 +5,20 @@
 ```php
 /* @var $target mixed */
 \Magento\Framework\App\ObjectManager::getInstance()
-    ->get( \Psr\Log\LoggerInterface::class )->addCritical( print_r( $target, true ) );
+    ->get(\Psr\Log\LoggerInterface::class)->critical(print_r($target, true));
 ```
-
 
 ## 追踪当前代码的路径
 
 ```php
 try {
-    throw new \Exception( 'debug' );
+    throw new \Exception('debug');
 }
 catch ( \Exception $ex ) {
     \Magento\Framework\App\ObjectManager::getInstance()
-        ->get( \Psr\Log\LoggerInterface::class )->addCritical( $ex->getTraceAsString() );
+        ->get(\Psr\Log\LoggerInterface::class)->addCritical($ex->getTraceAsString());
 }
 ```
-
 
 ## 追踪执行时间和内存使用状况
 
@@ -44,9 +42,9 @@ $_SERVER['MAGE_PROFILER'] = 'html';
 
 ```php
 \Magento\Framework\Profiler::reset();
-$portionProfileDriver = ( new \Magento\Framework\Profiler\Driver\Factory )
-    ->create( [ 'output' => 'csvfile', 'baseDir' => BP ] );
-\Magento\Framework\Profiler::add( $portionProfileDriver );
+$portionProfileDriver = (new \Magento\Framework\Profiler\Driver\Factory)
+    ->create(['output' => 'csvfile', 'baseDir' => BP]);
+\Magento\Framework\Profiler::add($portionProfileDriver);
 
 // 需要追踪的代码
 
@@ -55,7 +53,6 @@ $portionProfileDriver->display();
 ```
 
 *p.s. 一旦使用局部追踪，全局追踪就会失效。*
-
 
 如果安装了 Xdebug，还可以使用 [`xdebug_start_trace`] (https://xdebug.org/docs/execution_trace) 方法以获得更详尽的代码追踪信息：
 
@@ -66,7 +63,6 @@ xdebug_start_trace( BP . '/var/log/xdebug-trace', XDEBUG_TRACE_APPEND );
 
 xdebug_stop_trace();
 ```
-
 
 ## 通过定制 Helper 记录任意类型变量
 
@@ -160,7 +156,7 @@ class Debug {
             }
             return self::encode( gettype( $var ), $result );
         }
-        else if ( is_object( $var ) ) {
+        else {if ( is_object( $var ) ) {
             $hash = spl_object_hash( $var );
             if ( isset( $tracedObjects[$hash] ) ) {
                 return self::encode( get_class( $var ), self::STR_RECURSION );
@@ -178,9 +174,9 @@ class Debug {
             }
             return self::encode( get_class( $var ), $result );
         }
-        else if ( is_callable( $var ) ) {
+        else {if ( is_callable( $var ) ) {
             return self::encode( gettype( $var ), $var );
-        }
+        }}}
     }
 
 }
@@ -195,7 +191,6 @@ class Debug {
 ```
 
 `$print` 为 true 时直接打印结果，否则将内容记录到 system.log 文件中。
-
 
 ## 在正式站 Debug
 

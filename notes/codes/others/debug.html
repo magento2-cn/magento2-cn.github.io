@@ -17,14 +17,14 @@
 <h2>记录指定内容到 system.log 文件</h2>
 <pre><code class="language-php">/* @var $target mixed */
 \Magento\Framework\App\ObjectManager::getInstance()
-    -&gt;get( \Psr\Log\LoggerInterface::class )-&gt;addCritical( print_r( $target, true ) );</code></pre>
+    -&gt;get(\Psr\Log\LoggerInterface::class)-&gt;critical(print_r($target, true));</code></pre>
 <h2>追踪当前代码的路径</h2>
 <pre><code class="language-php">try {
-    throw new \Exception( 'debug' );
+    throw new \Exception('debug');
 }
 catch ( \Exception $ex ) {
     \Magento\Framework\App\ObjectManager::getInstance()
-        -&gt;get( \Psr\Log\LoggerInterface::class )-&gt;addCritical( $ex-&gt;getTraceAsString() );
+        -&gt;get(\Psr\Log\LoggerInterface::class)-&gt;addCritical($ex-&gt;getTraceAsString());
 }</code></pre>
 <h2>追踪执行时间和内存使用状况</h2>
 <h3>全局追踪</h3>
@@ -39,9 +39,9 @@ catch ( \Exception $ex ) {
 <h3>局部追踪</h3>
 <p>使用以下方法可以将部分代码的执行时间和内存使用状况记录到 var/log/profiler.csv，并不影响整个程序的运行：</p>
 <pre><code class="language-php">\Magento\Framework\Profiler::reset();
-$portionProfileDriver = ( new \Magento\Framework\Profiler\Driver\Factory )
-    -&gt;create( [ 'output' =&gt; 'csvfile', 'baseDir' =&gt; BP ] );
-\Magento\Framework\Profiler::add( $portionProfileDriver );
+$portionProfileDriver = (new \Magento\Framework\Profiler\Driver\Factory)
+    -&gt;create(['output' =&gt; 'csvfile', 'baseDir' =&gt; BP]);
+\Magento\Framework\Profiler::add($portionProfileDriver);
 
 // 需要追踪的代码
 
@@ -143,7 +143,7 @@ class Debug {
             }
             return self::encode( gettype( $var ), $result );
         }
-        else if ( is_object( $var ) ) {
+        else {if ( is_object( $var ) ) {
             $hash = spl_object_hash( $var );
             if ( isset( $tracedObjects[$hash] ) ) {
                 return self::encode( get_class( $var ), self::STR_RECURSION );
@@ -161,9 +161,9 @@ class Debug {
             }
             return self::encode( get_class( $var ), $result );
         }
-        else if ( is_callable( $var ) ) {
+        else {if ( is_callable( $var ) ) {
             return self::encode( gettype( $var ), $var );
-        }
+        }}}
     }
 
 }</code></pre>
