@@ -48,14 +48,6 @@
                 "path": "notes/codes/others/collection.html"
             },
             {
-                "title": "后台设置",
-                "path": "notes/codes/back-end/store-config.html"
-            },
-            {
-                "title": "后台 UI",
-                "path": "notes/codes/back-end/ui.html"
-            },
-            {
                 "title": "自定义入口文件",
                 "path": "notes/codes/others/custom-index.html"
             }
@@ -94,6 +86,10 @@
             {
                 "title": "资源索引",
                 "path": "/"
+            },
+            {
+                "title": "编码规范",
+                "path": "notes/appendices/code-standard.html"
             },
             {
                 "title": "本地开发框架",

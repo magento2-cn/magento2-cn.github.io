@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="keywords" content="Magento, Magento2, 开发, 文档, 手册, 笔记" />
+    <meta name="description" content="编码规范 - Magento 2 开发笔记" />
+    <base href="/"/>
+    <title>编码规范 - Magento 2 开发笔记</title>
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="web/css/notes.css"/>
+</head>
+<body>
+<main>
+    <article>
+        <h1>编码规范</h1>
+<p>Magento 2 有一套自己的编码规范：</p>
+<p><a href="https://devdocs.magento.com/guides/v2.4/coding-standards/bk-coding-standards.html">https://devdocs.magento.com/guides/v2.4/coding-standards/bk-coding-standards.html</a></p>
+<p>并对提交到其 Marketplace 的组件提供了一个检测工具：</p>
+<p><a href="https://devdocs.magento.com/marketplace/sellers/code-sniffer.html">https://devdocs.magento.com/marketplace/sellers/code-sniffer.html</a></p>
+<p>在项目目录之外执行如下指令可以安装工具：</p>
+<pre><code class="language-sh">composer create-project magento/magento-coding-standard --stability=dev magento-coding-standard</code></pre>
+<p>安装完成后会自动生成一个 magento-coding-standard 文件夹，进入这个文件夹后执行如下指令可以进行检测：</p>
+<pre><code class="language-sh">vendor/bin/phpcs &lt;path-to-extension&gt;
+  --standard=Magento2 \
+  --extensions=php,phtml \
+  --error-severity=10 \
+  --ignore-annotations</code></pre>
+<p>其中 <code>&lt;path-to-extension&gt;</code> 是需要检查的组件目录或指定文件的绝对路径。</p>
+    </article>
+</main>
+<script src="web/js/lib/require.js" type="text/javascript"></script>
+<script src="web/js/require-config.js" type="text/javascript"></script>
+<script src="web/js/notes.js" type="text/javascript"></script>
+</body>
+</html>
