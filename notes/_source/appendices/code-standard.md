@@ -17,7 +17,7 @@ composer create-project magento/magento-coding-standard --stability=dev magento-
 安装完成后会自动生成一个 magento-coding-standard 文件夹，进入这个文件夹后执行如下指令可以进行检测：
 
 ```sh
-vendor/bin/phpcs <path-to-extension>
+vendor/bin/phpcs <path-to-extension> \
   --standard=Magento2 \
   --extensions=php,phtml \
   --error-severity=10 \

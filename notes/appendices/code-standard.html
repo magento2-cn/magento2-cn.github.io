@@ -21,7 +21,7 @@
 <p>在项目目录之外执行如下指令可以安装工具：</p>
 <pre><code class="language-sh">composer create-project magento/magento-coding-standard --stability=dev magento-coding-standard</code></pre>
 <p>安装完成后会自动生成一个 magento-coding-standard 文件夹，进入这个文件夹后执行如下指令可以进行检测：</p>
-<pre><code class="language-sh">vendor/bin/phpcs &lt;path-to-extension&gt;
+<pre><code class="language-sh">vendor/bin/phpcs &lt;path-to-extension&gt; \
   --standard=Magento2 \
   --extensions=php,phtml \
   --error-severity=10 \
