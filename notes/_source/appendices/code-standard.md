@@ -19,8 +19,9 @@ composer create-project magento/magento-coding-standard --stability=dev magento-
 ```sh
 vendor/bin/phpcs <path-to-extension> \
   --standard=Magento2 \
-  --extensions=php,phtml \
   --error-severity=10 \
+  --extensions=php,phtml \
+  --exclude=Magento2.Legacy.Copyright,Magento2.Legacy.CopyrightAnotherExtensionsFiles \
   --ignore-annotations
 ```
 
