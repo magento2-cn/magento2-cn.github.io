@@ -22,7 +22,7 @@ vendor/bin/phpcs \
   --error-severity=10 \
   --extensions=php,phtml,js \
   --exclude=Magento2.Legacy.Copyright,Magento2.Legacy.CopyrightAnotherExtensionsFiles \
-  --report=summary \
+  --report=full,summary \
   --ignore-annotations \
     <path-to-source>
 ```
