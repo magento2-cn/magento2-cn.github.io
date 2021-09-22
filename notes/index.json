@@ -88,6 +88,10 @@
                 "path": "/"
             },
             {
+                "title": "组件配置文件",
+                "path": "notes/appendices/config.html"
+            },
+            {
                 "title": "编码规范",
                 "path": "notes/appendices/coding-standard.html"
             },

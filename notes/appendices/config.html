@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="keywords" content="Magento, Magento2, 开发, 文档, 手册, 笔记" />
+    <meta name="description" content="组件配置文件 - Magento 2 开发笔记" />
+    <base href="/"/>
+    <title>组件配置文件 - Magento 2 开发笔记</title>
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="web/css/notes.css"/>
+</head>
+<body>
+<main>
+    <article>
+        <h1>组件配置文件</h1>
+<h2>索引表</h2>
+<p>下表部分文件链接为外部链接，部分为本页锚点。</p>
+<table>
+<thead>
+<tr>
+<th>配置文件</th>
+<th>说明</th>
+<th>适用范围</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="notes/codes/others/di.html">di.xml</a></td>
+<td>Dependency injection configuration</td>
+<td>primary, global, area</td>
+</tr>
+<tr>
+<td>module.xml</td>
+<td>Defines module config data and soft dependency</td>
+<td>primary, global</td>
+</tr>
+<tr>
+<td>cache.xml</td>
+<td>Cache type declaration</td>
+<td>primary, global</td>
+</tr>
+<tr>
+<td>config.xml</td>
+<td>System configuration</td>
+<td>primary, global</td>
+</tr>
+<tr>
+<td>mview.xml</td>
+<td>MView configuration</td>
+<td>primary, global</td>
+</tr>
+<tr>
+<td>address_formats.xml</td>
+<td>Address format declaration</td>
+<td>primary, global</td>
+</tr>
+<tr>
+<td>analytics.xml</td>
+<td>Advanced reporting</td>
+<td>primary, global</td>
+</tr>
+<tr>
+<td>payment.xml</td>
+<td>Payment module configuration</td>
+<td>primary, global</td>
+</tr>
+<tr>
+<td>events.xml</td>
+<td>Event/observer configuration</td>
+<td>global, area</td>
+</tr>
+<tr>
+<td><a href="notes/appendices/config.html#acl.xml">acl.xml</a></td>
+<td>Access Control List</td>
+<td>global</td>
+</tr>
+<tr>
+<td>catalog_attributes.xml</td>
+<td>Catalog attributes configuration</td>
+<td>global</td>
+</tr>
+<tr>
+<td>communication.xml</td>
+<td>Defines aspects of the message queue system</td>
+<td>global</td>
+</tr>
+<tr>
+<td>crontab.xml</td>
+<td>Configures cron groups</td>
+<td>global</td>
+</tr>
+<tr>
+<td>cron_groups.xml</td>
+<td>Specifies cron group options</td>
+<td>global</td>
+</tr>
+<tr>
+<td>db_schema.xml</td>
+<td>Declarative schema</td>
+<td>global</td>
+</tr>
+<tr>
+<td>eav_attributes.xml</td>
+<td>Provides EAV attributes configuration</td>
+<td>global</td>
+</tr>
+<tr>
+<td>email_templates.xml</td>
+<td>Email templates configuration</td>
+<td>global</td>
+</tr>
+<tr>
+<td>esconfig.xml</td>
+<td>Elasticsearch locale stopwords config</td>
+<td>global</td>
+</tr>
+<tr>
+<td>export.xml</td>
+<td>Export entity configuration</td>
+<td>global</td>
+</tr>
+<tr>
+<td>extension_attributes.xml</td>
+<td>Extension attributes</td>
+<td>global</td>
+</tr>
+<tr>
+<td>fieldset.xml</td>
+<td>Defines fieldsets</td>
+<td>global</td>
+</tr>
+<tr>
+<td>indexer.xml</td>
+<td>Declares indexers</td>
+<td>global</td>
+</tr>
+<tr>
+<td>import.xml</td>
+<td>Declares import entities</td>
+<td>global</td>
+</tr>
+<tr>
+<td>persistent.xml</td>
+<td>Magento_Persistent configuration file</td>
+<td>global</td>
+</tr>
+<tr>
+<td>pdf.xml</td>
+<td>PDF settings</td>
+<td>global</td>
+</tr>
+<tr>
+<td>product_options.xml</td>
+<td>Provides product options configuration</td>
+<td>global</td>
+</tr>
+<tr>
+<td>product_types.xml</td>
+<td>Defines product type</td>
+<td>global</td>
+</tr>
+<tr>
+<td>queue_consumer.xml</td>
+<td>Defines the relationship between an existing queue and its consumer</td>
+<td>global</td>
+</tr>
+<tr>
+<td>queue_publisher.xml</td>
+<td>Defines the exchange where a topic is published.</td>
+<td>global</td>
+</tr>
+<tr>
+<td>queue_topology.xml</td>
+<td>Defines the message routing rules, declares queues and exchanges</td>
+<td>global</td>
+</tr>
+<tr>
+<td>reports.xml</td>
+<td>Advanced reports</td>
+<td>global</td>
+</tr>
+<tr>
+<td>resources.xml</td>
+<td>Defines module resource</td>
+<td>global</td>
+</tr>
+<tr>
+<td>sales.xml</td>
+<td>Defines sales total configuration</td>
+<td>global</td>
+</tr>
+<tr>
+<td>search_engine.xml</td>
+<td>Provides search engine configuration</td>
+<td>global</td>
+</tr>
+<tr>
+<td>search_request.xml</td>
+<td>Defines catalog search configuration</td>
+<td>global</td>
+</tr>
+<tr>
+<td>validation.xml</td>
+<td>Module validation configuration file</td>
+<td>global</td>
+</tr>
+<tr>
+<td>view.xml</td>
+<td>Defines Vendor_Module view config values</td>
+<td>global</td>
+</tr>
+<tr>
+<td>webapi.xml</td>
+<td>Configures a web API</td>
+<td>global</td>
+</tr>
+<tr>
+<td>webapi_async.xml</td>
+<td>Defines REST custom routes</td>
+<td>global</td>
+</tr>
+<tr>
+<td>widget.xml</td>
+<td>Defines widgets</td>
+<td>global</td>
+</tr>
+<tr>
+<td>zip_codes.xml</td>
+<td>Defines zip code format for each country</td>
+<td>global</td>
+</tr>
+<tr>
+<td><a href="notes/appendices/config.html#routes.xml">routes.xml</a></td>
+<td>Route configuration</td>
+<td>area</td>
+</tr>
+<tr>
+<td>sections.xml</td>
+<td>Defines actions that trigger cache invalidation for private content blocks</td>
+<td>frontend</td>
+</tr>
+<tr>
+<td><a href="notes/appendices/config.html#menu.xml">menu.xml</a></td>
+<td>Defines menu items for admin panel</td>
+<td>adminhtml</td>
+</tr>
+<tr>
+<td>system.xml</td>
+<td>Defines options for system configuration page</td>
+<td>adminhtml</td>
+</tr>
+</tbody>
+</table>
+<h2>示例及说明</h2>
+<h3>acl.xml</h3>
+<pre><code class="language-xml">&lt;?xml version="1.0"?&gt;
+&lt;config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd"&gt;
+    &lt;acl&gt;
+        &lt;resources&gt;
+            &lt;resource id="Magento_Backend::admin"&gt;
+                &lt;resource id="Vendor_MyModule::menu" title="Custom Menu" sortOrder="10"&gt;
+                    &lt;resource id="Vendor_MyModule::create" title="Create" sortOrder="50"/&gt;
+                    &lt;resource id="Vendor_MyModule::delete" title="Delete" sortOrder="100"/&gt;
+                    &lt;resource id="Vendor_MyModule::view" title="View" sortOrder="150"&gt;
+                        &lt;resource id="Vendor_MyModule::view_additional" title="View Additional Information" sortOrder="10"/&gt;
+                    &lt;/resource&gt;
+                &lt;/resource&gt;
+            &lt;/resource&gt;
+        &lt;/resources&gt;
+    &lt;/acl&gt;
+&lt;/config&gt;</code></pre>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>ACL 规则名，格式为 Vendor_ModuleName::resource_name</td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td>后台用户角色编辑页面中显示的标题</td>
+</tr>
+<tr>
+<td><code>sortOrder</code></td>
+<td>排序</td>
+</tr>
+</tbody>
+</table>
+<h3>menu.xml</h3>
+<pre><code class="language-xml">&lt;?xml version="1.0"?&gt;
+&lt;config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd"&gt;
+    &lt;menu&gt;
+        &lt;add id="Vendor_MyModule::menu" resource="Vendor_MyModule::menu"
+             module="Vendor_MyModule"
+             title="Custom Menu" sortOrder="10"/&gt;
+        &lt;add id="Vendor_MyModule::create" parent="Vendor_MyModule::menu"
+             module="Vendor_MyModule" resource="Vendor_MyModule::create"
+             title="Create" action="custommenu/create/index" sortOrder="10"/&gt;
+    &lt;/menu&gt;
+&lt;/config&gt;</code></pre>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>菜单项唯一标识，格式为 Vendor_ModuleName::resource_name</td>
+</tr>
+<tr>
+<td><code>parent</code></td>
+<td>上级菜单 id</td>
+</tr>
+<tr>
+<td><code>module</code></td>
+<td>此菜单项的所属组件</td>
+</tr>
+<tr>
+<td><code>resource</code></td>
+<td>用于控制访问权限的 <a href="notes/appendices/config.html#acl.xml">ACL 规则</a> 名</td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td>菜单标题</td>
+</tr>
+<tr>
+<td><code>action</code></td>
+<td>链接路径，格式为 front_name/controller_path/action</td>
+</tr>
+<tr>
+<td><code>sortOrder</code></td>
+<td>排序</td>
+</tr>
+</tbody>
+</table>
+<h3>routes.xml</h3>
+<pre><code class="language-xml">
+&lt;config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd"&gt;
+    &lt;router id="adminhtml"&gt;
+        &lt;route id="route_id" frontName="front-name"&gt;
+            &lt;module name="Vendor_ModuleName" before="Magento_Backend"/&gt;
+        &lt;/route&gt;
+    &lt;/router&gt;
+&lt;/config&gt;</code></pre>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>router/@id</code></td>
+<td>路由器名，<code>frontend</code> 或 <code>adminhtml</code></td>
+</tr>
+<tr>
+<td><code>router/route/@id</code></td>
+<td>路由名，也是相关 layout 配置文件名的第一部分</td>
+</tr>
+<tr>
+<td><code>router/route/@frontName</code></td>
+<td>链接路径的第一部分</td>
+</tr>
+<tr>
+<td><code>router/route/module/@name</code></td>
+<td>所属组件</td>
+</tr>
+<tr>
+<td><code>router/route/module/@before</code></td>
+<td>设定该路由在哪个组件之前进行处理，通常用于后台配置：Magento_Backend</td>
+</tr>
+<tr>
+<td><code>router/route/module/@after</code></td>
+<td>设定该路由在哪个组件之后进行处理</td>
+</tr>
+</tbody>
+</table>
+    </article>
+</main>
+<script src="web/js/lib/require.js" type="text/javascript"></script>
+<script src="web/js/require-config.js" type="text/javascript"></script>
+<script src="web/js/notes.js" type="text/javascript"></script>
+</body>
+</html>
