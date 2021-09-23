@@ -22,7 +22,7 @@
 |cron_groups.xml|Specifies cron group options|global|
 |db_schema.xml|Declarative schema|global|
 |eav_attributes.xml|Provides EAV attributes configuration|global|
-|email_templates.xml|Email templates configuration|global|
+|[email_templates.xml](notes/appendices/config.html#email_templates.xml)|Email templates configuration|global|
 |esconfig.xml|Elasticsearch locale stopwords config|global|
 |export.xml|Export entity configuration|global|
 |extension_attributes.xml|Extension attributes|global|
@@ -81,6 +81,26 @@
 |`id`|ACL 规则名，格式为 Vendor_ModuleName::resource_name|
 |`title`|后台用户角色编辑页面中显示的标题|
 |`sortOrder`|排序|
+
+### email_templates.xml
+
+```xml
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template id="email_test_template" module="Vendor_Module" area="adminhtml"
+              label="Template Label" file="template_file_name.html" type="html"/>
+</config>
+```
+
+|属性|说明|
+|---|---|
+|`id`|邮件模板唯一标识|
+|`module`|模板的所属组件|
+|`area`|邮件发送域，frontend 或 adminhtml|
+|`label`|后台 store config 中模板选项的标题|
+|`file`|模板文件相对 `[module_root]/view/[area]/email` 的路径|
+|`type`|邮件内容的类型，html 或 text|
 
 ### menu.xml
 

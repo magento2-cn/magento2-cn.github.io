@@ -106,7 +106,7 @@
 <td>global</td>
 </tr>
 <tr>
-<td>email_templates.xml</td>
+<td><a href="notes/appendices/config.html#email_templates.xml">email_templates.xml</a></td>
 <td>Email templates configuration</td>
 <td>global</td>
 </tr>
@@ -293,6 +293,47 @@
 </tr>
 </tbody>
 </table>
+<h3>email_templates.xml</h3>
+<pre><code class="language-xml">&lt;?xml version="1.0"?&gt;
+&lt;config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd"&gt;
+    &lt;template id="email_test_template" module="Vendor_Module" area="adminhtml"
+              label="Template Label" file="template_file_name.html" type="html"/&gt;
+&lt;/config&gt;</code></pre>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>邮件模板唯一标识</td>
+</tr>
+<tr>
+<td><code>module</code></td>
+<td>模板的所属组件</td>
+</tr>
+<tr>
+<td><code>area</code></td>
+<td>邮件发送域，frontend 或 adminhtml</td>
+</tr>
+<tr>
+<td><code>label</code></td>
+<td>后台 store config 中模板选项的标题</td>
+</tr>
+<tr>
+<td><code>file</code></td>
+<td>模板文件相对 <code>[module_root]/view/[area]/email</code> 的路径</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>邮件内容的类型，html 或 text</td>
+</tr>
+</tbody>
+</table>
 <h3>menu.xml</h3>
 <pre><code class="language-xml">&lt;?xml version="1.0"?&gt;
 &lt;config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -364,7 +405,7 @@
 <tbody>
 <tr>
 <td><code>router/@id</code></td>
-<td>路由器名，<code>frontend</code> 或 <code>adminhtml</code></td>
+<td>路由器名，<code>frontend</code> 或 <code>admin</code></td>
 </tr>
 <tr>
 <td><code>router/route/@id</code></td>

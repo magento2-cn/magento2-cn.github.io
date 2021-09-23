@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="keywords" content="Magento, Magento2, 开发, 文档, 手册, 笔记" />
+    <meta name="description" content="邮件发送 - Magento 2 开发笔记" />
+    <base href="/"/>
+    <title>邮件发送 - Magento 2 开发笔记</title>
+    <link rel="shortcut icon" type="image/x-icon" href="web/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="web/css/notes.css"/>
+</head>
+<body>
+<main>
+    <article>
+        <h1>邮件发送</h1>
+<p>Magento 2 采用 Lamina（原 Zend）mail 发邮件。</p>
+<p>发送自定义邮件先初始化：</p>
+<pre><code class="language-php">use Magento\Framework\Mail\Template\TransportBuilder;
+use Magento\Framework\App\Area;
+use Magento\Store\Model\Store;
+
+/** @var TransportBuilder $transportBuilder */
+/** @var array $variables */
+/** @var string $fromMail */
+/** @var string $fromName */
+/** @var string $toMail */
+$transport = $transportBuilder
+    -&gt;setTemplateIdentifier('email_test_template')
+    -&gt;setTemplateVars($variables)
+    -&gt;setTemplateOptions(['area' =&gt; Area::AREA_ADMINHTML, 'store' =&gt; Store::DEFAULT_STORE_ID])
+    -&gt;setFromByScope(['email' =&gt; $fromMail, 'name' =&gt; $fromName])
+    -&gt;addTo($toMail)
+    -&gt;getTransport();</code></pre>
+<p>其中 <code>email_test_template</code> 是邮件模板 ID，通过 <code>etc/email_templates.xml</code> 定义：</p>
+<pre><code class="language-xml">&lt;?xml version="1.0"?&gt;
+&lt;config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd"&gt;
+    &lt;template id="email_test_template" module="Vendor_Module" area="adminhtml"
+              label="Template Label" file="template_file_name.html" type="html"/&gt;
+&lt;/config&gt;</code></pre>
+<p>如果不用发送附件，只需再添加如下代码：</p>
+<pre><code class="language-php">$transport-&gt;sendMessage();</code></pre>
+<p>如需添加附件则要：</p>
+<pre><code class="language-php">use Laminas\Mail\Message;
+use Laminas\Mime\Message as MimeMessage;
+use Laminas\Mime\Mime;
+use Laminas\Mime\Part as MimePart;
+
+/** @var string $filepath */
+$pathInfo = pathinfo($filepath);
+$fileInfo = finfo_open(FILEINFO_MIME);
+$mime = finfo_file($fileInfo, $filepath);
+finfo_close($fileInfo);
+$attachment = new MimePart(fopen($filepath, 'r'));
+$attachment-&gt;setType($mime)
+    -&gt;setFileName($pathInfo['basename'])
+    -&gt;setDisposition(Mime::DISPOSITION_ATTACHMENT)
+    -&gt;setEncoding(Mime::ENCODING_BASE64);
+
+$emailMessage = $transport-&gt;getMessage();
+$mimeMessage = $emailMessage-&gt;getBody();
+$mimeMessage-&gt;addPart($attachment);
+
+$message = Message::fromString($emailMessage-&gt;toString());
+$message-&gt;setBody($mimeMessage)-&gt;setEncoding('utf-8');
+
+$contentTypeHeader = $message-&gt;getHeaders()-&gt;get('Content-Type');
+$contentTypeHeader-&gt;setType('multipart/related');
+
+(new Sendmail())-&gt;send($message);</code></pre>
+<p>注意，这里没有使用 <code>$transport-&gt;sendMessage()</code>，可能导致某些 SMTP 组件不生效，需另找实现方式。</p>
+    </article>
+</main>
+<script src="web/js/lib/require.js" type="text/javascript"></script>
+<script src="web/js/require-config.js" type="text/javascript"></script>
+<script src="web/js/notes.js" type="text/javascript"></script>
+</body>
+</html>

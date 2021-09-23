@@ -48,6 +48,10 @@
                 "path": "notes/codes/others/collection.html"
             },
             {
+                "title": "邮件发送",
+                "path": "notes/codes/others/email.html"
+            },
+            {
                 "title": "自定义入口文件",
                 "path": "notes/codes/others/custom-index.html"
             }
