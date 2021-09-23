@@ -23,7 +23,7 @@ $transport = $transportBuilder
     ->getTransport();
 ```
 
-其中 `email_test_template` 是邮件模板 ID，通过 `etc/email_templates.xml` 定义：
+其中 `email_test_template` 是邮件模板 ID，通过 [etc/email_templates.xml](notes/appendices/config.html#email_templates.xml) 定义：
 
 ```xml
 <?xml version="1.0"?>

@@ -32,7 +32,7 @@ $transport = $transportBuilder
     -&gt;setFromByScope(['email' =&gt; $fromMail, 'name' =&gt; $fromName])
     -&gt;addTo($toMail)
     -&gt;getTransport();</code></pre>
-<p>其中 <code>email_test_template</code> 是邮件模板 ID，通过 <code>etc/email_templates.xml</code> 定义：</p>
+<p>其中 <code>email_test_template</code> 是邮件模板 ID，通过 <a href="notes/appendices/config.html#email_templates.xml">etc/email_templates.xml</a> 定义：</p>
 <pre><code class="language-xml">&lt;?xml version="1.0"?&gt;
 &lt;config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd"&gt;
