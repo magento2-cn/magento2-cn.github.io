@@ -43,7 +43,7 @@
 |search_request.xml|Defines catalog search configuration|global|
 |validation.xml|Module validation configuration file|global|
 |view.xml|Defines Vendor_Module view config values|global|
-|webapi.xml|Configures a web API|global|
+|[webapi.xml](notes/appendices/config.html#webapi.xml)|Configures a web API|global|
 |webapi_async.xml|Defines REST custom routes|global|
 |widget.xml|Defines widgets|global|
 |zip_codes.xml|Defines zip code format for each country|global|
@@ -151,3 +151,26 @@
 |`router/route/module/@name`|所属组件|
 |`router/route/module/@before`|设定该路由在哪个组件之前进行处理，通常用于后台配置：Magento_Backend|
 |`router/route/module/@after`|设定该路由在哪个组件之后进行处理|
+
+### webapi.xml
+
+```xml
+<?xml version="1.0"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    <route url="/V1/aftership/last_checkpoint/:slug/:trackingNumber" method="GET">
+        <service class="CrazyCat\Aftership\Api\CheckpointRepositoryInterface" method="getLastCheckpoint"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+</routes>
+```
+
+|属性|说明|
+|---|---|
+|`route/@url`|API 路径，以冒号为前缀的部分是参数，依次对应下边指定的类的方法的入参|
+|`route/@method`|请求方法，可选项为 GET、POST、PUT、DELETE|
+|`route/service/@class`|实现此 API 的类或接口，如这里指定的是接口，则还需在 [di.xml](notes/codes/others/di.html) 中定义实现该接口的类|
+|`route/service/@method`|实现此 API 的方法|
+|`route/resources/resource/@ref`|设置 API 的访问权限，anonymous 为任何人都可访问，其他值参考 [acl.xml](notes/appendices/config.html#acl.xml)|
