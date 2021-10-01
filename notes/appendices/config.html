@@ -211,7 +211,7 @@
 <td>global</td>
 </tr>
 <tr>
-<td>webapi.xml</td>
+<td><a href="notes/appendices/config.html#webapi.xml">webapi.xml</a></td>
 <td>Configures a web API</td>
 <td>global</td>
 </tr>
@@ -426,6 +426,47 @@
 <tr>
 <td><code>router/route/module/@after</code></td>
 <td>设定该路由在哪个组件之后进行处理</td>
+</tr>
+</tbody>
+</table>
+<h3>webapi.xml</h3>
+<pre><code class="language-xml">&lt;?xml version="1.0"?&gt;
+&lt;routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd"&gt;
+    &lt;route url="/V1/aftership/last_checkpoint/:slug/:trackingNumber" method="GET"&gt;
+        &lt;service class="CrazyCat\Aftership\Api\CheckpointRepositoryInterface" method="getLastCheckpoint"/&gt;
+        &lt;resources&gt;
+            &lt;resource ref="anonymous"/&gt;
+        &lt;/resources&gt;
+    &lt;/route&gt;
+&lt;/routes&gt;</code></pre>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>route/@url</code></td>
+<td>API 路径，以冒号为前缀的部分是参数，依次对应下边指定的类的方法的入参</td>
+</tr>
+<tr>
+<td><code>route/@method</code></td>
+<td>请求方法，可选项为 GET、POST、PUT、DELETE</td>
+</tr>
+<tr>
+<td><code>route/service/@class</code></td>
+<td>实现此 API 的类或接口，如这里指定的是接口，则还需在 <a href="notes/codes/others/di.html">di.xml</a> 中定义实现该接口的类</td>
+</tr>
+<tr>
+<td><code>route/service/@method</code></td>
+<td>实现此 API 的方法</td>
+</tr>
+<tr>
+<td><code>route/resources/resource/@ref</code></td>
+<td>设置 API 的访问权限，anonymous 为任何人都可访问，其他值参考 <a href="notes/appendices/config.html#acl.xml">acl.xml</a></td>
 </tr>
 </tbody>
 </table>
